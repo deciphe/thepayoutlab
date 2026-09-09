@@ -16,7 +16,7 @@ export default function Hero() {
       </div>
 
       <div className="relative z-10 mx-auto grid min-h-screen max-w-[1500px] grid-cols-1 gap-0 px-6 py-24 md:grid-cols-2 md:px-12">
-        {/* LEFT — static narrative */}
+        {/* LEFT â€” static narrative */}
         <div className="flex flex-col justify-center">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -46,7 +46,7 @@ export default function Hero() {
             className="mt-7 max-w-md font-mono-lab text-sm leading-relaxed text-muted-foreground md:text-base"
           >
             This isn't another comparison page. These are my real, verified
-            reviews — ranked by my own score, <span className="text-spectral">True R</span> —
+            reviews â€” ranked by my own score, <span className="text-spectral">True R</span> â€”
             issued only after a payout actually hit my account.
           </motion.p>
 
@@ -73,7 +73,7 @@ export default function Hero() {
 
           <div className="mt-14 flex items-center gap-8 font-mono-lab text-xs uppercase tracking-widest text-muted-foreground">
             <div>
-              <div className="text-2xl font-semibold text-spectral">72</div>
+              <div className="text-2xl font-semibold text-spectral">{certificates.length}</div>
               <div className="mt-1">Verified Payouts</div>
             </div>
             <div className="h-8 w-px bg-border" />
@@ -89,7 +89,7 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* RIGHT — drifting certificate waterfall */}
+        {/* RIGHT â€” drifting certificate waterfall */}
         <div className="relative hidden md:block">
           <div className="absolute inset-0 mask-fade-y overflow-hidden">
             <div className="drift-track flex flex-col gap-4 will-change-transform">
@@ -101,7 +101,7 @@ export default function Hero() {
                 >
                   <img
                     src={c.url}
-                    alt={`${c.firm} payout certificate — ${c.amount}`}
+                    alt={`${c.firm} payout certificate â€” ${c.amount}`}
                     loading="lazy"
                     className="w-full rounded-md object-cover"
                   />
