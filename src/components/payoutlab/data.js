@@ -325,8 +325,8 @@ export const certificates = [
     "id": "maven-020",
     "firm": "Maven",
     "name": "John",
-    "amount": "$350",
-    "amountNum": 350,
+    "amount": "$3,500",
+    "amountNum": 3500,
     "date": "2024-10-15",
     "kind": "certificate",
     "image": "payouts/maven/maven-020.png"
@@ -751,7 +751,13 @@ export const certificates = [
     "kind": "certificate",
     "image": "payouts/tradeify/tradeify-007.png"
   }
-] .map(c => ({ ...c, image: assetUrl(c.image), url: assetUrl(c.image) }));
+] .map(c => {
+  const nativeDarkIds = new Set(["maven-001", "maven-002", "maven-003", "maven-004", "maven-005"]);
+  const image = c.firm === "Maven" && !nativeDarkIds.has(c.id)
+    ? `payouts/maven-dark/${c.id}-dark.png`
+    : c.image;
+  return { ...c, image: assetUrl(image), url: assetUrl(image) };
+});
 export const payouts = certificates;
 export const firms = [
   {

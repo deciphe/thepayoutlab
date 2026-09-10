@@ -1,3 +1,4 @@
+import Handbook from "./Handbook";
 import WispMark from "./WispMark";
 import React from "react";
 import Wisp from "./Wisp";
@@ -10,10 +11,10 @@ export default function TrueRGuide() {
     <header className="tr-nav"><a href="./#lesson"><ArrowLeft size={15} />Back to the lab</a><span><WispMark size={16} /> THE PAYOUT LAB</span></header>
     <article>
       <div className="tr-intro"><Wisp className="wisp-intro" />
-        <div className="tr-eyebrow">FIELD NOTES / TRUE R / 4 MIN READ</div>
+        <div className="tr-eyebrow">TPL HANDBOOK / TRUE R</div>
         <h1>The trade is only<br /> <span>half the equation.</span></h1>
         <p>A winning trade starts the story. True R asks what you actually keep after execution, fees, rules, and the wait to get paid.</p>
-        <div className="tr-intro-foot"><span>01 / WHAT YOU KEEP</span><span>02 / WHAT IT COSTS</span><span>03 / HOW LONG IT TAKES</span></div>
+        <div className="tr-intro-foot"><span>01 / WHAT YOU KEEP</span><span>02 / WHAT IT COSTS</span><span>03 / HOW LONG IT TAKES</span><a href="#handbook">THE HANDBOOK ↗</a></div>
       </div>
 
       <section className="tr-section tr-journey">
@@ -46,6 +47,7 @@ export default function TrueRGuide() {
         <div className="tr-timeline"><div className="tr-timeline-top"><Clock3 size={16} /><span>SAME NET CASH / ILLUSTRATIVE TIMELINES</span></div><div className="tr-lane"><span>Route A</span><div className="tr-line slow"><i /><i /><i /><i /><i /><i /><i /><i /></div><b>28 days</b></div><div className="tr-lane"><span>Route B</span><div className="tr-line fast"><i /><i /></div><b>7 days</b></div><div className="tr-timeline-result"><strong>21 days</strong><span>less time waiting for the same cash</span></div><p>Earlier access gives you more choice. It does not imply you can repeat the payout or multiply your returns.</p></div>
       </section>
 
+      <Handbook />
       <section className="tr-verdict"><div><div className="tr-eyebrow">BEFORE YOU BUY</div><h2>Would I buy it again?</h2><Wisp className="wisp-finish" note="Follow the money all the way home." /><p>Judge the full journey. Then look for receipts.</p></div><div>{["What did I spend across every attempt?", "What can I actually withdraw—and when?", "Do the rules fit how I trade?", "What reached my wallet, and how long did it take?"].map(t => <p key={t}><Check size={15} />{t}</p>)}</div></section>
       <footer className="tr-end"><p>True R is the Lab’s evaluation framework.<br /><span>A score is a judgment; the payout is evidence.</span></p><a href="./#rankings">See the True R rankings <ArrowUpRight size={17} /></a></footer>
     </article>

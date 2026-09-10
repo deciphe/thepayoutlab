@@ -1,14 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ChevronUp, ChevronDown, Pause, Play, X } from "lucide-react";
-import { certificates } from "./data";
-import { heroHighlights } from "./heroHighlights";
+import { certificates, orderedCertificates } from "./data";
+
 import "./card-wheel.css";
 
-const names = ["Lucid Trading", "Maven", "Tradeify", "FundedNext", "Topstep"];
-const groups = names.map(name => certificates.filter(c => c.firm === name).sort((a,b) => b.amountNum-a.amountNum).slice(0,4));
-const tradeifyLifetime = heroHighlights.find(c => c.id === "hero-tradeify-lifetime");
-groups[2] = [tradeifyLifetime, ...groups[2].slice(0,3)].filter(Boolean);
-const cards = Array.from({length:4},(_,i) => groups.map(g => g[i])).flat().filter(Boolean);
+const cards = orderedCertificates;
 const wrap = n => ((n % cards.length) + cards.length) % cards.length;
 
 export default function CardWheel() {

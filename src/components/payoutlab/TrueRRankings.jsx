@@ -1,3 +1,4 @@
+import "./handbook.css";
 import React, { useState, useRef, useEffect } from "react";
 import { motion, useInView, animate } from "framer-motion";
 import { Copy, Check, ChevronRight } from "lucide-react";
@@ -37,7 +38,17 @@ function ScoreMeter({ value }) {
   );
 }
 
+const reviewLens = {
+  "Lucid Trading": "Speed is central to my rating. I compare the full time to cash with the account's drawdown and withdrawal conditions, not just the transfer step.",
+  "FundedNext": "My receipt history is the starting point. The next check is the exact account product: costs, execution, eligibility and the payout window all belong in the decision.",
+  "Tradeify": "I judge the account on what remains after the journey. Compare account cost and withdrawal conditions alongside the payouts, rather than treating a single certificate as the verdict.",
+  "Breakout": "The Breakout Paradox is my trade-off: higher trading costs can still make sense when access is faster. Smaller payouts matter when they reach me sooner; repetition is never assumed.",
+  "Topstep": "My history spans multiple payouts. The economics still depend on subscriptions, resets, loss limits and the payout path for the specific account. Familiarity doesn't replace reading the rules."
+};
 function FirmPlate({ firm }) {
+  const records = certificates.filter(c => c.firm === firm.name);
+  const total = records.reduce((sum,c) => sum + c.amountNum,0);
+  const largest = Math.max(...records.map(c => c.amountNum));
   const [copied, setCopied] = useState(false);
 
   const copyCode = async () => {
@@ -95,6 +106,8 @@ function FirmPlate({ firm }) {
         <div className="mt-2"><ScoreMeter value={firm.trueR} /></div>
         <div className="group/notes relative mt-3 max-w-sm">
           <p className="font-mono-lab text-xs leading-relaxed text-muted-foreground">{firm.notes}</p>
+          <div className="firm-evidence"><span>${total.toLocaleString("en-US",{maximumFractionDigits:2})} recorded</span><span>Largest ${largest.toLocaleString("en-US",{maximumFractionDigits:2})}</span></div>
+          <details className="firm-review"><summary>My review / what matters</summary><p>{reviewLens[firm.name]}</p><p>Personal True R: {firm.trueR}/10. {records.length} payout records. No payout denial in my experience. Payout totals are not net profit.</p><a href="#vault">See the payout archive ↗</a></details>
         </div>
       </div>
 
@@ -136,16 +149,17 @@ export default function TrueRRankings() {
           <div>
             <div className="font-mono-lab text-xs uppercase tracking-[0.3em] text-lucid">04 / True R Rankings</div>
             <h2 className="mt-3 font-display text-4xl font-bold tracking-tight text-spectral md:text-6xl">
-              The firms that actually pay.
+              The firms behind my payouts.
             </h2>
           </div>
           <p className="max-w-sm font-mono-lab text-sm leading-relaxed text-muted-foreground">
             Ranked by my own <span className="text-lucid">True R</span> score — a
-            blend of payout speed, rule transparency, and post-payout reality.
+            blend of payout speed, rule transparency, and the full payout journey.
             Read the lab notes alongside each score.
           </p>
         </div>
 
+        <p className="rankings-trust"><strong>I've never had a payout denied.</strong> My experience is why these firms earn a place here. Personal ratings, backed by my payout archive—not a guarantee of future approvals.</p>
         <div className="mt-12 rounded-2xl border border-border bg-prism/20">
           <div className="hidden grid-cols-12 gap-4 border-b border-border px-8 py-4 font-mono-lab text-[10px] uppercase tracking-[0.25em] text-muted-foreground md:grid">
             <div className="col-span-1">Rank</div>
