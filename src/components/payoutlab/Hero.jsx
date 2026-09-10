@@ -2,10 +2,11 @@ import React from "react";
 import { motion } from "framer-motion";
 import { ArrowDown, FlaskConical } from "lucide-react";
 import { certificates } from "./data";
+import { heroHighlights } from "./heroHighlights";
 
 export default function Hero() {
   // duplicate the drift track so it loops seamlessly
-  const drift = [...certificates, ...certificates];
+  const drift = [...heroHighlights, ...heroHighlights];
 
   return (
     <section id="hero" className="relative min-h-screen w-full overflow-hidden bg-void">
@@ -92,7 +93,7 @@ export default function Hero() {
         {/* RIGHT — drifting certificate waterfall */}
         <div className="relative hidden md:block">
           <div className="absolute inset-0 mask-fade-y overflow-hidden">
-            <div className="drift-track flex flex-col gap-4 will-change-transform" style={{ animationDuration: `${40 * certificates.length / 15}s` }}>
+            <div className="drift-track flex flex-col gap-4 will-change-transform" style={{ animationDuration: `${40 * heroHighlights.length / 15}s` }}>
               {drift.map((c, i) => (
                 <div
                   key={i}
@@ -101,7 +102,7 @@ export default function Hero() {
                 >
                   <img
                     src={c.url}
-                    alt={`${c.firm} payout certificate — ${c.amount}`}
+                    alt={`${c.firm} ${c.kind === "lifetime" ? "lifetime payouts" : "payout record"} — ${c.amount}`}
                     loading="lazy"
                     className="w-full rounded-md object-cover"
                   />
