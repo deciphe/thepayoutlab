@@ -14,7 +14,7 @@ export default function Hero() {
       <header className="relative z-20 mx-auto flex max-w-[1500px] items-center justify-between border-b border-border px-6 py-6 md:px-12">
         <a href="#hero" className="flex items-center gap-3 font-display text-lg font-semibold tracking-tight"><WispMark className="h-5 w-5 text-lucid" />the payout lab<span className="text-lucid">.</span></a>
         <nav aria-label="Main navigation" className="flex gap-5 font-mono-lab text-[10px] uppercase tracking-widest text-muted-foreground">
-          <a href="#vault" className="hover:text-lucid">Proof</a><a href="#rankings" className="hover:text-lucid">Firms I use</a><a href="#lesson" className="hidden hover:text-lucid sm:block">The method</a>
+          <a href="#vault" className="hover:text-lucid">Proof</a><a href="#rankings" className="hover:text-lucid">Firms I use</a><a href="#lesson" className="hidden hover:text-lucid sm:block">The method</a><a href="./maven/" className="text-lucid hover:text-white">Maven Edition ↗</a>
         </nav>
       </header>
       <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse at 14% 38%, rgba(138,43,226,0.09), transparent 52%), radial-gradient(ellipse at 78% 65%, rgba(210,255,0,0.065), transparent 48%)" }} />

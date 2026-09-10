@@ -27,11 +27,22 @@ jobs:
         with:
           node-version: 24
 
-      - name: Install dependencies
+      - name: Install Payout Lab dependencies
         run: npm install
 
-      - name: Build site
+      - name: Install Maven Edition dependencies
+        run: npm install --prefix maven-site
+
+      - name: Build Payout Lab
         run: npm run build
+
+      - name: Build Maven Edition
+        run: npm run build --prefix maven-site
+
+      - name: Add Maven Edition to Pages artifact
+        run: |
+          mkdir -p dist/maven
+          cp -R maven-site/dist/. dist/maven/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
