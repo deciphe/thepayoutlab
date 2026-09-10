@@ -454,232 +454,232 @@ export const certificates = [
   {
     "id": "topstep-001",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$1,400",
     "amountNum": 1400,
     "date": "2025-01-24",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-001.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-001.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-002",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$1,160",
     "amountNum": 1160,
     "date": "2025-03-06",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-002.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-002.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-004",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$2,400",
     "amountNum": 2400,
     "date": "2025-04-16",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-004.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-004.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-005",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$1,550",
     "amountNum": 1550,
     "date": "2025-05-20",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-005.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-005.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-006",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$945",
     "amountNum": 945,
     "date": "2025-06-17",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-006.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-006.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-007",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$2,700",
     "amountNum": 2700,
     "date": "2025-07-15",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-007.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-007.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-008",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$2,361",
     "amountNum": 2361,
     "date": "2025-08-25",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-008.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-008.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-009",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$1,200",
     "amountNum": 1200,
     "date": "2025-09-30",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-009.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-009.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-010",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$1,000",
     "amountNum": 1000,
     "date": "2025-10-09",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-010.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-010.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-011",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$853",
     "amountNum": 853,
     "date": "2025-11-10",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-011.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-011.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-012",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$928",
     "amountNum": 928,
     "date": "2025-11-10",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-012.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-012.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-013",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$869",
     "amountNum": 869,
     "date": "2025-11-21",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-013.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-013.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-014",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$918",
     "amountNum": 918,
     "date": "2025-11-21",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-014.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-014.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-015",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$732",
     "amountNum": 732,
     "date": "2026-01-29",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-015.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-015.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-016",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$993",
     "amountNum": 993,
     "date": "2026-01-29",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-016.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-016.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-017",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$1,102",
     "amountNum": 1102,
     "date": "2026-01-29",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-017.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-017.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-018",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$1,103",
     "amountNum": 1103,
     "date": "2026-02-13",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-018.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-018.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-019",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$1,170",
     "amountNum": 1170,
     "date": "2026-03-02",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-019.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-019.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-020",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$1,265",
     "amountNum": 1265,
     "date": "2026-03-16",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-020.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-020.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-021",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$1,011",
     "amountNum": 1011,
     "date": "2026-03-31",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-021.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-021.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-022",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$1,225",
     "amountNum": 1225,
     "date": "2026-04-13",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-022.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-022.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-023",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$783",
     "amountNum": 783,
     "date": "2026-08-20",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-023.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-023.png?v=topstep-user-cards-4"
   },
   {
     "id": "topstep-024",
     "firm": "Topstep",
-    "name": "",
+    "name": "couldbeluck",
     "amount": "$617",
     "amountNum": 617,
     "date": "2026-09-03",
-    "kind": "transfer-proof",
-    "image": "payouts/topstep/topstep-024.png"
+    "kind": "personal-payout-record",
+    "image": "payouts/topstep/topstep-024.png?v=topstep-user-cards-4"
   },
   {
     "id": "tradeify-001",
@@ -837,3 +837,12 @@ export const firms = [
 // Existing editorial rankings preserved; counts updated only for firms represented in this archive.
 for (const firm of firms) { const count = certificates.filter(c => c.firm === firm.name).length; if (count) firm.payouts = count; }
 export const tickerItems = certificates.map(c => `${c.firm.toUpperCase()} · PAYOUT · ${c.amount}`);
+
+export const waterfallRecords = (() => {
+  const groups = [...new Set(certificates.map(c => c.firm))].map(firm => certificates.filter(c => c.firm === firm));
+  const result = [];
+  for (let i = 0; i < Math.max(0, ...groups.map(g => g.length)); i++) {
+    for (const group of groups) if (group[i]) result.push(group[i]);
+  }
+  return result;
+})();
