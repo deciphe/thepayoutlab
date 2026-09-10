@@ -771,7 +771,7 @@ export const firms = [
     logoText: "FN",
     trueR: 9.1,
     payouts: 5,
-    avgTime: "1â€“2 days",
+    avgTime: "1–2 days",
     code: "TPL",
     claimUrl: "#claim-fn",
     notes: "Reliable rails, transparent rules. Slight slippage on weekends but always pays.",
@@ -793,7 +793,7 @@ export const firms = [
     logoText: "5%",
     trueR: 8.7,
     payouts: 9,
-    avgTime: "2â€“3 days",
+    avgTime: "2–3 days",
     code: "TPL",
     claimUrl: "#claim-5ers",
     notes: "Solid bootcamp model. Slower payout but never missed one. Trustworthy support.",
@@ -804,7 +804,7 @@ export const firms = [
     logoText: "B",
     trueR: 8.4,
     payouts: 4,
-    avgTime: "1â€“2 days",
+    avgTime: "1–2 days",
     code: "TPL",
     claimUrl: "#claim-breakout",
     notes: "Clean certificate system, consistent small-ball payouts. Great for building a payout streak.",
@@ -818,7 +818,7 @@ export const firms = [
     avgTime: "2 days",
     code: "TPL",
     claimUrl: "#claim-topstep",
-    notes: "Legacy name, consistent execution. Stricter consistency rules â€” read the fine print.",
+    notes: "Legacy name, consistent execution. Stricter consistency rules — read the fine print.",
   },
   {
     rank: 7,
@@ -833,16 +833,13 @@ export const firms = [
   },
 ];
 
-
-// Existing editorial rankings preserved; counts updated only for firms represented in this archive.
-for (const firm of firms) { const count = certificates.filter(c => c.firm === firm.name).length; if (count) firm.payouts = count; }
-export const tickerItems = certificates.map(c => `${c.firm.toUpperCase()} · PAYOUT · ${c.amount}`);
-
-export const waterfallRecords = (() => {
-  const groups = [...new Set(certificates.map(c => c.firm))].map(firm => certificates.filter(c => c.firm === firm));
-  const result = [];
-  for (let i = 0; i < Math.max(0, ...groups.map(g => g.length)); i++) {
-    for (const group of groups) if (group[i]) result.push(group[i]);
-  }
-  return result;
-})();
+export const tickerItems = [
+  "LUCID TRADING · PAYOUT VERIFIED · $1,307",
+  "FUNDEDNEXT · PAYOUT VERIFIED · $1,375.13",
+  "BREAKOUT · PAYOUT VERIFIED · $239.56",
+  "TRADEIFY · PAYOUT VERIFIED · $1,238",
+  "THE 5%ERS · PAYOUT VERIFIED · $890",
+  "TOPSTEP · PAYOUT VERIFIED · $1,560",
+  "MYFUNDEDFUTURES · PAYOUT VERIFIED · $730",
+  "LUCID TRADING · PAYOUT VERIFIED · $1,428",
+];
