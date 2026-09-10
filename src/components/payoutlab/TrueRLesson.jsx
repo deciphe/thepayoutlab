@@ -1,4 +1,6 @@
 import React from "react";
+import Wisp from "./Wisp";
+import { unscoredFirms } from "./data";
 import { motion } from "framer-motion";
 import { Gauge, Zap, Clock, Receipt, TrendingUp, Sparkles } from "lucide-react";
 
@@ -25,6 +27,10 @@ export default function TrueRLesson() {
             True R is my honest score. It weighs what actually moves your
             account — and some factors outweigh others by a lot.
           </p>
+        </div>
+
+        <div className="wisp-lesson-link"><Wisp className="wisp-home" /><a href="?lesson=true-r" className="mt-6 inline-flex items-center gap-3 rounded-lg border border-lucid/30 bg-lucid/5 px-5 py-3 font-mono-lab text-xs text-lucid transition-colors hover:bg-lucid/10">Read the True R lesson <span aria-hidden="true">↗</span></a>
+
         </div>
 
         {/* the equation */}
@@ -119,6 +125,17 @@ export default function TrueRLesson() {
             </div>
           </div>
         </motion.div>
+        <div className="mt-5 border-t border-border pt-5">
+          <div className="mb-4 font-mono-lab text-[9px] uppercase tracking-[0.2em] text-muted-foreground">Web3 watch / the next payout test</div>
+          <div className="grid gap-5 sm:grid-cols-2">
+            {unscoredFirms.map(f => <a key={f.name} href={f.url} target="_blank" rel="noopener noreferrer" className="group flex items-start gap-5 rounded-lg border border-border bg-prism/10 p-5 transition-colors hover:border-lucid/30">
+              <img src={f.logo} alt={f.name} className="mt-1 h-5 w-24 shrink-0 object-contain object-left" />
+              <div><p className="font-display text-sm text-spectral">{f.name === "Hypernova" ? "Fast rails. A lower-fee possibility." : "Fewer gates. Onchain payouts."}</p>
+              <p className="mt-2 font-mono-lab text-[10px] leading-relaxed text-muted-foreground">{f.name === "Hypernova" ? "My next True R test: can low fees and fast access deliver together? First personal payout still to come. Access currently invite-only." : "No minimum trading days advertised; qualification and verification still apply. Personal payout review to come."}</p>
+              <span className="mt-3 block font-mono-lab text-[9px] uppercase tracking-wider text-lucid">Explore {f.name} ↗ · Unscored</span></div>
+            </a>)}
+          </div>
+        </div>
       </div>
     </section>
   );

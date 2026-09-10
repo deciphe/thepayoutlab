@@ -20,11 +20,11 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        lucid: "#D2FF00",
+        lucid: "#d2ff00",
         void: "#050505",
-        spectral: "#F7F7F7",
+        spectral: "#f7f7f7",
         prism: "#1A1A1A",
-        violetglow: "#8A2BE2"
+        violetglow: "#8a2be2"
       },
       fontFamily: {
         heading: ["var(--font-heading)"],

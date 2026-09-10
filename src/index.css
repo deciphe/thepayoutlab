@@ -51,11 +51,11 @@
   .font-display { font-family: var(--font-display); }
   .font-mono-lab { font-family: var(--font-mono); }
 
-  .text-lucid { color: #D2FF00; }
-  .bg-lucid { background-color: #D2FF00; }
-  .border-lucid { border-color: #D2FF00; }
+  .text-lucid { color: #d2ff00; }
+  .bg-lucid { background-color: #d2ff00; }
+  .border-lucid { border-color: #d2ff00; }
 
-  .text-violet-glow { color: #8A2BE2; }
+  .text-violet-glow { color: #8a2be2; }
 
   .grain-overlay {
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
@@ -95,7 +95,7 @@
 
   @keyframes drift-up {
     from { transform: translateY(0); }
-    to { transform: translateY(-50%); }
+    to { transform: translateY(var(--drift-distance, -50%)); }
   }
 
   .ticker-track {
@@ -107,3 +107,8 @@
     to { transform: translateX(-50%); }
   }
 }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+body:has(dialog[open]) { overflow: hidden; }
+a:focus-visible, button:focus-visible { outline: 2px solid #d2ff00; outline-offset: 4px; }

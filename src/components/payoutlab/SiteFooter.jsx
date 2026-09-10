@@ -1,5 +1,6 @@
+import WispMark from "./WispMark";
 import React from "react";
-import { FlaskConical } from "lucide-react";
+
 import { tickerItems } from "./data";
 
 export default function SiteFooter() {
@@ -22,7 +23,7 @@ export default function SiteFooter() {
 
       <div className="mx-auto max-w-[1500px] px-6 md:px-12">
         <div className="flex flex-col items-center text-center">
-          <FlaskConical className="h-8 w-8 text-lucid" />
+          <WispMark className="h-8 w-8 text-lucid" />
           <h3 className="mt-6 font-display text-3xl font-bold tracking-tight text-spectral md:text-5xl">
             The Lab Never Lies.
           </h3>
@@ -46,7 +47,7 @@ export default function SiteFooter() {
             <ul className="mt-4 space-y-2">
               <li><a href="#rankings" className="transition-colors hover:text-lucid">Lucid Trading</a></li>
               <li><a href="#rankings" className="transition-colors hover:text-lucid">FundedNext</a></li>
-              <li><a href="#rankings" className="transition-colors hover:text-lucid">The 5%ers</a></li>
+              <li><a href="#rankings" className="transition-colors hover:text-lucid">Tradeify</a></li>
             </ul>
           </div>
           <div>

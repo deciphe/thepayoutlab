@@ -459,7 +459,7 @@ export const certificates = [
     "amountNum": 1400,
     "date": "2025-01-24",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-001.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-001-gold.jpg"
   },
   {
     "id": "topstep-002",
@@ -469,7 +469,7 @@ export const certificates = [
     "amountNum": 1160,
     "date": "2025-03-06",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-002.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-002-gold.jpg"
   },
   {
     "id": "topstep-004",
@@ -479,7 +479,7 @@ export const certificates = [
     "amountNum": 2400,
     "date": "2025-04-16",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-004.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-004-gold.jpg"
   },
   {
     "id": "topstep-005",
@@ -489,7 +489,7 @@ export const certificates = [
     "amountNum": 1550,
     "date": "2025-05-20",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-005.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-005-gold.jpg"
   },
   {
     "id": "topstep-006",
@@ -499,7 +499,7 @@ export const certificates = [
     "amountNum": 945,
     "date": "2025-06-17",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-006.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-006-gold.jpg"
   },
   {
     "id": "topstep-007",
@@ -509,7 +509,7 @@ export const certificates = [
     "amountNum": 2700,
     "date": "2025-07-15",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-007.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-007-gold.jpg"
   },
   {
     "id": "topstep-008",
@@ -519,7 +519,7 @@ export const certificates = [
     "amountNum": 2361,
     "date": "2025-08-25",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-008.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-008-gold.jpg"
   },
   {
     "id": "topstep-009",
@@ -529,7 +529,7 @@ export const certificates = [
     "amountNum": 1200,
     "date": "2025-09-30",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-009.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-009-gold.jpg"
   },
   {
     "id": "topstep-010",
@@ -539,7 +539,7 @@ export const certificates = [
     "amountNum": 1000,
     "date": "2025-10-09",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-010.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-010-gold.jpg"
   },
   {
     "id": "topstep-011",
@@ -549,7 +549,7 @@ export const certificates = [
     "amountNum": 853,
     "date": "2025-11-10",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-011.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-011-gold.jpg"
   },
   {
     "id": "topstep-012",
@@ -559,7 +559,7 @@ export const certificates = [
     "amountNum": 928,
     "date": "2025-11-10",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-012.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-012-gold.jpg"
   },
   {
     "id": "topstep-013",
@@ -569,7 +569,7 @@ export const certificates = [
     "amountNum": 869,
     "date": "2025-11-21",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-013.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-013-gold.jpg"
   },
   {
     "id": "topstep-014",
@@ -579,7 +579,7 @@ export const certificates = [
     "amountNum": 918,
     "date": "2025-11-21",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-014.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-014-gold.jpg"
   },
   {
     "id": "topstep-015",
@@ -589,7 +589,7 @@ export const certificates = [
     "amountNum": 732,
     "date": "2026-01-29",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-015.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-015-gold.jpg"
   },
   {
     "id": "topstep-016",
@@ -599,7 +599,7 @@ export const certificates = [
     "amountNum": 993,
     "date": "2026-01-29",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-016.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-016-gold.jpg"
   },
   {
     "id": "topstep-017",
@@ -609,7 +609,7 @@ export const certificates = [
     "amountNum": 1102,
     "date": "2026-01-29",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-017.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-017-gold.jpg"
   },
   {
     "id": "topstep-018",
@@ -619,7 +619,7 @@ export const certificates = [
     "amountNum": 1103,
     "date": "2026-02-13",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-018.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-018-gold.jpg"
   },
   {
     "id": "topstep-019",
@@ -629,7 +629,7 @@ export const certificates = [
     "amountNum": 1170,
     "date": "2026-03-02",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-019.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-019-gold.jpg"
   },
   {
     "id": "topstep-020",
@@ -639,7 +639,7 @@ export const certificates = [
     "amountNum": 1265,
     "date": "2026-03-16",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-020.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-020-gold.jpg"
   },
   {
     "id": "topstep-021",
@@ -649,7 +649,7 @@ export const certificates = [
     "amountNum": 1011,
     "date": "2026-03-31",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-021.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-021-gold.jpg"
   },
   {
     "id": "topstep-022",
@@ -659,7 +659,7 @@ export const certificates = [
     "amountNum": 1225,
     "date": "2026-04-13",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-022.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-022-gold.jpg"
   },
   {
     "id": "topstep-023",
@@ -669,7 +669,7 @@ export const certificates = [
     "amountNum": 783,
     "date": "2026-08-20",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-023.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-023-gold.jpg"
   },
   {
     "id": "topstep-024",
@@ -679,7 +679,7 @@ export const certificates = [
     "amountNum": 617,
     "date": "2026-09-03",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-024.png?v=topstep-user-cards-4"
+    "image": "payouts/topstep/topstep-024-gold.jpg"
   },
   {
     "id": "tradeify-001",
@@ -772,8 +772,9 @@ export const firms = [
     trueR: 9.1,
     payouts: 5,
     avgTime: "1–2 days",
-    code: "TPL",
-    claimUrl: "#claim-fn",
+    code: "PAYOUTLAB",
+    claimUrl: "https://fundednext.com/?fpr=PAYOUTLAB",
+    logo: assetUrl("brands/fundednext-wordmark-light.png"),
     notes: "Reliable rails, transparent rules. Slight slippage on weekends but always pays.",
   },
   {
@@ -789,17 +790,6 @@ export const firms = [
   },
   {
     rank: 4,
-    name: "The 5%ers",
-    logoText: "5%",
-    trueR: 8.7,
-    payouts: 9,
-    avgTime: "2–3 days",
-    code: "TPL",
-    claimUrl: "#claim-5ers",
-    notes: "Solid bootcamp model. Slower payout but never missed one. Trustworthy support.",
-  },
-  {
-    rank: 5,
     name: "Breakout",
     logoText: "B",
     trueR: 8.4,
@@ -810,7 +800,7 @@ export const firms = [
     notes: "Clean certificate system, consistent small-ball payouts. Great for building a payout streak.",
   },
   {
-    rank: 6,
+    rank: 5,
     name: "Topstep",
     logoText: "TS",
     trueR: 8.2,
@@ -820,17 +810,6 @@ export const firms = [
     claimUrl: "#claim-topstep",
     notes: "Legacy name, consistent execution. Stricter consistency rules — read the fine print.",
   },
-  {
-    rank: 7,
-    name: "MyFundedFutures",
-    logoText: "MFF",
-    trueR: 7.4,
-    payouts: 4,
-    avgTime: "3 days",
-    code: "TPL",
-    claimUrl: "#claim-mff",
-    notes: "Decent futures option. Payouts work but the onboarding friction costs you edge.",
-  },
 ];
 
 export const tickerItems = [
@@ -838,8 +817,10 @@ export const tickerItems = [
   "FUNDEDNEXT · PAYOUT VERIFIED · $1,375.13",
   "BREAKOUT · PAYOUT VERIFIED · $239.56",
   "TRADEIFY · PAYOUT VERIFIED · $1,238",
-  "THE 5%ERS · PAYOUT VERIFIED · $890",
-  "TOPSTEP · PAYOUT VERIFIED · $1,560",
-  "MYFUNDEDFUTURES · PAYOUT VERIFIED · $730",
+  "TOPSTEP · PAYOUT VERIFIED · $2,700",
   "LUCID TRADING · PAYOUT VERIFIED · $1,428",
+];
+export const unscoredFirms = [
+  { name: "Propr", logo: assetUrl("brands/propr.svg"), url: "https://propr.xyz" },
+  { name: "Hypernova", logo: assetUrl("brands/hypernova.svg"), url: "https://hypernova.xyz" },
 ];

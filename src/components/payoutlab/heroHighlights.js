@@ -9,6 +9,8 @@ const ranked = [...certificates].sort((a, b) => b.amountNum - a.amountNum || a.i
 const firms = [...new Set(certificates.map(c => c.firm))];
 const representatives = firms.map(firm => lifetimeCards[firm] || ranked.find(c => c.firm === firm));
 const selected = new Set(representatives.map(c => c.id));
-const remaining = ranked.filter(c => !selected.has(c.id));
+// Fill the remaining hero slots with Lucid first; Maven appears only once.
+const remaining = ranked.filter(c => !selected.has(c.id) && c.firm !== "Maven")
+  .sort((a, b) => Number(b.firm === "Lucid Trading") - Number(a.firm === "Lucid Trading") || b.amountNum - a.amountNum);
 export const heroHighlights = [...representatives, ...remaining.slice(0, Math.max(0, 10 - representatives.length))]
   .sort((a, b) => b.amountNum - a.amountNum || a.id.localeCompare(b.id)).slice(0, 10);

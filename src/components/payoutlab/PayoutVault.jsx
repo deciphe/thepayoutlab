@@ -1,127 +1,64 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, ShieldCheck } from "lucide-react";
-import { certificates, firms } from "./data";
+import React, { useRef, useState } from "react";
+import { ArrowUpRight, X, ArrowLeft } from "lucide-react";
+import { certificates } from "./data";
 
-// Repeat the full set several times to convey sheer volume in the stream.
-const REPEAT = 4;
-const stream = Array.from({ length: certificates.length * REPEAT }, (_, i) => {
-  const c = certificates[i % certificates.length];
-  return { ...c, uid: `${c.id}-${i}` };
-});
-
-const totalVolume = certificates.reduce((s, c) => s + c.amountNum, 0);
-const fmtVolume = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(totalVolume);
+const ordered = [...certificates].sort((a, b) => b.amountNum - a.amountNum || a.id.localeCompare(b.id));
+// Interleave firms so the preview conveys the breadth of the full collection.
+const groups = [...new Set(certificates.map(c => c.firm))].map(firm => ordered.filter(c => c.firm === firm));
+const previewCards = Array.from({ length: Math.max(...groups.map(g => g.length)) }, (_, i) => groups.map(g => g[i]).filter(Boolean)).flat();
+const total = Math.round(certificates.reduce((sum, c) => sum + c.amountNum, 0)).toLocaleString("en-US");
 
 export default function PayoutVault() {
+  const dialog = useRef(null);
   const [active, setActive] = useState(null);
-
-  const trueRFor = (firmName) => firms.find((f) => f.name === firmName)?.trueR ?? "—";
+  const openVault = () => { setActive(null); dialog.current.showModal(); };
 
   return (
-    <section id="vault" className="relative w-full bg-void py-24 md:py-32">
-      <div className="mx-auto mb-10 max-w-[1500px] px-6 md:px-12">
-        <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-          <div>
-            <div className="font-mono-lab text-xs uppercase tracking-[0.3em] text-lucid">02 / The Payout Vault</div>
-            <h2 className="mt-3 font-display text-4xl font-bold tracking-tight text-spectral md:text-6xl">
-              Proof, not promises.
-            </h2>
+    <section id="vault" className="bg-void px-6 py-10 md:px-12 md:py-12">
+      <div className="relative mx-auto max-w-[1404px] overflow-hidden rounded-xl border border-border bg-prism/20">
+        <div className="relative z-10 flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between md:p-8">
+          <div className="shrink-0">
+            <div className="font-mono-lab text-[10px] uppercase tracking-[0.25em] text-lucid">02 / The payout vault</div>
+            <h2 className="mt-2 font-display text-2xl font-semibold tracking-tight text-spectral">Proof, not promises.</h2>
+            <p className="mt-2 font-mono-lab text-[11px] text-muted-foreground">{certificates.length} payouts · ${total} received</p>
           </div>
-          <div className="flex items-center gap-6 font-mono-lab">
-            <div>
-              <div className="text-2xl font-semibold text-spectral md:text-3xl">{certificates.length}</div>
-              <div className="mt-1 text-[11px] uppercase tracking-widest text-muted-foreground">Verified payouts</div>
-            </div>
-            <div className="h-10 w-px bg-border" />
-            <div>
-              <div className="text-2xl font-semibold text-lucid md:text-3xl">${fmtVolume}</div>
-              <div className="mt-1 text-[11px] uppercase tracking-widest text-muted-foreground">Total verified</div>
-            </div>
-          </div>
-        </div>
-        <p className="mt-5 max-w-xl font-mono-lab text-sm leading-relaxed text-muted-foreground">
-          Real certificates across every firm I trust. Scroll the stream, tap
-          any frame to enter the audit view. Every one cleared after the money
-          landed.
-        </p>
-      </div>
-
-      {/* horizontal payout stream */}
-      <div className="relative">
-        <div className="mask-fade-x overflow-x-auto no-scrollbar">
-          <div className="flex w-max gap-4 px-6 pb-6 md:px-12">
-            {stream.map((c, i) => (
-              <button
-                key={c.uid}
-                onClick={() => setActive(c)}
-                className="group relative shrink-0"
-                style={{ perspective: "1000px" }}
-              >
-                <div
-                  className="refractive-border overflow-hidden rounded-lg p-1 transition-all duration-500 group-hover:glow-lucid"
-                  style={{ width: "clamp(170px, 19vw, 250px)" }}
-                >
-                  <div className="relative overflow-hidden rounded-md">
-                    <img
-                      src={c.url}
-                      alt={`${c.firm} payout certificate — ${c.amount}`}
-                      loading="lazy"
-                      className="w-full object-cover transition-all duration-500 group-hover:scale-[1.03]"
-                    />
-                    <div className="grain-overlay pointer-events-none absolute inset-0 opacity-30 mix-blend-overlay transition-opacity duration-500 group-hover:opacity-0" />
-                    <div className="pointer-events-none absolute inset-0 bg-void/10 transition-opacity duration-500 group-hover:opacity-0" />
-                  </div>
-                </div>
-                <div className="mt-2 flex items-center justify-between font-mono-lab text-[9px] uppercase tracking-widest text-muted-foreground">
-                  <span className="truncate pr-2">{c.firm}</span>
-                  <span className="text-lucid">{c.amount}</span>
-                </div>
-              </button>
+          <div aria-hidden="true" className="relative h-24 min-w-0 flex-1 overflow-hidden sm:mx-4" style={{maskImage: "linear-gradient(to right, transparent, black 6%, black 62%, transparent 100%)"}}>
+            {previewCards.filter(c => c.firm !== "Breakout").slice(0, 12).map((c, i) => (
+              <img key={c.id} src={c.url} alt="" loading="lazy"
+                className="absolute top-2 h-20 w-24 rounded border border-white/10 object-cover shadow-lg"
+                style={{
+                  left: `${i * 12}%`,
+                  zIndex: 12 - i,
+                  
+                  opacity: 1 - i / 24,
+                  filter: `blur(${Math.max(0, i - 2) / 3}px)`,
+                }} />
             ))}
           </div>
+          <button onClick={openVault} className="inline-flex shrink-0 items-center justify-center gap-3 self-start rounded-lg border border-lucid/30 bg-lucid/5 px-5 py-3 font-mono-lab text-xs text-lucid transition-colors hover:bg-lucid/10 sm:self-center">See the vault <ArrowUpRight className="h-4 w-4" /></button>
         </div>
       </div>
 
-      {/* Audit view modal */}
-      <AnimatePresence>
-        {active && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-void/90 p-4 backdrop-blur-md md:p-10"
-            onClick={() => setActive(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.92, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.92, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 260, damping: 26 }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-3xl"
-            >
-              <button
-                onClick={() => setActive(null)}
-                className="absolute -top-12 right-0 inline-flex items-center gap-2 font-mono-lab text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-lucid"
-              >
-                Close <X className="h-4 w-4" />
-              </button>
-              <div className="refractive-border glow-lucid overflow-hidden rounded-xl p-2">
-                <img src={active.url} alt={`${active.firm} payout certificate — ${active.amount}`} className="w-full rounded-lg" />
-              </div>
-              <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="inline-flex items-center gap-2 rounded-full border border-lucid/40 bg-lucid/10 px-3 py-1.5 font-mono-lab text-[11px] uppercase tracking-widest text-lucid">
-                  <ShieldCheck className="h-4 w-4" /> Verified by TPL
-                </div>
-                <div className="font-mono-lab text-xs uppercase tracking-widest text-muted-foreground">
-                  {active.firm} · {active.date} · True R {trueRFor(active.firm)}
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <dialog aria-label="The payout vault" ref={dialog} onClose={() => setActive(null)} className="m-auto max-h-[90vh] w-[min(1100px,94vw)] max-w-none overflow-y-auto rounded-xl border border-border bg-void p-0 text-spectral backdrop:bg-black/80 backdrop:backdrop-blur-md">
+        <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-border bg-void/95 px-6 py-5 backdrop-blur">
+          <div>
+            <h2 className="font-display text-xl font-semibold">The payout vault</h2>
+            <p className="mt-1 font-mono-lab text-[10px] text-muted-foreground">{certificates.length} payouts · ${total} received · Largest first</p>
+          </div>
+          <button autoFocus onClick={() => dialog.current.close()} aria-label="Close vault" className="rounded p-2 text-muted-foreground hover:text-lucid"><X className="h-5 w-5" /></button>
+        </div>
+        {active ? <div className="p-6">
+          <button onClick={() => setActive(null)} className="mb-5 flex items-center gap-2 font-mono-lab text-xs text-lucid"><ArrowLeft className="h-4 w-4" />All payouts</button>
+          <img src={active.url} alt={`${active.firm} payout of ${active.amount}`} className="mx-auto max-h-[60vh] max-w-full object-contain" />
+          <p className="mt-5 text-center font-mono-lab text-xs text-muted-foreground">{active.firm} · {active.amount} · {active.date}</p>
+        </div> : <div className="grid grid-cols-2 gap-5 p-6 sm:grid-cols-3 lg:grid-cols-4">
+          {ordered.map(c => <button key={c.id} onClick={() => setActive(c)} className="group min-w-0 text-left">
+            <div className="flex h-32 items-center justify-center rounded-md border border-border bg-prism/20 p-2 transition-colors group-hover:border-lucid/40"><img src={c.url} alt={`${c.firm} payout of ${c.amount}`} loading="lazy" className="h-full w-full object-contain" /></div>
+            <div className="mt-3 flex flex-wrap justify-between gap-1 font-mono-lab text-[10px]"><span>{c.firm}</span><span className="text-lucid">{c.amount}</span></div>
+            <p className="mt-1 font-mono-lab text-[9px] text-muted-foreground">{c.date}</p>
+          </button>)}
+        </div>}
+      </dialog>
     </section>
   );
 }
