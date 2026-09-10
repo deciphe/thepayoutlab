@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ChevronUp, ChevronDown, Pause, Play, X } from "lucide-react";
 import { certificates, orderedCertificates } from "./data";
+import { depositById } from "./deposits";
 
 import "./card-wheel.css";
 
@@ -34,6 +35,6 @@ export default function CardWheel() {
       <button className="wheel-inspect" onClick={inspect} aria-label={`Inspect ${current.firm} payout ${current.amount}`}>{current.kind === "lifetime" ? "Inspect lifetime total ↗" : "Inspect payout ↗"}</button>
     </div>
     <div className="wheel-bottom"><div aria-live="polite"><span>{current.firm}{current.kind === "lifetime" ? " · Lifetime total" : ""}</span><strong>{current.amount}</strong><small>{String(wrap(position)+1).padStart(2,'0')} / {cards.length} · Drag to explore</small></div><div className="wheel-controls"><button onClick={()=>setPosition(p=>p-1)} aria-label="Previous payout"><ChevronUp size={16}/></button><button onClick={()=>setPaused(p=>!p)} aria-label={paused?'Play card wheel':'Pause card wheel'}>{paused?<Play size={14}/>:<Pause size={14}/>}</button><button onClick={()=>setPosition(p=>p+1)} aria-label="Next payout"><ChevronDown size={16}/></button></div></div>
-    <dialog ref={modal} aria-label="Payout certificate" onClose={()=>setSelected(null)} className="wheel-dialog"><button autoFocus onClick={()=>modal.current.close()} aria-label="Close certificate"><X size={20}/></button>{selected&&<><img src={selected.url} alt={`${selected.firm} payout ${selected.amount}`}/><p>{selected.firm} · {selected.amount} · {selected.kind === "lifetime" ? "Lifetime total · hero highlight only" : selected.date}</p></>}</dialog>
+    <dialog ref={modal} aria-label="Payout certificate and deposit" onClose={()=>setSelected(null)} className="wheel-dialog"><button autoFocus onClick={()=>modal.current.close()} aria-label="Close certificate"><X size={20}/></button>{selected&&<><div className="wheel-proof-pair"><img className="wheel-pair-cert" src={selected.url} alt={`${selected.firm} payout ${selected.amount}`}/>{depositById[selected.id]?<img className="wheel-pair-deposit" src={depositById[selected.id]} alt={`USDC deposit corresponding to ${selected.amount} certificate`}/>:<div className="wheel-pair-missing">Certificate only · matching deposit image unavailable</div>}</div><p>{selected.firm} · {selected.amount} · {selected.kind === "lifetime" ? "Lifetime total · hero highlight only" : selected.date}</p></>}</dialog>
   </div>;
 }
