@@ -1,4 +1,4 @@
-name: Deploy Payout Lab
+name: Deploy gigaprop
 
 on:
   push:
@@ -27,13 +27,13 @@ jobs:
         with:
           node-version: 24
 
-      - name: Install Payout Lab dependencies
+      - name: Install gigaprop dependencies
         run: npm install
 
       - name: Install Maven Edition dependencies
         run: npm install --prefix maven-site
 
-      - name: Build Payout Lab
+      - name: Build gigaprop
         run: npm run build
 
       - name: Build Maven Edition

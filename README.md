@@ -1,6 +1,6 @@
-# The Payout Lab — GitHub Pages edition
+# gigaprop — GitHub Pages edition
 
-A clean, Base44-independent React/Vite build of The Payout Lab.
+A clean React/Vite site built around personal prop-firm payout proof, True R rankings, and a dedicated Maven proof edition.
 
 ## Local development
 
@@ -19,18 +19,20 @@ The deployable static site is generated in `dist/`.
 
 ## GitHub Pages
 
-Use the included GitHub Actions workflow. In your repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions**.
-
-For a custom domain, add your domain in **Settings → Pages → Custom domain**. GitHub will create/update the CNAME configuration for the deployment.
+The included GitHub Actions workflow builds the main gigaprop site and the Maven edition on every push to `main`, then deploys the combined artifact to GitHub Pages.
 
 ## Content updates
 
-Payout certificates, firm rankings and ticker copy live in:
+Payout certificates, firm rankings, and ticker copy live in:
 
 `src/components/payoutlab/data.js`
 
-The rest of the page is split into small components under:
+The main site components live under:
 
 `src/components/payoutlab/`
 
-No Base44 SDK, authentication, database, or Base44 build plugin is required.
+The Maven edition lives under:
+
+`maven-site/`
+
+Legacy lesson and mentorship components remain in source for possible future reuse but are intentionally not part of the streamlined launch page.

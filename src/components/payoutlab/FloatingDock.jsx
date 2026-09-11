@@ -1,54 +1,28 @@
-import WispMark from "./WispMark";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Layers, Sigma, Trophy, UserRound, ArrowUp } from "lucide-react";
+import { Home, Layers, Trophy, Ghost, ArrowUp } from "lucide-react";
 
 const links = [
-  { label: "Lab", href: "#hero", icon: WispMark },
-  { label: "Vault", href: "#vault", icon: Layers },
-  { label: "True R", href: "#lesson", icon: Sigma },
-  { label: "Rankings", href: "#rankings", icon: Trophy },
-  { label: "Mentor", href: "#mentorship", icon: UserRound },
+  { label: "Home", href: "#hero", icon: Home },
+  { label: "Proof", href: "#vault", icon: Layers },
+  { label: "True R", href: "#rankings", icon: Trophy },
+  { label: "Maven", href: "./maven/", icon: Ghost },
 ];
 
 export default function FloatingDock() {
   const [hovered, setHovered] = useState(null);
-
   return (
     <div className="fixed bottom-5 left-1/2 z-40 -translate-x-1/2">
-    <motion.div
-      initial={{ y: 40, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, delay: 0.6 }}
-      className="max-w-[95vw]"
-    >
-      <div className="flex items-center gap-1 rounded-full border border-border bg-prism/80 p-1.5 backdrop-blur-xl">
-        {links.map((l) => {
-          const Icon = l.icon;
-          const active = hovered === l.label;
-          return (
-            <a
-              key={l.label}
-              href={l.href}
-              aria-label={l.label}
-              onMouseEnter={() => setHovered(l.label)}
-              onMouseLeave={() => setHovered(null)}
-              className="relative flex items-center gap-2 rounded-full px-4 py-2 font-mono-lab text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-spectral"
-            >
-              <Icon className={`h-4 w-4 ${active ? "text-lucid" : ""}`} />
-              <span className="hidden sm:inline">{l.label}</span>
-            </a>
-          );
-        })}
-        <a
-          href="#hero"
-          className="ml-1 flex h-9 w-9 items-center justify-center rounded-full bg-lucid text-void transition-transform hover:scale-105"
-          aria-label="Back to top"
-        >
-          <ArrowUp className="h-4 w-4" />
-        </a>
-      </div>
-    </motion.div>
+      <motion.div initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6, delay: 0.6 }} className="max-w-[95vw]">
+        <div className="flex items-center gap-1 rounded-full border border-border bg-prism/80 p-1.5 backdrop-blur-xl">
+          {links.map((l) => {
+            const Icon = l.icon;
+            const active = hovered === l.label;
+            return <a key={l.label} href={l.href} aria-label={l.label} onMouseEnter={() => setHovered(l.label)} onMouseLeave={() => setHovered(null)} className="relative flex items-center gap-2 rounded-full px-4 py-2 font-mono-lab text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-spectral"><Icon className={`h-4 w-4 ${active ? "text-lucid" : ""}`} /><span className="hidden sm:inline">{l.label}</span></a>;
+          })}
+          <a href="#hero" className="ml-1 flex h-9 w-9 items-center justify-center rounded-full bg-lucid text-void transition-transform hover:scale-105" aria-label="Back to top"><ArrowUp className="h-4 w-4" /></a>
+        </div>
+      </motion.div>
     </div>
   );
 }
