@@ -10,4 +10,5 @@ export const depositById = Object.fromEntries(
   pairedIds.map(id => [id, `${import.meta.env.BASE_URL}payouts/maven-deposits/${id}-deposit.jpg`]),
 );
 
-export const depositCount = pairedIds.length;
+// Owner-confirmed total; remaining receipt images will be supplied separately.
+export const depositCount = 31;
