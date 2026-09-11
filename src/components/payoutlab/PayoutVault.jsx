@@ -52,12 +52,12 @@ export default function PayoutVault() {
             <button onClick={() => setActive(null)} className="mb-6 flex items-center gap-2 font-mono-lab text-[11px] text-muted-foreground transition-colors hover:text-lucid"><ArrowLeft className="h-4 w-4" />Back</button>
             <div className="mx-auto max-w-4xl">
               <img src={active.url} alt={`${active.firm} payout of ${active.amount}`} className="mx-auto max-h-[66vh] max-w-full rounded-lg object-contain" />
-              <div className="mt-5 flex items-center justify-between gap-4 border-t border-white/[0.06] pt-4 font-mono-lab text-[11px]"><span className="text-muted-foreground">{active.firm} · {active.date}</span><span className="text-lucid">{active.amount}</span></div>
+              <div className="mt-5 border-t border-white/[0.06] pt-4 font-mono-lab text-[11px] text-muted-foreground">{active.firm} · {active.date}</div>
             </div>
           </div> : <div className="columns-2 gap-3 p-3 sm:columns-3 md:columns-4 md:gap-4 md:p-5 lg:columns-5">
             {visible.map(c => <button key={c.id} onClick={() => setActive(c)} className="group mb-3 block w-full break-inside-avoid text-left md:mb-4">
               <div className="overflow-hidden rounded-lg bg-white/[0.025] transition-all duration-300 group-hover:bg-white/[0.05] group-hover:ring-1 group-hover:ring-white/[0.10]"><img src={c.url} alt={`${c.firm} payout of ${c.amount}`} loading="lazy" className="block h-auto w-full object-contain transition-transform duration-300 group-hover:scale-[1.015]" /></div>
-              <div className="mt-2.5 flex items-baseline justify-between gap-2 px-0.5 font-mono-lab text-[9px]"><span className="truncate text-muted-foreground">{c.firm}</span><span className="shrink-0 text-lucid">{c.amount}</span></div>
+              <div className="mt-2.5 px-0.5 font-mono-lab text-[9px] text-muted-foreground"><span className="truncate">{c.firm}</span></div>
             </button>)}
           </div>}
         </div>
