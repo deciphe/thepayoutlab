@@ -21,6 +21,7 @@ export default function PayoutVault() {
         <div className="relative z-10 flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between md:p-8">
           <div className="shrink-0">
             <h2 className="font-display text-2xl font-semibold tracking-tight text-spectral">Payout vault.</h2>
+            <p className="mt-1.5 font-mono-lab text-[10px] tracking-wide text-muted-foreground">The receipts do the talking.</p>
             <p className="mt-2 font-mono-lab text-[11px] text-muted-foreground">{certificates.length} records · ${total}</p>
           </div>
           <div aria-hidden="true" className="relative h-24 min-w-0 flex-1 overflow-hidden sm:mx-4" style={{maskImage: "linear-gradient(to right, transparent, black 6%, black 62%, transparent 100%)"}}>
@@ -46,7 +47,7 @@ export default function PayoutVault() {
           </div>}
         </div>
 
-        <div className="max-h-[calc(92vh-82px)] overflow-y-auto">
+        <div className="max-h-[calc(92vh-82px)] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {active ? <div className="p-5 md:p-8">
             <button onClick={() => setActive(null)} className="mb-6 flex items-center gap-2 font-mono-lab text-[11px] text-muted-foreground transition-colors hover:text-lucid"><ArrowLeft className="h-4 w-4" />Back</button>
             <div className="mx-auto max-w-4xl">
