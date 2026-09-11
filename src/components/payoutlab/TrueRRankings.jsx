@@ -1,7 +1,7 @@
 import "./handbook.css";
 import React, { useState, useRef, useEffect } from "react";
 import { motion, useInView, animate } from "framer-motion";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Copy, Check } from "lucide-react";
 import { firms, unscoredFirms, certificates } from "./data";
 
 function ScoreMeter({ value }) {
@@ -44,12 +44,22 @@ function FirmPlate({ firm }) {
   const total = records.reduce((sum,c) => sum + c.amountNum,0);
   const largest = records.length ? Math.max(...records.map(c => c.amountNum)) : 0;
   const isMaven = firm.name === "Maven";
+  const isFundedNext = firm.name === "FundedNext";
+  const [copied, setCopied] = useState(false);
+  const copyGiga = async () => {
+    try { await navigator.clipboard.writeText("GIGA"); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch { setCopied(false); }
+  };
 
   return <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.5 }} className={`group relative grid grid-cols-1 gap-6 border-t border-border p-6 transition-colors hover:bg-prism/40 md:grid-cols-12 md:items-center md:gap-4 md:p-8 ${isMaven ? "bg-lucid/[0.035]" : ""}`}>
     <div className="md:col-span-1"><div className="font-display font-bold leading-none text-transparent" style={{fontSize:"clamp(2.5rem, 5vw, 4rem)",WebkitTextStroke:isMaven ? "1px rgba(255,255,255,0.9)" : "1px rgba(247,247,247,0.5)"}}>{String(firm.rank).padStart(2,"0")}</div></div>
     <div className="md:col-span-3"><div className="flex items-center gap-3">{firm.logo ? <div className="min-w-0"><img src={firm.logo} alt={firm.name} className="mb-3 h-auto w-44 max-w-full" /><div className="font-mono-lab text-[10px] uppercase tracking-wider text-muted-foreground">{records.length} payout records · {firm.avgTime}</div></div> : <><div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border bg-prism font-display text-sm font-bold text-spectral">{firm.logoText}</div><div><div className="font-display text-xl font-semibold text-spectral">{firm.name}</div><div className="font-mono-lab text-[11px] uppercase tracking-widest text-muted-foreground">{records.length} payout records · {firm.avgTime}</div>{isMaven && <div className="mt-2 font-mono-lab text-[9px] uppercase tracking-[0.24em] text-lucid">gigaprop #1 / flagship pick</div>}</div></>}</div></div>
     <div className="md:col-span-4"><div className="font-mono-lab text-[10px] uppercase tracking-[0.25em] text-muted-foreground">True R / personal score</div><div className="mt-2"><ScoreMeter value={firm.trueR} /></div><p className="mt-3 max-w-sm font-mono-lab text-xs leading-relaxed text-muted-foreground">{firm.notes}</p><div className="firm-evidence"><span>${total.toLocaleString("en-US",{maximumFractionDigits:2})} recorded</span><span>Largest ${largest.toLocaleString("en-US",{maximumFractionDigits:2})}</span></div><details className="firm-review"><summary>My review / what matters</summary><p>{reviewLens[firm.name]}</p><p>Personal True R: {firm.trueR}/10. {records.length} payout records. Payout totals are not net profit.</p>{isMaven ? <a href={`${import.meta.env.BASE_URL}maven/`}>Open Maven Edition ↗</a> : <a href="#vault">See payout evidence ↗</a>}</details></div>
-    <div className="md:col-span-4"><div className={`rounded-lg border p-4 transition-colors ${isMaven ? "border-lucid/60 bg-lucid/10" : "border-lucid/30 bg-lucid/5 group-hover:border-lucid/60"}`}><div className="font-mono-lab text-[10px] uppercase tracking-[0.25em] text-muted-foreground">{isMaven ? "Preferred partner code" : "gigaprop code"}</div><div className="mt-2 font-mono-lab text-2xl font-bold text-lucid">CODE GIGA</div><div className="mt-1 font-mono-lab text-[10px] uppercase tracking-[0.26em] text-spectral">COMING SOON</div><p className="mt-3 font-mono-lab text-[10px] leading-relaxed text-muted-foreground">No placeholder discount. When a real gigaprop offer is live, it will appear here.</p>{isMaven && <a href={`${import.meta.env.BASE_URL}maven/`} className="mt-3 inline-flex items-center gap-1 font-mono-lab text-[11px] uppercase tracking-widest text-muted-foreground transition-colors hover:text-lucid">See the Maven proof <ChevronRight className="h-3 w-3" /></a>}</div></div>
+    <div className="md:col-span-4"><div className={`rounded-lg border p-4 transition-colors ${isMaven ? "border-lucid/60 bg-lucid/10" : "border-lucid/30 bg-lucid/5 group-hover:border-lucid/60"}`}>
+      <div className="font-mono-lab text-[10px] uppercase tracking-[0.25em] text-muted-foreground">{isFundedNext ? "Live gigaprop code" : isMaven ? "Preferred partner code" : "gigaprop code"}</div>
+      <div className="mt-2 font-mono-lab text-2xl font-bold text-lucid">CODE GIGA</div>
+      {isFundedNext ? <><button onClick={copyGiga} className="mt-3 inline-flex items-center gap-2 rounded-md border border-border bg-prism px-3 py-2 font-mono-lab text-[11px] uppercase tracking-widest text-spectral transition-all hover:border-lucid/60 hover:text-lucid">{copied ? <Check className="h-3.5 w-3.5 text-lucid" /> : <Copy className="h-3.5 w-3.5" />}{copied ? "Copied GIGA" : "Copy GIGA"}</button><p className="mt-3 font-mono-lab text-[10px] leading-relaxed text-muted-foreground">Live on FundedNext. Use code GIGA.</p></> : <><div className="mt-1 font-mono-lab text-[10px] uppercase tracking-[0.26em] text-spectral">COMING SOON</div><p className="mt-3 font-mono-lab text-[10px] leading-relaxed text-muted-foreground">No placeholder discount. When a real gigaprop offer is live, it will appear here.</p></>}
+      {isMaven && <a href={`${import.meta.env.BASE_URL}maven/`} className="mt-3 inline-flex items-center gap-1 font-mono-lab text-[11px] uppercase tracking-widest text-muted-foreground transition-colors hover:text-lucid">See the Maven proof <ChevronRight className="h-3 w-3" /></a>}
+    </div></div>
   </motion.div>;
 }
 
