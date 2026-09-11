@@ -23,28 +23,19 @@ export default function Hero() {
 
       <div className="relative z-10 mx-auto grid min-h-[75vh] max-w-[1500px] grid-cols-1 gap-10 px-6 py-16 md:grid-cols-2 md:gap-12 md:px-12">
         <div className="flex flex-col justify-center">
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-8 inline-flex w-fit items-center gap-3 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-            01 / REAL PAYOUTS. NO PERFORMANCE THEATER.
-          </motion.div>
-
           <motion.h1 initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.05 }} className="font-display font-bold leading-[0.92] tracking-tight text-spectral" style={{ fontSize: "clamp(3.5rem, 8.5vw, 8rem)" }}>
             NOT ALL <br />
             <span className="text-lucid">R</span> IS <span className="text-lucid">R</span>.
           </motion.h1>
 
-          <motion.p initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.18 }} className="mt-7 max-w-md font-display text-base leading-relaxed text-muted-foreground md:text-lg">
-            Payout proof, personal rankings, and the full cost of getting paid. <span className="text-spectral">True R</span> is what survives the journey.
-          </motion.p>
-
-          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.28 }} className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
             <a href="#rankings" className="group inline-flex items-center justify-center gap-2 rounded-md bg-lucid px-6 py-3.5 font-mono-lab text-sm font-semibold uppercase tracking-wider text-void transition-all hover:glow-lucid">
               Firms I use <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
             </a>
             <a href="#vault" className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-6 py-3.5 font-mono-lab text-sm font-medium uppercase tracking-wider text-spectral transition-colors hover:border-lucid/60 hover:text-lucid">
-              Open payout vault
+              Payout vault
             </a>
           </motion.div>
-          <p className="mt-5 font-mono-lab text-[11px] text-muted-foreground">My payouts. My experience. Your call.</p>
         </div>
 
         <CardWheel />
