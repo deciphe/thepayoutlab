@@ -2,6 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 import { certificates } from "./data";
+import { track } from "../../lib/analytics";
 import CardWheel from "./CardWheel";
 
 export default function Hero() {
@@ -15,7 +16,7 @@ export default function Hero() {
         <nav aria-label="Main navigation" className="flex gap-5 font-mono-lab text-[10px] uppercase tracking-widest text-muted-foreground">
           <a href="#vault" className="hover:text-lucid">Proof</a>
           <a href="#rankings" className="hover:text-lucid">True R</a>
-          <a href="./maven/" className="text-lucid hover:text-white">Maven Edition ↗</a>
+          <a href="./maven/" onClick={() => track("maven_edition_open", { source: "top_nav" })} className="text-lucid hover:text-white">Maven Edition ↗</a>
         </nav>
       </header>
 
@@ -27,12 +28,13 @@ export default function Hero() {
             NOT ALL <br />
             <span className="text-lucid">R</span> IS <span className="text-lucid">R</span>.
           </motion.h1>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.14 }} className="mt-4 font-mono-lab text-[10px] tracking-wide text-muted-foreground">The trade is only half the equation.</motion.p>
 
-          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
-            <a href="#rankings" className="group inline-flex items-center justify-center gap-2 rounded-md bg-lucid px-6 py-3.5 font-mono-lab text-sm font-semibold uppercase tracking-wider text-void transition-all hover:glow-lucid">
-              Firms I use <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
+          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+            <a href="#rankings" onClick={() => track("hero_cta_click", { target: "rankings" })} className="group inline-flex items-center justify-center gap-2 rounded-md bg-lucid px-6 py-3.5 font-mono-lab text-sm font-semibold uppercase tracking-wider text-void transition-all hover:glow-lucid">
+              My picks <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
             </a>
-            <a href="#vault" className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-6 py-3.5 font-mono-lab text-sm font-medium uppercase tracking-wider text-spectral transition-colors hover:border-lucid/60 hover:text-lucid">
+            <a href="#vault" onClick={() => track("hero_cta_click", { target: "vault" })} className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-6 py-3.5 font-mono-lab text-sm font-medium uppercase tracking-wider text-spectral transition-colors hover:border-lucid/60 hover:text-lucid">
               Payout vault
             </a>
           </motion.div>
