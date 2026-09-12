@@ -2,9 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { ChevronUp, ChevronDown, Pause, Play, X } from "lucide-react";
 import { certificates } from "./data";
 import { heroHighlights } from "./heroHighlights";
+import { track } from "../../lib/analytics";
 import "./card-wheel.css";
 
-const names = ["Lucid Trading", "Maven", "Tradeify", "FundedNext", "Topstep"];
+const names = ["Lucid Trading", "Maven", "Tradeify", "FundedNext", "Topstep", "Breakout"];
 const groups = names.map(name => certificates.filter(c => c.firm === name).sort((a,b) => b.amountNum-a.amountNum).slice(0,4));
 const tradeifyLifetime = heroHighlights.find(c => c.id === "hero-tradeify-lifetime");
 groups[2] = [tradeifyLifetime, ...groups[2].slice(0,3)].filter(Boolean);
@@ -25,7 +26,7 @@ export default function CardWheel() {
     return () => clearInterval(timer);
   }, [paused, hover, dragging, selected]);
   const current = cards[wrap(position)];
-  const inspect = () => { setSelected(current); modal.current.showModal(); };
+  const inspect = () => { setSelected(current); track("hero_payout_inspect", { firm: current.firm, id: current.id }); modal.current.showModal(); };
   return <div className="wheel-shell">
     <div className="wheel-stage" aria-label="Payout card wheel" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
       <div className="wheel-orbit" aria-hidden="true" />
@@ -35,9 +36,9 @@ export default function CardWheel() {
         onPointerCancel={() => {drag.current=null;setDragging(false);}}>
         {cards.map((c,i) => { const offset = wrap(i-wrap(position)+cards.length/2)-cards.length/2; const visible=Math.abs(offset)<=2; return <div key={c.id} aria-hidden="true" className={`wheel-card ${offset===0?'is-front':''}`} style={{ transform:`translate(calc(-50% + ${Math.abs(offset)*Math.abs(offset)*48}px), calc(-50% + ${offset*142}px)) rotate(${offset*-11}deg) scale(${1-Math.min(Math.abs(offset),4)*.09})`,opacity:visible?1-Math.abs(offset)*.28:0,zIndex:10-Math.abs(offset),visibility:visible?'visible':'hidden' }}><img src={c.url} alt="" draggable="false" loading="eager" /></div>; })}
       </div>
-      <button className="wheel-inspect" onClick={inspect} aria-label={`Inspect ${current.firm} payout ${current.amount}`}>{current.kind === "lifetime" ? "Inspect lifetime total ↗" : "Inspect payout ↗"}</button>
+      <button className="wheel-inspect" onClick={inspect} aria-label={`Inspect ${current.firm} payout`}>{current.kind === "lifetime" ? "Inspect lifetime total ↗" : "Inspect payout ↗"}</button>
     </div>
-    <div className="wheel-bottom"><div aria-live="polite"><span>{current.firm}{current.kind === "lifetime" ? " · Lifetime total" : ""}</span><strong>{current.amount}</strong><small>{String(wrap(position)+1).padStart(2,'0')} / {cards.length} · Drag to explore</small></div><div className="wheel-controls"><button onClick={()=>setPosition(p=>p-1)} aria-label="Previous payout"><ChevronUp size={16}/></button><button onClick={()=>setPaused(p=>!p)} aria-label={paused?'Play card wheel':'Pause card wheel'}>{paused?<Play size={14}/>:<Pause size={14}/>}</button><button onClick={()=>setPosition(p=>p+1)} aria-label="Next payout"><ChevronDown size={16}/></button></div></div>
-    <dialog ref={modal} aria-label="Payout certificate" onClose={()=>setSelected(null)} className="wheel-dialog"><button autoFocus onClick={()=>modal.current.close()} aria-label="Close certificate"><X size={20}/></button>{selected&&<><img src={selected.url} alt={`${selected.firm} payout ${selected.amount}`}/><p>{selected.firm} · {selected.amount} · {selected.kind === "lifetime" ? "Lifetime total · hero highlight only" : selected.date}</p></>}</dialog>
+    <div className="wheel-bottom"><div aria-live="polite"><span>{current.firm}{current.kind === "lifetime" ? " · Lifetime total" : ""}</span><small>{String(wrap(position)+1).padStart(2,'0')} / {cards.length} · Drag to explore</small></div><div className="wheel-controls"><button onClick={()=>setPosition(p=>p-1)} aria-label="Previous payout"><ChevronUp size={16}/></button><button onClick={()=>setPaused(p=>!p)} aria-label={paused?'Play card wheel':'Pause card wheel'}>{paused?<Play size={14}/>:<Pause size={14}/>}</button><button onClick={()=>setPosition(p=>p+1)} aria-label="Next payout"><ChevronDown size={16}/></button></div></div>
+    <dialog ref={modal} aria-label="Payout certificate" onClose={()=>setSelected(null)} className="wheel-dialog"><button autoFocus onClick={()=>modal.current.close()} aria-label="Close certificate"><X size={20}/></button>{selected&&<><img src={selected.url} alt={`${selected.firm} payout ${selected.amount}`}/><p>{selected.firm} · {selected.kind === "lifetime" ? "Lifetime total" : selected.date}</p></>}</dialog>
   </div>;
 }
