@@ -30,6 +30,7 @@ const reviewLens = {
 const mavenFirm = { rank: 1, name: "Maven", logoText: "M", trueR: 9.9, avgTime: "Proven over time" };
 const rankedFirms = [mavenFirm, ...firms.filter(f => f.name !== "Maven").map((firm, index) => ({ ...firm, rank: index + 2 }))];
 const watchlistFirms = [...unscoredFirms, { name: "MyFundedPerps", url: "https://myfundedperpetuals.com/" }];
+const markets = ["Futures", "CFDs", "Perps"];
 
 function BrandMark({ firm, compact = false }) {
   const profile = firmProfiles[firm.name] || {};
@@ -49,7 +50,7 @@ function PickCard({ firm, copied, onCopy }) {
   const profile = firmProfiles[firm.name] || {};
   const pick = profile.pick;
   const isFundedNext = firm.name === "FundedNext";
-  const outbound = () => track("firm_outbound_click", { firm: firm.name, plan: pick?.name || "none" });
+  const outbound = () => track("firm_outbound_click", { firm: firm.name, plan: pick?.name || "none", market: profile.market });
 
   if (!pick) return <div className="rounded-xl border border-white/[0.06] bg-white/[0.018] p-4">
     <div className="font-mono-lab text-[9px] uppercase tracking-[0.22em] text-muted-foreground">MY PICK</div>
@@ -67,6 +68,7 @@ function PickCard({ firm, copied, onCopy }) {
 }
 
 function FirmPlate({ firm }) {
+  const profile = firmProfiles[firm.name] || {};
   const records = certificates.filter(c => c.firm === firm.name);
   const total = records.reduce((sum,c) => sum + c.amountNum,0);
   const largest = records.length ? Math.max(...records.map(c => c.amountNum)) : 0;
@@ -78,20 +80,37 @@ function FirmPlate({ firm }) {
 
   return <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.5 }} className={`group relative grid grid-cols-1 gap-6 border-t border-border p-6 transition-colors hover:bg-prism/30 md:grid-cols-12 md:items-center md:gap-4 md:p-8 ${isMaven ? "bg-lucid/[0.025]" : ""}`}>
     <div className="md:col-span-1"><div className="font-display font-bold leading-none text-transparent" style={{fontSize:"clamp(2.5rem, 5vw, 4rem)",WebkitTextStroke:isMaven ? "1px rgba(255,255,255,0.9)" : "1px rgba(247,247,247,0.45)"}}>{String(firm.rank).padStart(2,"0")}</div></div>
-    <div className="md:col-span-3"><BrandMark firm={firm} /><div className="mt-3 font-mono-lab text-[10px] uppercase tracking-wider text-muted-foreground">{records.length} payouts · {firm.avgTime}</div>{isMaven && <div className="mt-2 font-mono-lab text-[9px] uppercase tracking-[0.2em] text-lucid">gigaprop #1</div>}</div>
+    <div className="md:col-span-3"><BrandMark firm={firm} /><div className="mt-3 font-mono-lab text-[10px] uppercase tracking-wider text-muted-foreground">{profile.market} · {records.length} payouts · {firm.avgTime}</div>{isMaven && <div className="mt-2 font-mono-lab text-[9px] uppercase tracking-[0.2em] text-lucid">gigaprop #1</div>}</div>
     <div className="md:col-span-3"><div className="font-mono-lab text-[9px] uppercase tracking-[0.22em] text-muted-foreground">True R</div><div className="mt-2"><ScoreMeter value={firm.trueR} /></div><div className="firm-evidence"><span>${total.toLocaleString("en-US",{maximumFractionDigits:2})} recorded</span><span>Largest ${largest.toLocaleString("en-US",{maximumFractionDigits:2})}</span></div><details className="firm-review"><summary>Details</summary><p>{reviewLens[firm.name]}</p><p>True R: {firm.trueR}/10 · {records.length} payout records.</p>{isMaven ? <a href={`${import.meta.env.BASE_URL}maven/`}>Maven proof ↗</a> : <a href="#vault">See payouts ↗</a>}</details></div>
     <div className="md:col-span-5"><PickCard firm={firm} copied={copied} onCopy={copyGiga} /></div>
   </motion.div>;
 }
 
+function WatchRow({ firm }) {
+  const profile = firmProfiles[firm.name] || {};
+  const url = profile.url || firm.url;
+  return <div className="grid gap-4 border-t border-border px-6 py-6 md:grid-cols-12 md:items-center md:px-8">
+    <div className="md:col-span-4"><BrandMark firm={firm} compact /></div>
+    <div className="font-mono-lab text-[10px] uppercase tracking-wider text-muted-foreground md:col-span-3">{profile.market} · Not yet rated</div>
+    <div className="flex items-center justify-between gap-3 md:col-span-5"><span className="font-mono-lab text-[9px] uppercase tracking-[0.2em] text-muted-foreground">{profile.referral ? "REFERRAL · LIVE" : "CODE GIGA · SOON"}</span>{url && <a onClick={() => track("watchlist_outbound_click", { firm: firm.name, market: profile.market, referral: Boolean(profile.referral) })} href={url} target="_blank" rel="sponsored noopener noreferrer" className="font-mono-lab text-[10px] uppercase tracking-widest text-spectral hover:text-lucid">Open ↗</a>}</div>
+  </div>;
+}
+
 export default function TrueRRankings() {
+  const [market, setMarket] = useState("Futures");
+  const ranked = rankedFirms.filter(f => firmProfiles[f.name]?.market === market);
+  const watch = watchlistFirms.filter(f => firmProfiles[f.name]?.market === market);
+  const switchMarket = next => { setMarket(next); track("market_filter", { market: next }); };
+
   return <section id="rankings" className="relative w-full bg-void py-24 md:py-32"><div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-lucid/40 to-transparent" /><div className="mx-auto max-w-[1500px] px-6 md:px-12">
     <h2 className="font-display text-4xl font-bold tracking-tight text-spectral md:text-6xl">True R.</h2>
     <p className="mt-2 font-mono-lab text-[10px] tracking-wide text-muted-foreground">What survives the trip to cash. <a href="?lesson=true-r" onClick={() => track("methodology_open", { source: "rankings" })} className="text-spectral transition-colors hover:text-lucid">How I score it ↗</a></p>
-    <div className="mt-10 rounded-2xl border border-border bg-prism/20"><div className="hidden grid-cols-12 gap-4 border-b border-border px-8 py-4 font-mono-lab text-[10px] uppercase tracking-[0.25em] text-muted-foreground md:grid"><div className="col-span-1">Rank</div><div className="col-span-3">Firm</div><div className="col-span-3">True R</div><div className="col-span-5">My pick</div></div>{rankedFirms.map(f => <FirmPlate key={f.name} firm={f} />)}
-      <div className="border-t border-border px-6 py-5 md:px-8"><div className="font-mono-lab text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Watchlist</div></div>
-      {watchlistFirms.map(f => { const profile = firmProfiles[f.name] || {}; const url = profile.url || f.url; return <div key={f.name} className="grid gap-4 border-t border-border px-6 py-6 md:grid-cols-12 md:items-center md:px-8"><div className="md:col-span-4"><BrandMark firm={f} compact /></div><div className="font-mono-lab text-[10px] text-muted-foreground md:col-span-3">Not yet rated</div><div className="flex items-center justify-between gap-3 md:col-span-5"><span className="font-mono-lab text-[9px] uppercase tracking-[0.2em] text-muted-foreground">CODE GIGA · SOON</span>{url && <a onClick={() => track("watchlist_outbound_click", { firm: f.name })} href={url} target="_blank" rel="noopener noreferrer" className="font-mono-lab text-[10px] uppercase tracking-widest text-spectral hover:text-lucid">Open ↗</a>}</div></div>; })}
+    <div className="mt-7 flex gap-2">{markets.map(name => <button key={name} onClick={() => switchMarket(name)} className={`rounded-full px-4 py-2 font-mono-lab text-[10px] uppercase tracking-[0.18em] transition-colors ${market === name ? "bg-spectral text-void" : "border border-white/[0.07] bg-white/[0.02] text-muted-foreground hover:text-spectral"}`}>{name}</button>)}</div>
+    {market === "Perps" && <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 border-y border-white/[0.06] py-4 font-mono-lab text-[10px] uppercase tracking-[0.18em]"><span className="text-lucid">Same trade. Different True R.</span><span className="text-muted-foreground">Fees · leverage · execution · payout speed</span></div>}
+    <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-prism/20"><div className="hidden grid-cols-12 gap-4 border-b border-border px-8 py-4 font-mono-lab text-[10px] uppercase tracking-[0.25em] text-muted-foreground md:grid"><div className="col-span-1">Rank</div><div className="col-span-3">Firm</div><div className="col-span-3">True R</div><div className="col-span-5">My pick</div></div>{ranked.map(f => <FirmPlate key={f.name} firm={f} />)}
+      {watch.length > 0 && <><div className="border-t border-border px-6 py-5 md:px-8"><div className="font-mono-lab text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Watchlist</div></div>{watch.map(f => <WatchRow key={f.name} firm={f} />)}</>}
     </div>
-    <p className="mt-4 font-mono-lab text-[9px] leading-relaxed text-muted-foreground">Plan terms change. Stats are a compact current snapshot, not a substitute for the firm’s rules. If a link becomes affiliate, it will be disclosed.</p>
+    {market === "Perps" && <p className="mt-4 font-mono-lab text-[9px] leading-relaxed text-muted-foreground">Hypernova and Propr links are referral links. I may earn a commission if you use them. Rankings are not for sale.</p>}
+    <p className="mt-2 font-mono-lab text-[9px] leading-relaxed text-muted-foreground">Plan terms change. Stats are a compact current snapshot, not a substitute for the firm’s rules.</p>
   </div></section>;
 }
