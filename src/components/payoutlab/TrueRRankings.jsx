@@ -33,9 +33,9 @@ const watchlistFirms = [...unscoredFirms, { name: "MyFundedPerps", url: "https:/
 
 function BrandMark({ firm, compact = false }) {
   const profile = firmProfiles[firm.name] || {};
-  const src = firm.logo || profile.icon;
+  const icon = profile.icon;
   return <div className="flex min-w-0 items-center gap-3">
-    {src ? <div className={`${compact ? "h-8 w-8" : "h-10 w-10"} flex shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white/[0.04] p-1.5`}><img src={src} alt="" className="h-full w-full object-contain" onError={e => { e.currentTarget.style.display = "none"; }} /></div> : null}
+    {icon ? <div className={`${compact ? "h-8 w-8" : "h-10 w-10"} flex shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white/[0.04] p-1.5`}><img src={icon} alt="" className="h-full w-full object-contain" onError={e => { e.currentTarget.parentElement.style.display = "none"; }} /></div> : firm.logo ? <img src={firm.logo} alt="" className={`${compact ? "h-6 w-28" : "h-7 w-36"} shrink-0 object-contain object-left`} /> : null}
     <div className={`${compact ? "text-base" : "text-xl"} truncate font-display font-semibold text-spectral`}>{firm.name}</div>
   </div>;
 }
