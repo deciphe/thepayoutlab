@@ -1,8 +1,10 @@
 import "./handbook.css";
 import React, { useState, useRef, useEffect } from "react";
 import { motion, useInView, animate } from "framer-motion";
-import { ChevronRight, Copy, Check } from "lucide-react";
+import { ArrowUpRight, Copy, Check } from "lucide-react";
 import { firms, unscoredFirms, certificates } from "./data";
+import { firmProfiles } from "./firmProfiles";
+import { track } from "../../lib/analytics";
 
 function ScoreMeter({ value }) {
   const ref = useRef(null);
@@ -17,39 +19,50 @@ function ScoreMeter({ value }) {
 }
 
 const reviewLens = {
-  "Maven": "My most proven prop firm by a wide margin. This is the deepest payout history in the archive, the relationship I trust most, and the firm behind my biggest body of realized payout proof.",
-  "Lucid Trading": "Speed is central to my rating. I compare the full time to cash with the account's drawdown and withdrawal conditions, not just the transfer step.",
-  "FundedNext": "My receipt history is the starting point. Costs, execution, eligibility and payout windows all belong in the decision.",
-  "Tradeify": "I judge the account on what remains after the journey. Account cost and withdrawal conditions matter alongside the payouts.",
-  "Breakout": "Higher trading costs can still make sense when access is faster. Smaller payouts matter when they reach me sooner; repetition is never assumed.",
-  "Topstep": "My history spans multiple payouts. The economics still depend on subscriptions, resets, loss limits and the payout path for the specific account."
+  "Maven": "My deepest payout history and the firm I trust most from direct experience.",
+  "Lucid Trading": "I care about the full path to cash: drawdown, payout rules, and how quickly the account becomes usable.",
+  "FundedNext": "Low target and funded-stage simplicity matter more to me than the headline account size.",
+  "Tradeify": "The Flex path removes the exact friction I care about most: DLLs, funded consistency, and payout buffers.",
+  "Breakout": "The fee is the real risk. Static drawdown and on-demand payouts make the tight Turbo structure interesting to me.",
+  "Topstep": "Proven payout history, but I have not chosen a single favorite plan for this page yet."
 };
 
-const mavenFirm = {
-  rank: 1,
-  name: "Maven",
-  logoText: "M",
-  trueR: 9.9,
-  avgTime: "Proven over time",
-  notes: "My #1. Most trusted, most proven, and the deepest payout record in the archive. Maven is the benchmark the rest of the list has to beat.",
-};
+const mavenFirm = { rank: 1, name: "Maven", logoText: "M", trueR: 9.9, avgTime: "Proven over time" };
+const rankedFirms = [mavenFirm, ...firms.filter(f => f.name !== "Maven").map((firm, index) => ({ ...firm, rank: index + 2 }))];
+const watchlistFirms = [...unscoredFirms, { name: "MyFundedPerps", url: "https://myfundedperpetuals.com/" }];
 
-const rankedFirms = [
-  mavenFirm,
-  ...firms.filter(f => f.name !== "Maven").map((firm, index) => ({ ...firm, rank: index + 2 })),
-];
+function BrandMark({ firm, compact = false }) {
+  const profile = firmProfiles[firm.name] || {};
+  const src = firm.logo || profile.icon;
+  return <div className="flex min-w-0 items-center gap-3">
+    {src ? <div className={`${compact ? "h-8 w-8" : "h-10 w-10"} flex shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white/[0.04] p-1.5`}><img src={src} alt="" className="h-full w-full object-contain" onError={e => { e.currentTarget.style.display = "none"; }} /></div> : null}
+    <div className={`${compact ? "text-base" : "text-xl"} truncate font-display font-semibold text-spectral`}>{firm.name}</div>
+  </div>;
+}
 
-const watchlistFirms = [
-  ...unscoredFirms,
-  { name: "MyFundedPerps", url: "https://myfundedperpetuals.com/" },
-];
+function CodeStatus({ live, onCopy, copied }) {
+  if (live) return <button onClick={onCopy} className="inline-flex items-center gap-1.5 font-mono-lab text-[9px] uppercase tracking-[0.2em] text-lucid transition-colors hover:text-white">{copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}CODE GIGA · {copied ? "COPIED" : "LIVE"}</button>;
+  return <span className="font-mono-lab text-[9px] uppercase tracking-[0.2em] text-muted-foreground">CODE GIGA · SOON</span>;
+}
 
-function ComingSoonRail() {
-  return <div className="giga-coming-soon">
-    <div className="giga-hazard" />
-    <div className="font-mono-lab text-[10px] uppercase tracking-[0.25em] text-muted-foreground">gigaprop code</div>
-    <div className="mt-2 font-mono-lab text-2xl font-bold text-lucid">CODE GIGA</div>
-    <div className="mt-1 font-mono-lab text-[10px] uppercase tracking-[0.26em] text-spectral">COMING SOON</div>
+function PickCard({ firm, copied, onCopy }) {
+  const profile = firmProfiles[firm.name] || {};
+  const pick = profile.pick;
+  const isFundedNext = firm.name === "FundedNext";
+  const outbound = () => track("firm_outbound_click", { firm: firm.name, plan: pick?.name || "none" });
+
+  if (!pick) return <div className="rounded-xl border border-white/[0.06] bg-white/[0.018] p-4">
+    <div className="font-mono-lab text-[9px] uppercase tracking-[0.22em] text-muted-foreground">MY PICK</div>
+    <div className="mt-2 font-display text-lg text-spectral">Not locked yet.</div>
+    <p className="mt-2 font-mono-lab text-[10px] leading-relaxed text-muted-foreground">Still choosing the exact plan I would buy.</p>
+    {profile.url && <a onClick={outbound} href={profile.url} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1 font-mono-lab text-[10px] uppercase tracking-widest text-muted-foreground hover:text-lucid">Open {firm.name} <ArrowUpRight className="h-3 w-3" /></a>}
+  </div>;
+
+  return <div className={`rounded-xl border p-4 transition-colors ${isFundedNext ? "border-lucid/25 bg-lucid/[0.035]" : "border-white/[0.07] bg-white/[0.018] group-hover:border-white/[0.12]"}`}>
+    <div className="flex items-start justify-between gap-3"><div><div className="font-mono-lab text-[9px] uppercase tracking-[0.22em] text-muted-foreground">MY PICK</div><div className="mt-1.5 font-display text-xl font-semibold tracking-tight text-spectral">{pick.name}</div></div><CodeStatus live={isFundedNext} onCopy={onCopy} copied={copied} /></div>
+    <div className="mt-4 grid grid-cols-4 gap-2">{pick.stats.map(([label, value]) => <div key={label} className="min-w-0"><div className="font-mono-lab text-[8px] uppercase tracking-wider text-muted-foreground">{label}</div><div className="mt-1 truncate font-mono-lab text-[11px] text-spectral">{value}</div></div>)}</div>
+    <p className="mt-4 font-mono-lab text-[10px] leading-relaxed text-muted-foreground">{pick.why}</p>
+    <a onClick={outbound} href={profile.url} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1 font-mono-lab text-[10px] uppercase tracking-widest text-lucid hover:text-white">View this plan <ArrowUpRight className="h-3 w-3" /></a>
   </div>;
 }
 
@@ -58,20 +71,27 @@ function FirmPlate({ firm }) {
   const total = records.reduce((sum,c) => sum + c.amountNum,0);
   const largest = records.length ? Math.max(...records.map(c => c.amountNum)) : 0;
   const isMaven = firm.name === "Maven";
-  const isFundedNext = firm.name === "FundedNext";
   const [copied, setCopied] = useState(false);
   const copyGiga = async () => {
-    try { await navigator.clipboard.writeText("GIGA"); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch { setCopied(false); }
+    try { await navigator.clipboard.writeText("GIGA"); setCopied(true); track("code_copy", { firm: firm.name, code: "GIGA" }); setTimeout(() => setCopied(false), 1800); } catch { setCopied(false); }
   };
 
-  return <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.5 }} className={`group relative grid grid-cols-1 gap-6 border-t border-border p-6 transition-colors hover:bg-prism/40 md:grid-cols-12 md:items-center md:gap-4 md:p-8 ${isMaven ? "bg-lucid/[0.035]" : ""}`}>
-    <div className="md:col-span-1"><div className="font-display font-bold leading-none text-transparent" style={{fontSize:"clamp(2.5rem, 5vw, 4rem)",WebkitTextStroke:isMaven ? "1px rgba(255,255,255,0.9)" : "1px rgba(247,247,247,0.5)"}}>{String(firm.rank).padStart(2,"0")}</div></div>
-    <div className="md:col-span-3"><div className="flex items-center gap-3">{firm.logo ? <div className="min-w-0"><img src={firm.logo} alt={firm.name} className="mb-3 h-auto w-44 max-w-full" /><div className="font-mono-lab text-[10px] uppercase tracking-wider text-muted-foreground">{records.length} payout records · {firm.avgTime}</div></div> : <><div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border bg-prism font-display text-sm font-bold text-spectral">{firm.logoText}</div><div><div className="font-display text-xl font-semibold text-spectral">{firm.name}</div><div className="font-mono-lab text-[11px] uppercase tracking-widest text-muted-foreground">{records.length} payout records · {firm.avgTime}</div>{isMaven && <div className="mt-2 font-mono-lab text-[9px] uppercase tracking-[0.24em] text-lucid">gigaprop #1 / flagship pick</div>}</div></>}</div></div>
-    <div className="md:col-span-4"><div className="font-mono-lab text-[10px] uppercase tracking-[0.25em] text-muted-foreground">True R</div><div className="mt-2"><ScoreMeter value={firm.trueR} /></div><div className="firm-evidence"><span>${total.toLocaleString("en-US",{maximumFractionDigits:2})} recorded</span><span>Largest ${largest.toLocaleString("en-US",{maximumFractionDigits:2})}</span></div><details className="firm-review"><summary>Details</summary><p>{reviewLens[firm.name]}</p><p>True R: {firm.trueR}/10 · {records.length} payout records.</p>{isMaven ? <a href={`${import.meta.env.BASE_URL}maven/`}>Open Maven Edition ↗</a> : <a href="#vault">See payouts ↗</a>}</details></div>
-    <div className="md:col-span-4">{isFundedNext ? <div className="rounded-lg border border-lucid/30 bg-lucid/5 p-4 transition-colors group-hover:border-lucid/60"><div className="font-mono-lab text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Live gigaprop code</div><div className="mt-2 font-mono-lab text-2xl font-bold text-lucid">CODE GIGA</div><button onClick={copyGiga} className="mt-3 inline-flex items-center gap-2 rounded-md border border-border bg-prism px-3 py-2 font-mono-lab text-[11px] uppercase tracking-widest text-spectral transition-all hover:border-lucid/60 hover:text-lucid">{copied ? <Check className="h-3.5 w-3.5 text-lucid" /> : <Copy className="h-3.5 w-3.5" />}{copied ? "Copied GIGA" : "Copy GIGA"}</button><div className="mt-3 font-mono-lab text-[10px] uppercase tracking-[0.18em] text-muted-foreground">FUNDEDNEXT / LIVE</div></div> : <ComingSoonRail />}{isMaven && <a href={`${import.meta.env.BASE_URL}maven/`} className="mt-3 inline-flex items-center gap-1 font-mono-lab text-[11px] uppercase tracking-widest text-muted-foreground transition-colors hover:text-lucid">Maven Edition <ChevronRight className="h-3 w-3" /></a>}</div>
+  return <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.5 }} className={`group relative grid grid-cols-1 gap-6 border-t border-border p-6 transition-colors hover:bg-prism/30 md:grid-cols-12 md:items-center md:gap-4 md:p-8 ${isMaven ? "bg-lucid/[0.025]" : ""}`}>
+    <div className="md:col-span-1"><div className="font-display font-bold leading-none text-transparent" style={{fontSize:"clamp(2.5rem, 5vw, 4rem)",WebkitTextStroke:isMaven ? "1px rgba(255,255,255,0.9)" : "1px rgba(247,247,247,0.45)"}}>{String(firm.rank).padStart(2,"0")}</div></div>
+    <div className="md:col-span-3"><BrandMark firm={firm} /><div className="mt-3 font-mono-lab text-[10px] uppercase tracking-wider text-muted-foreground">{records.length} payouts · {firm.avgTime}</div>{isMaven && <div className="mt-2 font-mono-lab text-[9px] uppercase tracking-[0.2em] text-lucid">gigaprop #1</div>}</div>
+    <div className="md:col-span-3"><div className="font-mono-lab text-[9px] uppercase tracking-[0.22em] text-muted-foreground">True R</div><div className="mt-2"><ScoreMeter value={firm.trueR} /></div><div className="firm-evidence"><span>${total.toLocaleString("en-US",{maximumFractionDigits:2})} recorded</span><span>Largest ${largest.toLocaleString("en-US",{maximumFractionDigits:2})}</span></div><details className="firm-review"><summary>Details</summary><p>{reviewLens[firm.name]}</p><p>True R: {firm.trueR}/10 · {records.length} payout records.</p>{isMaven ? <a href={`${import.meta.env.BASE_URL}maven/`}>Maven proof ↗</a> : <a href="#vault">See payouts ↗</a>}</details></div>
+    <div className="md:col-span-5"><PickCard firm={firm} copied={copied} onCopy={copyGiga} /></div>
   </motion.div>;
 }
 
 export default function TrueRRankings() {
-  return <section id="rankings" className="relative w-full bg-void py-24 md:py-32"><div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-lucid/40 to-transparent" /><div className="mx-auto max-w-[1500px] px-6 md:px-12"><h2 className="font-display text-4xl font-bold tracking-tight text-spectral md:text-6xl">True R.</h2><p className="mt-2 font-mono-lab text-[10px] tracking-wide text-muted-foreground">What survives the trip to cash.</p><div className="mt-10 rounded-2xl border border-border bg-prism/20"><div className="hidden grid-cols-12 gap-4 border-b border-border px-8 py-4 font-mono-lab text-[10px] uppercase tracking-[0.25em] text-muted-foreground md:grid"><div className="col-span-1">Rank</div><div className="col-span-3">Firm</div><div className="col-span-4">True R</div><div className="col-span-4">Status</div></div>{rankedFirms.map(f => <FirmPlate key={f.name} firm={f} />)}<div className="border-t border-border px-6 py-5 md:px-8"><div className="font-mono-lab text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Watchlist</div></div>{watchlistFirms.map(f => <div key={f.name} className="grid gap-5 border-t border-border px-6 py-7 md:grid-cols-12 md:items-center md:px-8"><div className="md:col-span-4">{f.logo ? <img src={f.logo} alt={f.name} className="h-7 w-40 object-contain object-left" /> : <div className="font-display text-xl font-semibold text-spectral">{f.name}</div>}</div><div className="font-mono-lab text-xs text-muted-foreground md:col-span-3">Not yet rated</div><div className="md:col-span-5"><a href={f.url} target="_blank" rel="noopener noreferrer" className="block"><ComingSoonRail /></a></div></div>)}</div></div></section>;
+  return <section id="rankings" className="relative w-full bg-void py-24 md:py-32"><div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-lucid/40 to-transparent" /><div className="mx-auto max-w-[1500px] px-6 md:px-12">
+    <h2 className="font-display text-4xl font-bold tracking-tight text-spectral md:text-6xl">True R.</h2>
+    <p className="mt-2 font-mono-lab text-[10px] tracking-wide text-muted-foreground">What survives the trip to cash. <a href="?lesson=true-r" onClick={() => track("methodology_open", { source: "rankings" })} className="text-spectral transition-colors hover:text-lucid">How I score it ↗</a></p>
+    <div className="mt-10 rounded-2xl border border-border bg-prism/20"><div className="hidden grid-cols-12 gap-4 border-b border-border px-8 py-4 font-mono-lab text-[10px] uppercase tracking-[0.25em] text-muted-foreground md:grid"><div className="col-span-1">Rank</div><div className="col-span-3">Firm</div><div className="col-span-3">True R</div><div className="col-span-5">My pick</div></div>{rankedFirms.map(f => <FirmPlate key={f.name} firm={f} />)}
+      <div className="border-t border-border px-6 py-5 md:px-8"><div className="font-mono-lab text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Watchlist</div></div>
+      {watchlistFirms.map(f => { const profile = firmProfiles[f.name] || {}; const url = profile.url || f.url; return <div key={f.name} className="grid gap-4 border-t border-border px-6 py-6 md:grid-cols-12 md:items-center md:px-8"><div className="md:col-span-4"><BrandMark firm={f} compact /></div><div className="font-mono-lab text-[10px] text-muted-foreground md:col-span-3">Not yet rated</div><div className="flex items-center justify-between gap-3 md:col-span-5"><span className="font-mono-lab text-[9px] uppercase tracking-[0.2em] text-muted-foreground">CODE GIGA · SOON</span>{url && <a onClick={() => track("watchlist_outbound_click", { firm: f.name })} href={url} target="_blank" rel="noopener noreferrer" className="font-mono-lab text-[10px] uppercase tracking-widest text-spectral hover:text-lucid">Open ↗</a>}</div></div>; })}
+    </div>
+    <p className="mt-4 font-mono-lab text-[9px] leading-relaxed text-muted-foreground">Plan terms change. Stats are a compact current snapshot, not a substitute for the firm’s rules. If a link becomes affiliate, it will be disclosed.</p>
+  </div></section>;
 }
