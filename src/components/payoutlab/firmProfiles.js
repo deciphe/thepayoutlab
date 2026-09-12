@@ -1,5 +1,6 @@
 export const firmProfiles = {
   "Maven": {
+    market: "CFDs",
     url: "https://maventrading.com/",
     icon: "https://maventrading.com/favicon.ico",
     pick: {
@@ -9,6 +10,7 @@ export const firmProfiles = {
     },
   },
   "Lucid Trading": {
+    market: "Futures",
     url: "https://www.lucidtrading.com/",
     icon: "https://www.lucidtrading.com/favicon.ico",
     pick: {
@@ -18,6 +20,7 @@ export const firmProfiles = {
     },
   },
   "FundedNext": {
+    market: "Futures",
     url: "https://fundednext.com/futures/legacy",
     icon: "https://fundednext.com/favicon.ico",
     pick: {
@@ -27,6 +30,7 @@ export const firmProfiles = {
     },
   },
   "Tradeify": {
+    market: "Futures",
     url: "https://tradeify.co/",
     icon: "https://tradeify.co/favicon.ico",
     pick: {
@@ -36,6 +40,7 @@ export const firmProfiles = {
     },
   },
   "Breakout": {
+    market: "Perps",
     url: "https://www.breakoutprop.com/pricing/",
     icon: "https://www.breakoutprop.com/favicon.ico",
     pick: {
@@ -45,17 +50,23 @@ export const firmProfiles = {
     },
   },
   "Topstep": {
+    market: "Futures",
     url: "https://www.topstep.com/",
     icon: "https://www.topstep.com/favicon.ico",
   },
   "MyFundedPerps": {
+    market: "Perps",
     url: "https://myfundedperpetuals.com/",
     icon: "https://myfundedperpetuals.com/favicon.ico",
   },
   "Propr": {
-    url: "https://propr.xyz",
+    market: "Perps",
+    url: "https://app.propr.xyz/r/7gJmpEjv",
+    referral: true,
   },
   "Hypernova": {
-    url: "https://hypernova.xyz",
+    market: "Perps",
+    url: "https://hn.xyz/r/4sjg1b",
+    referral: true,
   },
 };
