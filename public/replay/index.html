@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#050505">
+<title>gigaprop. — Trade Replay</title>
+<style>
+:root{
+  --bg:#050505; --panel:#0a0a0b; --panel2:#0f0f11; --line:#222228;
+  --text:#f4f4f0; --muted:#75757f; --green:#B6FF4A; --purple:#9B87F5; --bear:#34343a;
+}
+*{box-sizing:border-box} html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{min-height:100vh;display:grid;place-items:center;padding:24px}
+.app{width:min(1180px,100%);background:linear-gradient(180deg,#0a0a0b 0%,#070708 100%);border:1px solid #1d1d21;border-radius:22px;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.55)}
+.topbar{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid var(--line);background:#080809}
+.brand{display:flex;align-items:center;gap:14px;min-width:0}
+.logo{font-weight:900;letter-spacing:-.07em;font-size:24px;line-height:1}
+.logo .dot{color:var(--green)} .divider{width:1px;height:22px;background:var(--line)}
+.instrument{display:flex;flex-direction:column;gap:1px} .instrument strong{font-size:13px;letter-spacing:.08em}
+.instrument span{font-size:10px;color:var(--muted);letter-spacing:.13em}
+.status{display:flex;align-items:center;gap:8px;color:#9c9ca5;font-size:10px;letter-spacing:.13em;text-transform:uppercase}
+.status i{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 14px rgba(182,255,74,.5)}
+.stage{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 286px;min-height:610px}
+.chartwrap{position:relative;min-width:0;background:#050505;border-right:1px solid var(--line)}
+canvas{display:block;width:100%;height:610px}
+.overlayTop{position:absolute;left:22px;top:18px;display:flex;align-items:center;gap:9px;pointer-events:none}
+.badge{font-size:9px;letter-spacing:.16em;text-transform:uppercase;border:1px solid #28282e;border-radius:999px;padding:6px 9px;color:#9a9aa3;background:rgba(8,8,9,.78);backdrop-filter:blur(8px)}
+.badge.purple{color:#c8bdff;border-color:rgba(155,135,245,.35)}
+.pnlFloat{position:absolute;right:22px;top:20px;text-align:right;pointer-events:none}
+.pnlFloat small{display:block;color:#707079;font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px}
+.pnlFloat strong{display:block;font-size:34px;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.045em}
+.pnlFloat strong.positive{color:var(--green)} .pnlFloat strong.negative{color:#f06d78}
+.pnlFloat span{display:block;color:#676771;font-size:10px;margin-top:6px;font-variant-numeric:tabular-nums}
+.sidebar{padding:18px;background:#09090a;display:flex;flex-direction:column;gap:18px}
+.kicker{color:#63636c;font-size:9px;letter-spacing:.17em;text-transform:uppercase}
+.tradeTitle{font-size:22px;font-weight:800;letter-spacing:-.04em;margin-top:5px} .tradeTitle .sell{color:var(--purple)}
+.grid{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.stat{padding:13px 12px;border-bottom:1px solid var(--line)} .stat:nth-child(odd){border-right:1px solid var(--line)} .stat:nth-last-child(-n+2){border-bottom:0}
+.stat label{display:block;color:#62626b;font-size:9px;letter-spacing:.11em;text-transform:uppercase;margin-bottom:5px}
+.stat b{font-size:13px;font-variant-numeric:tabular-nums}
+.account{padding:14px;border:1px solid var(--line);border-radius:14px;background:#0c0c0e}
+.accountRow{display:flex;justify-content:space-between;gap:16px;padding:7px 0;font-size:11px;color:#8b8b94}
+.accountRow b{color:var(--text);font-variant-numeric:tabular-nums} .accountRow .green{color:var(--green)}
+.rule{margin-top:auto;border:1px solid rgba(155,135,245,.24);background:rgba(155,135,245,.05);border-radius:14px;padding:14px}
+.rule b{display:block;font-size:11px;margin-bottom:4px} .rule span{color:#7b768a;font-size:10px;line-height:1.45}
+.controls{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;border-top:1px solid var(--line);background:#080809;flex-wrap:wrap}
+.leftControls,.rightControls{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+button{appearance:none;border:1px solid #27272d;background:#101012;color:#e9e9e5;border-radius:10px;padding:10px 13px;font:700 10px/1 system-ui;letter-spacing:.09em;text-transform:uppercase;cursor:pointer}
+button:hover{border-color:#3a3a42} button.primary{background:var(--green);color:#080808;border-color:var(--green)} button:disabled{opacity:.4;cursor:not-allowed}
+.speed{display:flex;border:1px solid #27272d;border-radius:10px;overflow:hidden} .speed button{border:0;border-radius:0;padding:10px 11px;background:#0d0d0f;color:#74747d}
+.speed button.active{background:#1a1a1e;color:#fff}
+.clock{font-size:11px;color:#777780;font-variant-numeric:tabular-nums;letter-spacing:.08em}
+.clock b{color:#cfcfd3}
+.endcard{position:absolute;inset:0;display:grid;place-items:center;background:rgba(5,5,5,.72);backdrop-filter:blur(9px);opacity:0;pointer-events:none;transition:opacity .35s}
+.endcard.show{opacity:1;pointer-events:auto}
+.endinner{text-align:center;padding:28px} .endinner .mini{font-size:10px;letter-spacing:.18em;color:#7d7d86;text-transform:uppercase}
+.endinner h2{margin:8px 0 2px;font-size:64px;letter-spacing:-.06em;color:var(--green)} .endinner p{margin:0;color:#8a8a93;font-size:12px}
+.endinner .gp{margin-top:28px;font-size:16px;font-weight:900;letter-spacing:-.05em} .endinner .gp i{font-style:normal;color:var(--green)}
+.endinner button{margin-top:20px}
+@media(max-width:860px){.stage{grid-template-columns:1fr}.chartwrap{border-right:0;border-bottom:1px solid var(--line)}canvas{height:500px}.sidebar{display:grid;grid-template-columns:1fr 1fr}.rule{margin-top:0}}
+@media(max-width:560px){body{padding:0}.app{border-radius:0;border-left:0;border-right:0}.stage{min-height:0}canvas{height:430px}.sidebar{grid-template-columns:1fr}.pnlFloat strong{font-size:27px}.instrument span{display:none}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">GP<span class="dot">.</span></div><div class="divider"></div>
+      <div class="instrument"><strong>US100 · 10M</strong><span>MAVEN / HISTORICAL RECONSTRUCTION</span></div>
+    </div>
+    <div class="status"><i></i><span id="statusText">Ready</span></div>
+  </div>
+
+  <div class="stage">
+    <div class="chartwrap">
+      <canvas id="chart"></canvas>
+      <div class="overlayTop">
+        <span class="badge">DEC 23 2024</span>
+        <span class="badge purple">10M OHLC REPLAY</span>
+      </div>
+      <div class="pnlFloat">
+        <small>Floating P&amp;L</small>
+        <strong id="pnl">$0.00</strong>
+        <span id="priceLabel">US100 —</span>
+      </div>
+      <div class="endcard" id="endcard">
+        <div class="endinner">
+          <div class="mini">POSITION CLOSED · REALIZED</div>
+          <h2>+$6,133.80</h2>
+          <p>3.00 lots · 102.23 pts · US100</p>
+          <div class="gp">gigaprop<i>.</i></div>
+          <button type="button" id="replayEnd">Replay trade</button>
+        </div>
+      </div>
+    </div>
+
+    <aside class="sidebar">
+      <div>
+        <div class="kicker">Open position</div>
+        <div class="tradeTitle"><span class="sell">SELL</span> 3.00 US100</div>
+      </div>
+      <div class="grid">
+        <div class="stat"><label>Entry</label><b>21,366.35</b></div>
+        <div class="stat"><label>Exit</label><b>21,264.12</b></div>
+        <div class="stat"><label>Side</label><b>SHORT</b></div>
+        <div class="stat"><label>Value / pt</label><b>$60.00</b></div>
+      </div>
+      <div class="account">
+        <div class="accountRow"><span>Balance</span><b id="balance">$100,000.00</b></div>
+        <div class="accountRow"><span>Equity</span><b id="equity">$100,000.00</b></div>
+        <div class="accountRow"><span>Net P&amp;L</span><b class="green" id="sidePnl">$0.00</b></div>
+      </div>
+      <div class="rule">
+        <b>Source reconstruction</b>
+        <span>Real 2024 NDX 10-minute OHLC bars. Intrabar movement is reconstructed from OHLC; entry, exit, size and final realized P&amp;L match the trade record.</span>
+      </div>
+    </aside>
+  </div>
+
+  <div class="controls">
+    <div class="leftControls">
+      <button class="primary" id="play">Play replay</button>
+      <button id="reset">Reset</button>
+      <div class="speed">
+        <button data-speed="0.65">0.5×</button>
+        <button data-speed="1" class="active">1×</button>
+        <button data-speed="1.8">2×</button>
+        <button data-speed="3.2">4×</button>
+      </div>
+    </div>
+    <div class="rightControls"><div class="clock">SOURCE <b id="clock">14:20</b></div></div>
+  </div>
+</div>
+
+<script>
+(() => {
+const BARS=[{"t":"14:20","o":21336.65,"h":21368.28,"l":21333.4,"c":21364.65},{"t":"14:30","o":21363.65,"h":21368.15,"l":21351.78,"c":21362.4},{"t":"14:40","o":21361.9,"h":21373.15,"l":21352.9,"c":21370.15},{"t":"14:50","o":21370.78,"h":21381.53,"l":21366.53,"c":21379.65},{"t":"15:00","o":21377.15,"h":21382.65,"l":21356.03,"c":21366.28},{"t":"15:10","o":21366.28,"h":21372.9,"l":21353.9,"c":21367.78},{"t":"15:20","o":21367.65,"h":21376.4,"l":21359.4,"c":21369.4},{"t":"15:30","o":21369.4,"h":21370.78,"l":21293.28,"c":21298.03},{"t":"15:40","o":21298.9,"h":21298.9,"l":21255.78,"c":21284.53},{"t":"15:50","o":21284.9,"h":21298.9,"l":21270.15,"c":21283.4}];
+const ENTRY=21366.35, EXIT=21264.12, LOTS=3, DOLLARS_PER_POINT_PER_LOT=20, START_BAL=100000;
+const ENTRY_BAR=2, ENTRY_FRAC=.54, EXIT_BAR=8;
+const root=document.getElementById('app'), canvas=document.getElementById('chart'), ctx=canvas.getContext('2d');
+const pnlEl=document.getElementById('pnl'), sidePnl=document.getElementById('sidePnl'), eqEl=document.getElementById('equity'), balEl=document.getElementById('balance');
+const priceLabel=document.getElementById('priceLabel'), clockEl=document.getElementById('clock'), statusText=document.getElementById('statusText'), endcard=document.getElementById('endcard');
+const playBtn=document.getElementById('play'), resetBtn=document.getElementById('reset'), replayEnd=document.getElementById('replayEnd');
+let speed=1, playing=false, raf=0, startedAt=0, elapsed=0, progress=0, entered=false, exited=false;
+const DURATION=14500;
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function money(v){const s=Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return (v>0?'+':v<0?'-':'')+'$'+s;}
+function resize(){const r=canvas.getBoundingClientRect(), d=Math.min(devicePixelRatio||1,2); canvas.width=Math.max(1,Math.floor(r.width*d));canvas.height=Math.max(1,Math.floor(r.height*d));ctx.setTransform(d,0,0,d,0,0);draw();}
+function intrabar(bar,p){
+  const green=bar.c>=bar.o;
+  const pts=green?[bar.o,bar.l,bar.h,bar.c]:[bar.o,bar.h,bar.l,bar.c];
+  const seg=Math.min(2,Math.floor(p*3)), local=p*3-seg;
+  const a=pts[seg], b=pts[seg+1];
+  return a+(b-a)*local;
+}
+function stateAt(q){
+  const total=BARS.length;
+  let x=q*(total-1);
+  let bi=Math.min(total-1,Math.floor(x)), frac=Math.min(1,x-bi);
+  let price=intrabar(BARS[bi],frac);
+  if(bi===ENTRY_BAR && frac>=ENTRY_FRAC && !entered) entered=true;
+  if(bi>ENTRY_BAR) entered=true;
+  if(entered && !exited && bi===EXIT_BAR && price<=EXIT){ price=EXIT; exited=true; playing=false; }
+  if(exited) price=EXIT;
+  return {bi,frac,price};
+}
+function draw(){
+  const W=canvas.clientWidth,H=canvas.clientHeight; if(!W||!H)return;
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#050505';ctx.fillRect(0,0,W,H);
+  const pad={l:20,r:76,t:76,b:42}, cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;
+  const lo=Math.min(...BARS.map(b=>b.l),EXIT)-20, hi=Math.max(...BARS.map(b=>b.h),ENTRY)+20;
+  const y=p=>pad.t+(hi-p)/(hi-lo)*ch;
+  const sx=cw/(BARS.length+1);
+  ctx.strokeStyle='#111116';ctx.lineWidth=1;
+  for(let i=0;i<6;i++){let yy=pad.t+i*ch/5;ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(W-pad.r,yy);ctx.stroke();}
+  for(let i=0;i<BARS.length;i++){let xx=pad.l+(i+1)*sx;ctx.beginPath();ctx.moveTo(xx,pad.t);ctx.lineTo(xx,pad.t+ch);ctx.stroke();}
+  const st=stateAt(progress), visible=st.bi;
+  for(let i=0;i<=visible;i++){
+    const b=BARS[i], xx=pad.l+(i+1)*sx, frac=i<visible?1:st.frac;
+    let o=b.o,h=b.h,l=b.l,c=intrabar(b,frac);
+    if(frac<1){h=Math.max(o,c);l=Math.min(o,c);}
+    const up=c>=o,col=up?'#B6FF4A':'#34343a';
+    ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=1.4;
+    ctx.beginPath();ctx.moveTo(xx,y(h));ctx.lineTo(xx,y(l));ctx.stroke();
+    const top=Math.min(y(o),y(c)), bh=Math.max(2,Math.abs(y(o)-y(c)));
+    ctx.fillRect(xx-Math.min(12,sx*.28),top,Math.min(24,sx*.56),bh);
+  }
+  if(entered){
+    ctx.save();ctx.setLineDash([7,7]);ctx.strokeStyle='rgba(155,135,245,.65)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,y(ENTRY));ctx.lineTo(W-pad.r,y(ENTRY));ctx.stroke();ctx.restore();
+    ctx.fillStyle='#9B87F5';ctx.font='700 10px system-ui';ctx.fillText('SELL 3.00  ·  21,366.35',pad.l+8,y(ENTRY)-8);
+  }
+  if(exited){
+    ctx.save();ctx.setLineDash([6,6]);ctx.strokeStyle='rgba(182,255,74,.55)';ctx.beginPath();ctx.moveTo(pad.l,y(EXIT));ctx.lineTo(W-pad.r,y(EXIT));ctx.stroke();ctx.restore();
+  }
+  const current=st.price;
+  ctx.fillStyle='#d9d9d5';ctx.fillRect(W-pad.r+7,y(current)-10,61,20);ctx.fillStyle='#070707';ctx.font='800 10px ui-monospace,monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(current.toFixed(2),W-pad.r+37,y(current));ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  ctx.fillStyle='#616169';ctx.font='10px system-ui';
+  BARS.forEach((b,i)=>{if(i%2===0)ctx.fillText(b.t,pad.l+(i+1)*sx-13,H-17);});
+  for(let i=0;i<6;i++){const val=hi-i*(hi-lo)/5;ctx.fillStyle='#505058';ctx.font='10px ui-monospace,monospace';ctx.fillText(val.toFixed(0),W-pad.r+8,pad.t+i*ch/5+3);}
+  updateUI(st);
+}
+function updateUI(st){
+  const current=st.price;
+  let pnl=entered?(ENTRY-current)*LOTS*DOLLARS_PER_POINT_PER_LOT:0;
+  if(exited)pnl=6133.80;
+  pnlEl.textContent=money(pnl);sidePnl.textContent=money(pnl);eqEl.textContent='$'+(START_BAL+pnl).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  pnlEl.className=pnl>0?'positive':pnl<0?'negative':'';
+  sidePnl.style.color=pnl>=0?'#B6FF4A':'#f06d78';
+  priceLabel.textContent='US100  '+current.toFixed(2);
+  clockEl.textContent=BARS[st.bi].t;
+  statusText.textContent=exited?'Closed':entered?'Position live':playing?'Replaying':'Ready';
+  if(exited){endcard.classList.add('show');balEl.textContent='$106,133.80';}
+}
+function tick(ts){
+  if(!playing)return;
+  if(!startedAt)startedAt=ts;
+  const dt=(ts-startedAt)*speed; progress=Math.min(1,(elapsed+dt)/DURATION);
+  draw();
+  if(exited||progress>=1){playing=false;playBtn.textContent='Play replay'; if(progress>=1&&!exited) endcard.classList.add('show'); return;}
+  raf=requestAnimationFrame(tick);
+}
+function play(){
+  if(exited||progress>=1)reset();
+  if(playing){elapsed=progress*DURATION;playing=false;cancelAnimationFrame(raf);startedAt=0;playBtn.textContent='Resume';return;}
+  playing=true;startedAt=0;playBtn.textContent='Pause';endcard.classList.remove('show');raf=requestAnimationFrame(tick);
+}
+function reset(){
+  cancelAnimationFrame(raf);playing=false;startedAt=0;elapsed=0;progress=0;entered=false;exited=false;
+  playBtn.textContent='Play replay';endcard.classList.remove('show');balEl.textContent='$100,000.00';draw();
+}
+playBtn.addEventListener('click',play);resetBtn.addEventListener('click',reset);replayEnd.addEventListener('click',()=>{reset();play();});
+document.querySelectorAll('[data-speed]').forEach(b=>b.addEventListener('click',()=>{speed=+b.dataset.speed;document.querySelectorAll('[data-speed]').forEach(x=>x.classList.toggle('active',x===b));}));
+new ResizeObserver(resize).observe(canvas);resize();
+if(reduceMotion){progress=.26;draw();}
+})();
+</script>
+</body>
+</html>
