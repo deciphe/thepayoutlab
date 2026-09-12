@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Home, Layers, Trophy, Ghost, ArrowUp } from "lucide-react";
+import { Layers, Trophy, Ghost, ArrowUp } from "lucide-react";
 
 const links = [
-  { label: "Home", href: "#hero", icon: Home },
   { label: "Proof", href: "#vault", icon: Layers },
   { label: "True R", href: "#rankings", icon: Trophy },
   { label: "Maven", href: "./maven/", icon: Ghost },
