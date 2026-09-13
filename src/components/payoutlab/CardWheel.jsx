@@ -5,11 +5,26 @@ import { heroHighlights } from "./heroHighlights";
 import { track } from "../../lib/analytics";
 import "./card-wheel.css";
 
-const names = ["Lucid Trading", "Maven", "Tradeify", "FundedNext", "Topstep", "Breakout"];
-const groups = names.map(name => certificates.filter(c => c.firm === name).sort((a,b) => b.amountNum-a.amountNum).slice(0,4));
+const topByFirm = name => certificates
+  .filter(c => c.firm === name)
+  .sort((a,b) => b.amountNum-a.amountNum);
+
+const mavenTop = topByFirm("Maven").slice(0,10);
+const fundedNextTop = topByFirm("FundedNext").slice(0,2);
+const lucidTop = topByFirm("Lucid Trading").slice(0,2);
+const topstepTop = topByFirm("Topstep").slice(0,2);
+const breakoutTop = topByFirm("Breakout").slice(0,2);
 const tradeifyLifetime = heroHighlights.find(c => c.id === "hero-tradeify-lifetime");
-groups[2] = [tradeifyLifetime, ...groups[2].slice(0,3)].filter(Boolean);
-const cards = Array.from({length:4},(_,i) => groups.map(g => g[i])).flat().filter(Boolean);
+const tradeifyTop = [tradeifyLifetime, ...topByFirm("Tradeify").slice(0,1)].filter(Boolean);
+
+const supporting = [
+  fundedNextTop[0], tradeifyTop[0], lucidTop[0], topstepTop[0], breakoutTop[0],
+  fundedNextTop[1], tradeifyTop[1], lucidTop[1], topstepTop[1], breakoutTop[1],
+].filter(Boolean);
+
+// Keep Maven's biggest payouts as the visual backbone without turning the wheel into a Maven-only feed.
+// Sequence reads like: FundedNext → Maven → Tradeify → Maven → Lucid → Maven ...
+const cards = mavenTop.flatMap((maven,i) => [supporting[i], maven]).filter(Boolean);
 const wrap = n => ((n % cards.length) + cards.length) % cards.length;
 
 export default function CardWheel() {
