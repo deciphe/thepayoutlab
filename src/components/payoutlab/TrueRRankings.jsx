@@ -30,7 +30,16 @@ const reviewLens = {
 const mavenFirm = { rank: 1, name: "Maven", logoText: "M", trueR: 9.9, avgTime: "Proven over time" };
 const rankedFirms = [mavenFirm, ...firms.filter(f => f.name !== "Maven").map((firm, index) => ({ ...firm, rank: index + 2 }))];
 const watchlistFirms = [...unscoredFirms, { name: "MyFundedPerps", url: "https://myfundedperpetuals.com/" }];
-const markets = ["Futures", "CFDs", "Perps"];
+const liveNames = new Set(["Maven", "FundedNext", "Propr", "Hypernova"]);
+const liveRankedFirms = ["Maven", "FundedNext"].map((name, index) => {
+  const firm = rankedFirms.find(f => f.name === name);
+  return firm ? { ...firm, rank: index + 1 } : null;
+}).filter(Boolean);
+const livePartnerFirms = watchlistFirms.filter(f => liveNames.has(f.name));
+const comingSoonFirms = [
+  ...rankedFirms.filter(f => !liveNames.has(f.name)),
+  ...watchlistFirms.filter(f => !liveNames.has(f.name)),
+];
 
 function BrandMark({ firm, compact = false }) {
   const profile = firmProfiles[firm.name] || {};
@@ -41,26 +50,21 @@ function BrandMark({ firm, compact = false }) {
   </div>;
 }
 
-function CodeStatus({ live, onCopy, copied }) {
-  if (live) return <button onClick={onCopy} className="inline-flex items-center gap-1.5 font-mono-lab text-[9px] uppercase tracking-[0.2em] text-lucid transition-colors hover:text-white">{copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}CODE GIGA · {copied ? "COPIED" : "LIVE"}</button>;
-  return <span className="font-mono-lab text-[9px] uppercase tracking-[0.2em] text-muted-foreground">CODE GIGA · SOON</span>;
+function CodeStatus({ onCopy, copied }) {
+  return <button onClick={onCopy} className="inline-flex items-center gap-1.5 font-mono-lab text-[9px] uppercase tracking-[0.2em] text-lucid transition-colors hover:text-white">{copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}CODE GIGA · {copied ? "COPIED" : "LIVE"}</button>;
 }
 
 function PickCard({ firm, copied, onCopy }) {
   const profile = firmProfiles[firm.name] || {};
   const pick = profile.pick;
   const isFundedNext = firm.name === "FundedNext";
+  const isMaven = firm.name === "Maven";
   const outbound = () => track("firm_outbound_click", { firm: firm.name, plan: pick?.name || "none", market: profile.market });
 
-  if (!pick) return <div className="rounded-xl border border-white/[0.06] bg-white/[0.018] p-4">
-    <div className="font-mono-lab text-[9px] uppercase tracking-[0.22em] text-muted-foreground">MY PICK</div>
-    <div className="mt-2 font-display text-lg text-spectral">Not locked yet.</div>
-    <p className="mt-2 font-mono-lab text-[10px] leading-relaxed text-muted-foreground">Still choosing the exact plan I would buy.</p>
-    {profile.url && <a onClick={outbound} href={profile.url} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1 font-mono-lab text-[10px] uppercase tracking-widest text-muted-foreground hover:text-lucid">Open {firm.name} <ArrowUpRight className="h-3 w-3" /></a>}
-  </div>;
+  if (!pick) return null;
 
   return <div className={`rounded-xl border p-4 transition-colors ${isFundedNext ? "border-lucid/25 bg-lucid/[0.035]" : "border-white/[0.07] bg-white/[0.018] group-hover:border-white/[0.12]"}`}>
-    <div className="flex items-start justify-between gap-3"><div><div className="font-mono-lab text-[9px] uppercase tracking-[0.22em] text-muted-foreground">MY PICK</div><div className="mt-1.5 font-display text-xl font-semibold tracking-tight text-spectral">{pick.name}</div></div><CodeStatus live={isFundedNext} onCopy={onCopy} copied={copied} /></div>
+    <div className="flex items-start justify-between gap-3"><div><div className="font-mono-lab text-[9px] uppercase tracking-[0.22em] text-muted-foreground">MY PICK</div><div className="mt-1.5 font-display text-xl font-semibold tracking-tight text-spectral">{pick.name}</div></div>{isFundedNext ? <CodeStatus onCopy={onCopy} copied={copied} /> : isMaven ? <span className="rounded-full border border-lucid/20 bg-lucid/[0.05] px-2.5 py-1 font-mono-lab text-[9px] uppercase tracking-[0.18em] text-lucid">LIVE</span> : null}</div>
     <div className="mt-4 grid grid-cols-4 gap-2">{pick.stats.map(([label, value]) => <div key={label} className="min-w-0"><div className="font-mono-lab text-[8px] uppercase tracking-wider text-muted-foreground">{label}</div><div className="mt-1 truncate font-mono-lab text-[11px] text-spectral">{value}</div></div>)}</div>
     <p className="mt-4 font-mono-lab text-[10px] leading-relaxed text-muted-foreground">{pick.why}</p>
     <a onClick={outbound} href={profile.url} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1 font-mono-lab text-[10px] uppercase tracking-widest text-lucid hover:text-white">View this plan <ArrowUpRight className="h-3 w-3" /></a>
@@ -86,31 +90,41 @@ function FirmPlate({ firm }) {
   </motion.div>;
 }
 
-function WatchRow({ firm }) {
+function LivePartnerRow({ firm }) {
   const profile = firmProfiles[firm.name] || {};
   const url = profile.url || firm.url;
-  return <div className="grid gap-4 border-t border-border px-6 py-6 md:grid-cols-12 md:items-center md:px-8">
+  return <div className="grid gap-4 border-t border-border px-6 py-6 transition-colors hover:bg-prism/30 md:grid-cols-12 md:items-center md:px-8">
     <div className="md:col-span-4"><BrandMark firm={firm} compact /></div>
-    <div className="font-mono-lab text-[10px] uppercase tracking-wider text-muted-foreground md:col-span-3">{profile.market} · Not yet rated</div>
-    <div className="flex items-center justify-between gap-3 md:col-span-5"><span className="font-mono-lab text-[9px] uppercase tracking-[0.2em] text-muted-foreground">{profile.referral ? "REFERRAL · LIVE" : "CODE GIGA · SOON"}</span>{url && <a onClick={() => track("watchlist_outbound_click", { firm: firm.name, market: profile.market, referral: Boolean(profile.referral) })} href={url} target="_blank" rel="sponsored noopener noreferrer" className="font-mono-lab text-[10px] uppercase tracking-widest text-spectral hover:text-lucid">Open ↗</a>}</div>
+    <div className="font-mono-lab text-[10px] uppercase tracking-wider text-muted-foreground md:col-span-3">{profile.market} · LIVE</div>
+    <div className="flex items-center justify-between gap-3 md:col-span-5"><span className="font-mono-lab text-[9px] uppercase tracking-[0.2em] text-lucid">REFERRAL · LIVE</span>{url && <a onClick={() => track("watchlist_outbound_click", { firm: firm.name, market: profile.market, referral: Boolean(profile.referral) })} href={url} target="_blank" rel="sponsored noopener noreferrer" className="font-mono-lab text-[10px] uppercase tracking-widest text-spectral hover:text-lucid">Open ↗</a>}</div>
+  </div>;
+}
+
+function ComingSoonRow({ firm }) {
+  const profile = firmProfiles[firm.name] || {};
+  const records = certificates.filter(c => c.firm === firm.name);
+  return <div className="grid gap-4 border-t border-white/[0.05] px-6 py-5 opacity-55 md:grid-cols-12 md:items-center md:px-8">
+    <div className="md:col-span-5"><BrandMark firm={firm} compact /></div>
+    <div className="font-mono-lab text-[9px] uppercase tracking-[0.18em] text-muted-foreground md:col-span-4">{profile.market || "—"}{records.length ? ` · ${records.length} payouts on file` : ""}</div>
+    <div className="md:col-span-3 md:text-right"><span className="font-mono-lab text-[9px] uppercase tracking-[0.22em] text-muted-foreground">COMING SOON</span></div>
   </div>;
 }
 
 export default function TrueRRankings() {
-  const [market, setMarket] = useState("Futures");
-  const ranked = rankedFirms.filter(f => firmProfiles[f.name]?.market === market);
-  const watch = watchlistFirms.filter(f => firmProfiles[f.name]?.market === market);
-  const switchMarket = next => { setMarket(next); track("market_filter", { market: next }); };
-
   return <section id="rankings" className="relative w-full bg-void py-24 md:py-32"><div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-lucid/40 to-transparent" /><div className="mx-auto max-w-[1500px] px-6 md:px-12">
     <h2 className="font-display text-4xl font-bold tracking-tight text-spectral md:text-6xl">True R.</h2>
     <p className="mt-2 font-mono-lab text-[10px] tracking-wide text-muted-foreground">What survives the trip to cash. <a href="?lesson=true-r" onClick={() => track("methodology_open", { source: "rankings" })} className="text-spectral transition-colors hover:text-lucid">How I score it ↗</a></p>
-    <div className="mt-7 flex gap-2">{markets.map(name => <button key={name} onClick={() => switchMarket(name)} className={`rounded-full px-4 py-2 font-mono-lab text-[10px] uppercase tracking-[0.18em] transition-colors ${market === name ? "bg-spectral text-void" : "border border-white/[0.07] bg-white/[0.02] text-muted-foreground hover:text-spectral"}`}>{name}</button>)}</div>
-    {market === "Perps" && <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 border-y border-white/[0.06] py-4 font-mono-lab text-[10px] uppercase tracking-[0.18em]"><span className="text-lucid">Same trade. Different True R.</span><span className="text-muted-foreground">Fees · leverage · execution · payout speed</span></div>}
-    <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-prism/20"><div className="hidden grid-cols-12 gap-4 border-b border-border px-8 py-4 font-mono-lab text-[10px] uppercase tracking-[0.25em] text-muted-foreground md:grid"><div className="col-span-1">Rank</div><div className="col-span-3">Firm</div><div className="col-span-3">True R</div><div className="col-span-5">My pick</div></div>{ranked.map(f => <FirmPlate key={f.name} firm={f} />)}
-      {watch.length > 0 && <><div className="border-t border-border px-6 py-5 md:px-8"><div className="font-mono-lab text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Watchlist</div></div>{watch.map(f => <WatchRow key={f.name} firm={f} />)}</>}
+
+    <div className="mt-8 flex items-center justify-between gap-4"><div><div className="font-mono-lab text-[10px] uppercase tracking-[0.24em] text-lucid">LIVE NOW</div><div className="mt-1 font-display text-xl font-semibold text-spectral">The firms I can actually send you to.</div></div><div className="hidden rounded-full border border-lucid/15 bg-lucid/[0.04] px-3 py-1.5 font-mono-lab text-[9px] uppercase tracking-[0.18em] text-lucid sm:block">4 LIVE</div></div>
+
+    <div className="mt-5 overflow-hidden rounded-2xl border border-border bg-prism/20"><div className="hidden grid-cols-12 gap-4 border-b border-border px-8 py-4 font-mono-lab text-[10px] uppercase tracking-[0.25em] text-muted-foreground md:grid"><div className="col-span-1">Rank</div><div className="col-span-3">Firm</div><div className="col-span-3">True R</div><div className="col-span-5">My pick</div></div>{liveRankedFirms.map(f => <FirmPlate key={f.name} firm={f} />)}
+      <div className="border-t border-border px-6 py-4 md:px-8"><div className="font-mono-lab text-[9px] uppercase tracking-[0.2em] text-muted-foreground">LIVE PERPS</div></div>{livePartnerFirms.map(f => <LivePartnerRow key={f.name} firm={f} />)}
     </div>
-    {market === "Perps" && <p className="mt-4 font-mono-lab text-[9px] leading-relaxed text-muted-foreground">Hypernova and Propr links are referral links. I may earn a commission if you use them. Rankings are not for sale.</p>}
+
+    <div className="mt-12 flex items-end justify-between gap-4"><div><div className="font-mono-lab text-[10px] uppercase tracking-[0.24em] text-muted-foreground">COMING SOON</div><div className="mt-1 font-display text-xl font-semibold text-spectral">Proof stays. Links wait.</div></div></div>
+    <div className="mt-5 overflow-hidden rounded-2xl border border-white/[0.05] bg-white/[0.01]">{comingSoonFirms.map(f => <ComingSoonRow key={f.name} firm={f} />)}</div>
+
+    <p className="mt-5 font-mono-lab text-[9px] leading-relaxed text-muted-foreground">Hypernova and Propr links are referral links. I may earn a commission if you use them. Rankings are not for sale.</p>
     <p className="mt-2 font-mono-lab text-[9px] leading-relaxed text-muted-foreground">Plan terms change. Stats are a compact current snapshot, not a substitute for the firm’s rules.</p>
   </div></section>;
 }
