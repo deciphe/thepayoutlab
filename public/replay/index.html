@@ -1,1 +1,50 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#050505"><title>gigaprop. — Trade Replay</title><link rel="stylesheet" href="./replay.css"></head><body><div class="shell"><div class="toolbar"><div class="brandline"><div class="gp">GP<i>.</i></div><div class="micro">historical trade renderer</div></div><div class="mode"><button id="desktopMode" class="active">Trade view</button><button id="reelsMode">IG Reels</button></div></div><div class="tradeRail" id="tradeRail"></div><div class="app"><div class="topbar"><div class="brand"><div class="logo">GP<span class="dot">.</span></div><div class="divider"></div><div class="instrument"><strong>US100 · 10M</strong><span>MAVEN / HISTORICAL RECONSTRUCTION</span></div></div><div class="status"><i></i><span id="statusText">Ready</span></div></div><div class="stage"><div class="chartwrap"><canvas id="chart"></canvas><div class="overlayTop"><span class="badge" id="dateBadge"></span><span class="badge purple">10M OHLC REPLAY</span></div><div class="pnlFloat"><small>Floating P&amp;L</small><strong id="pnl">$0.00</strong><span id="priceLabel">US100 —</span></div><div class="endcard" id="endcard"><div class="endinner"><div class="mini">POSITION CLOSED · REALIZED</div><h2 id="endPnl"></h2><p id="endMeta"></p><div class="gp">gigaprop<i>.</i></div><button type="button" class="ctrl" id="replayEnd">Replay trade</button></div></div></div><aside class="sidebar"><div><div class="kicker">Selected position</div><div class="tradeTitle" id="tradeTitle"></div></div><div class="grid"><div class="stat"><label>Entry</label><b id="entryStat"></b></div><div class="stat"><label>TP / exit</label><b id="exitStat"></b></div><div class="stat"><label>Replay SL</label><b id="slStat"></b></div><div class="stat"><label>Realized</label><b id="realizedStat"></b></div></div><div class="account"><div class="accountRow"><span>Balance</span><b id="balance">$100,000.00</b></div><div class="accountRow"><span>Equity</span><b id="equity">$100,000.00</b></div><div class="accountRow"><span>Net P&amp;L</span><b class="green" id="sidePnl">$0.00</b></div></div><div class="note"><b>Replay treatment</b><span>TP is the real profitable close. SL is a visual replay line deliberately placed outside the observed price range; it is not claimed as the original historical stop. OHLC comes from the supplied 2024 10-minute NDX file.</span></div></aside></div><div class="controls"><div class="leftControls"><button class="ctrl primary" id="play">Play replay</button><button class="ctrl" id="reset">Reset</button><div class="speed"><button data-speed=".65">0.5×</button><button data-speed="1" class="active">1×</button><button data-speed="1.8">2×</button><button data-speed="3.2">4×</button></div></div><div class="rightControls"><div class="clock">FEED <b id="clock">—</b></div></div></div></div><div class="reelsWrap"><div><div class="reel"><div class="reelHead"><div class="gp">GP<i>.</i></div><div class="episode">CFD REPLAY<br><b id="episodeNo">001</b></div></div><div class="reelAccount"><div><span>MARKET</span><b>US100 · 10M</b></div><div style="text-align:right"><span>ACCOUNT VALUE</span><b id="reelAccountValue">$100,000.00</b></div></div><div class="reelPnl"><small>LIVE P&amp;L</small><strong id="reelPnl">$0.00</strong></div><canvas class="reelCanvas" id="reelCanvas"></canvas><div class="reelMeta"><div>POSITION<b id="reelPosition"></b></div><div style="text-align:right">REALIZED<b id="reelRealized"></b></div></div><div class="endcard" id="reelEnd"><div class="endinner"><div class="mini">TRADE CLOSED · RECEIPT NEXT</div><h2 id="reelEndPnl"></h2><p id="reelEndMeta"></p><div class="gp">gigaprop<i>.</i></div></div></div></div><div class="reelControls"><button class="ctrl primary" id="reelPlay">Play reel</button><button class="ctrl" id="reelReset">Reset</button></div></div></div></div><script src="./trades-1.js"></script><script src="./trades-2.js"></script><script src="./trades-3.js"></script><script src="./replay.js"></script></body></html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#050505"><title>gigaprop. — Trade Replay</title><link rel="stylesheet" href="./replay.css"></head><body>
+<div class="shell">
+  <div class="toolbar">
+    <div class="brandline"><div class="gp">GP<i>.</i></div><div class="micro">historical trade renderer</div></div>
+    <div class="toolbarRight">
+      <div class="tradePicker">
+        <button id="prevTrade" aria-label="Previous trade">←</button>
+        <select id="tradeSelect" aria-label="Select trade"></select>
+        <button id="nextTrade" aria-label="Next trade">→</button>
+      </div>
+      <div class="mode"><button id="desktopMode" class="active">Trade view</button><button id="reelsMode">IG Reels</button></div>
+    </div>
+  </div>
+
+  <div class="app" id="tradeApp">
+    <div class="topbar">
+      <div class="brand"><div class="logo">GP<span class="dot">.</span></div><div class="divider"></div><div class="instrument"><strong id="tickerTop">US100 · 10M</strong><span id="dateTop">MAVEN · HISTORICAL REPLAY</span></div></div>
+      <div class="topAccount"><span>ACCOUNT</span><b id="topAccountValue">$100,000.00</b></div>
+      <div class="status"><i></i><span id="statusText">Ready</span></div>
+    </div>
+    <div class="stage">
+      <div class="chartwrap">
+        <canvas id="chart"></canvas>
+        <div class="overlayTop"><span class="badge" id="dateBadge"></span><span class="badge purple">10M</span></div>
+        <div class="pnlFloat"><small>LIVE P&amp;L</small><strong id="pnl">$0.00</strong><span id="priceLabel">US100 —</span></div>
+        <div class="endcard" id="endcard"><div class="endinner"><div class="mini">POSITION CLOSED · REALIZED</div><h2 id="endPnl"></h2><p id="endMeta"></p><div class="gp">gigaprop<i>.</i></div><button type="button" class="ctrl" id="replayEnd">Replay trade</button></div></div>
+      </div>
+      <aside class="sidebar">
+        <div><div class="kicker">Selected position</div><div class="tradeTitle" id="tradeTitle"></div></div>
+        <div class="grid"><div class="stat"><label>Entry</label><b id="entryStat"></b></div><div class="stat"><label>TP / exit</label><b id="exitStat"></b></div><div class="stat"><label>Replay SL</label><b id="slStat"></b></div><div class="stat"><label>Realized</label><b id="realizedStat"></b></div></div>
+        <div class="account"><div class="accountRow"><span>Balance</span><b id="balance">$100,000.00</b></div><div class="accountRow"><span>Equity</span><b id="equity">$100,000.00</b></div><div class="accountRow"><span>Net P&amp;L</span><b class="green" id="sidePnl">$0.00</b></div></div>
+        <div class="note"><b>Replay treatment</b><span>Each trade auto-fits its own price action. TP is the real profitable close. Replay SL is shown outside the active price range so it never crushes the chart scale.</span></div>
+      </aside>
+    </div>
+    <div class="controls"><div class="leftControls"><button class="ctrl primary" id="play">Play replay</button><button class="ctrl" id="reset">Reset</button><div class="speed"><button data-speed=".65">0.5×</button><button data-speed="1" class="active">1×</button><button data-speed="1.8">2×</button><button data-speed="3.2">4×</button></div></div><div class="rightControls"><div class="clock">FEED <b id="clock">—</b></div></div></div>
+  </div>
+
+  <div class="reelsWrap" id="reelsWrap">
+    <div class="reel">
+      <div class="reelHead"><div class="gp">GP<i>.</i></div><div class="episode"><b id="episodeNo">001</b></div></div>
+      <div class="reelAccount"><div><span>MARKET</span><b id="reelTicker">US100 · 10M</b></div><div class="right"><span>ACCOUNT</span><b id="reelAccountValue">$100,000.00</b></div></div>
+      <div class="reelPnl"><small>LIVE P&amp;L</small><strong id="reelPnl">$0.00</strong></div>
+      <canvas class="reelCanvas" id="reelCanvas"></canvas>
+      <div class="reelMeta"><div>POSITION<b id="reelPosition"></b></div><div class="right">REALIZED<b id="reelRealized"></b></div></div>
+      <div class="endcard" id="reelEnd"><div class="endinner"><div class="mini">TRADE CLOSED</div><h2 id="reelEndPnl"></h2><p id="reelEndMeta"></p><div class="gp">gigaprop<i>.</i></div></div></div>
+    </div>
+    <div class="reelControls"><button class="ctrl primary" id="reelPlay">Play reel</button><button class="ctrl" id="reelReset">Reset</button></div>
+  </div>
+</div>
+<script src="./trades-1.js"></script><script src="./trades-2.js"></script><script src="./trades-3.js"></script><script src="./replay.js"></script></body></html>
