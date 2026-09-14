@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { UserRound, ArrowUpRight, Copy, Check } from "lucide-react";
 
-const CONTACT = "lab@thepayoutlab.com";
+const CONTACT = "gp@gigaprop.xyz";
 
 export default function MentorshipCTA() {
   const [copied, setCopied] = useState(false);
@@ -44,7 +44,7 @@ export default function MentorshipCTA() {
 
           <div className="mx-auto mt-9 flex max-w-md flex-col gap-3 sm:flex-row">
             <a
-              href={`mailto:${CONTACT}?subject=${encodeURIComponent("Payout Lab — 1:1 Mentorship")}`}
+              href={`mailto:${CONTACT}?subject=${encodeURIComponent("gigaprop — 1:1 Mentorship")}`}
               className="inline-flex flex-1 items-center justify-center gap-2 rounded-md bg-lucid px-7 py-4 font-mono-lab text-sm font-semibold uppercase tracking-wider text-void transition-all hover:glow-lucid"
             >
               Request 1:1 Mentorship <ArrowUpRight className="h-4 w-4" />
