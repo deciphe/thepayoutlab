@@ -9,8 +9,9 @@ const topByFirm = name => certificates
   .filter(c => c.firm === name)
   .sort((a,b) => b.amountNum-a.amountNum);
 
+const privateFundedNextIds = new Set(["fundednext-004", "fundednext-005"]);
 const mavenTop = topByFirm("Maven").slice(0,10);
-const fundedNextTop = topByFirm("FundedNext").slice(0,2);
+const fundedNextTop = topByFirm("FundedNext").filter(c => !privateFundedNextIds.has(c.id)).slice(0,2);
 const lucidTop = topByFirm("Lucid Trading").slice(0,2);
 const topstepTop = topByFirm("Topstep").slice(0,2);
 const breakoutTop = topByFirm("Breakout").slice(0,2);
