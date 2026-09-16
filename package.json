@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/match-onchain.mjs && vite build",
+    "build": "vite build",
+    "audit:onchain": "node scripts/match-onchain.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
