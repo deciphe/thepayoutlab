@@ -4,6 +4,18 @@ import { certificates } from "./data";
 
 const privateNameIds = new Set(["fundednext-004", "fundednext-005"]);
 
+const proofCountLabel = (firm, count) => {
+  if (firm === "Maven") return "30+ certificates";
+  if (firm === "Topstep") return "20+ certificates";
+  return `${String(count).padStart(2, "0")} certificates`;
+};
+
+const proofCountShort = (firm, count) => {
+  if (firm === "Maven") return "30+";
+  if (firm === "Topstep") return "20+";
+  return String(count).padStart(2, "0");
+};
+
 const grouped = [...new Set(certificates.map(c => c.firm))]
   .map(firm => ({
     firm,
@@ -73,11 +85,16 @@ export default function PayoutVault() {
                         </div>
                       ))}
                     </div>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#070707] via-[#070707]/70 to-transparent" />
+                    <div className="pointer-events-none absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#070707] via-[#070707]/85 to-transparent" />
                   </div>
 
                   <div className="flex shrink-0 items-center gap-3">
-                    <span className="font-mono-lab text-[9px] font-semibold tracking-[0.16em] text-white/34">05</span>
+                    <span className="font-mono-lab text-[8px] font-semibold tracking-[0.14em] text-white/32 sm:hidden">
+                      {proofCountShort(firm, all.length)}
+                    </span>
+                    <span className="hidden font-mono-lab text-[8px] font-semibold uppercase tracking-[0.14em] text-white/32 sm:inline">
+                      {proofCountLabel(firm, all.length)}
+                    </span>
                     <ChevronDown className={`h-4 w-4 text-white/28 transition-transform duration-200 group-hover:text-lucid ${isOpen ? "rotate-180 text-lucid" : ""}`} />
                   </div>
                 </button>
