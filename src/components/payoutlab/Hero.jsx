@@ -24,9 +24,10 @@ export default function Hero() {
 
       <div className="relative z-10 mx-auto grid min-h-[75vh] max-w-[1500px] grid-cols-1 gap-10 px-6 py-16 md:grid-cols-2 md:gap-12 md:px-12">
         <div className="flex flex-col justify-center">
-          <motion.h1 initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.05 }} className="font-display font-bold leading-[0.92] tracking-tight text-spectral" style={{ fontSize: "clamp(3.5rem, 8.5vw, 8rem)" }}>
-            PAYOUTS.<br />
-            <span className="text-lucid">PROOF.</span>
+          <motion.h1 initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.05 }} className="font-display text-[clamp(2.35rem,8.4vw,4.8rem)] font-bold leading-[0.98] tracking-[-0.06em] text-spectral md:text-[clamp(2.35rem,5.2vw,4.8rem)]">
+            You&apos;re making<br />
+            prop trading<br />
+            too difficult.
           </motion.h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.14 }} className="mt-4 font-mono-lab text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Receipts first.</motion.p>
 
