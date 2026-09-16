@@ -33,25 +33,24 @@ export default function FounderProof() {
         className="pointer-events-none absolute inset-0"
         style={{ background: "radial-gradient(circle at 18% 45%, rgba(155,135,245,.09), transparent 30%), radial-gradient(circle at 82% 60%, rgba(182,255,74,.028), transparent 28%)" }}
       />
-      <div className="relative mx-auto grid max-w-[980px] gap-6 px-6 md:px-10 lg:grid-cols-[1fr_auto] lg:items-center">
-        <div className="max-w-[390px]">
+      <div className="relative mx-auto grid max-w-[900px] gap-5 px-6 md:px-10 lg:grid-cols-[.7fr_auto] lg:items-center">
+        <div className="max-w-[310px]">
           <div className="inline-flex items-center gap-2 rounded-full border border-violetglow/20 bg-violetglow/[0.04] px-3 py-1.5 font-mono-lab text-[8px] font-semibold uppercase tracking-[0.18em] text-violetglow">
             <BadgeCheck className="h-3 w-3" /> Public receipt
           </div>
-          <h2 className="mt-4 font-display text-3xl font-semibold leading-[0.96] tracking-[-0.05em] text-spectral md:text-4xl">The firm said it.</h2>
-          <p className="mt-3 max-w-sm font-mono-lab text-[10px] leading-5 text-white/40">Maven's CEO quoting my payout history on his own feed.</p>
+          <h2 className="mt-4 font-display text-3xl font-semibold leading-[0.96] tracking-[-0.05em] text-spectral md:text-4xl">Quoted by Maven.</h2>
           <a href={TWEET_URL} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 font-mono-lab text-[9px] font-semibold uppercase tracking-[0.14em] text-lucid transition-colors hover:text-white">
-            Open original on X <ArrowUpRight className="h-3 w-3" />
+            Open on X <ArrowUpRight className="h-3 w-3" />
           </a>
         </div>
 
-        <div className="mx-auto w-full max-w-[410px] overflow-hidden rounded-xl border border-white/[0.07] bg-[#080808] p-2.5 shadow-xl shadow-black/25 lg:mx-0">
+        <div className="mx-auto w-full max-w-[390px] overflow-hidden rounded-xl border border-white/[0.07] bg-[#080808] p-2 shadow-xl shadow-black/25 lg:mx-0">
           <div className="mb-2 flex items-center justify-between px-1 font-mono-lab text-[7px] uppercase tracking-[0.16em] text-white/22">
-            <span>@traderjon</span><span>Maven · external proof</span>
+            <span>@traderjon</span><span>Maven · X</span>
           </div>
-          <div ref={embedRef} className="mx-auto max-w-[390px] overflow-hidden rounded-lg">
-            <blockquote className="twitter-tweet" data-theme="dark" data-dnt="true" data-align="center" data-width="390">
-              <a href={TWEET_URL}>View the Maven CEO post on X</a>
+          <div ref={embedRef} className="mx-auto max-w-[370px] overflow-hidden rounded-lg">
+            <blockquote className="twitter-tweet" data-theme="dark" data-dnt="true" data-align="center" data-width="370">
+              <a href={TWEET_URL}>View post on X</a>
             </blockquote>
           </div>
         </div>
