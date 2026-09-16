@@ -15,6 +15,7 @@ export default function Hero() {
         <a href="#hero" className="font-display text-lg font-semibold tracking-tight text-spectral">gigaprop<span className="text-lucid">.</span></a>
         <nav aria-label="Main navigation" className="flex gap-5 font-mono-lab text-[10px] uppercase tracking-widest text-muted-foreground">
           <a href="#vault" className="hover:text-lucid">Proof</a>
+          <a href="#onchain" className="hover:text-lucid">USDC</a>
           <a href="#rankings" className="hover:text-lucid">True R</a>
           <a href="./maven/" onClick={() => track("maven_edition_open", { source: "top_nav" })} className="text-lucid hover:text-white">Maven Edition ↗</a>
         </nav>
