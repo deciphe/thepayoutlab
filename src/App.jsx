@@ -2,8 +2,9 @@ import { useEffect } from "react";
 import TrueRGuide from "./components/payoutlab/TrueRGuide";
 import Hero from "./components/payoutlab/Hero";
 import PayoutVault from "./components/payoutlab/PayoutVault";
-import OnChainProof from "./components/payoutlab/OnChainProof";
+import FounderProof from "./components/payoutlab/FounderProof";
 import TrueRRankings from "./components/payoutlab/TrueRRankings";
+import ProprPick from "./components/payoutlab/ProprPick";
 import SiteFooter from "./components/payoutlab/SiteFooter";
 import FloatingDock from "./components/payoutlab/FloatingDock";
 import { captureAttribution } from "./lib/analytics";
@@ -16,8 +17,9 @@ export default function App() {
     <main className="relative min-h-screen w-full bg-void text-spectral selection:bg-lucid selection:text-void">
       <Hero />
       <PayoutVault />
-      <OnChainProof />
+      <FounderProof />
       <TrueRRankings />
+      <ProprPick />
       <SiteFooter />
       <FloatingDock />
     </main>
