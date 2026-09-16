@@ -11,7 +11,7 @@ export default function Hero() {
         <a href="#hero" className="font-display text-lg font-semibold tracking-tight text-spectral">gigaprop<span className="text-lucid">.</span></a>
         <nav aria-label="Main navigation" className="flex gap-5 font-mono-lab text-[10px] uppercase tracking-widest text-muted-foreground">
           <a href="#vault" className="hover:text-lucid">Payouts</a>
-          <a href="#drops" className="hover:text-lucid">Free drops</a>
+          <a href="#drops" className="hover:text-lucid">Free lessons</a>
           <a href="#access" className="text-lucid hover:text-white">1:1 training</a>
         </nav>
       </header>
@@ -27,7 +27,13 @@ export default function Hero() {
           </motion.h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.14 }} className="mt-4 font-mono-lab text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Only <span className="text-violetglow">5%</span> of prop traders reach a payout? <span className="text-lucid">Not with gigaprop.</span></motion.p>
 
-          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="mt-8 flex flex-wrap items-center gap-3">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.18 }} className="mt-5 space-y-1.5 font-mono-lab text-[9px] font-semibold uppercase tracking-[0.16em]">
+            <div className="text-violetglow">Not another repackaged PO3 course.</div>
+            <div className="text-white/52">Only what actually gets payouts.</div>
+            <div className="text-lucid">It&apos;s simpler than you think.</div>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.24 }} className="mt-8 flex flex-wrap items-center gap-3">
             <a href="#vault" onClick={() => track("hero_cta_click", { target: "vault" })} className="group inline-flex items-center justify-center gap-2 rounded-md bg-lucid px-6 py-3.5 font-mono-lab text-sm font-semibold uppercase tracking-wider text-void transition-all hover:glow-lucid">
               See the payouts <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
             </a>
