@@ -20,17 +20,10 @@ function dateOnly(value) {
   if (Number.isNaN(d.getTime())) return null;
   return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
 }
-
-function certDate(value) {
-  const d = new Date(value);
-  if (!Number.isNaN(d.getTime())) return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
-  return null;
-}
-
+function certDate(value) { return dateOnly(value); }
 function amountOf(item) {
   const decimals = Number(item?.token?.decimals ?? item?.total?.decimals ?? 6);
-  const raw = Number(item?.total?.value ?? 0);
-  return raw / (10 ** decimals);
+  return Number(item?.total?.value ?? 0) / (10 ** decimals);
 }
 
 async function fetchTransfers() {
@@ -98,11 +91,8 @@ function txRecord(tx, cert, match) {
 
 const targets = targetIds.map(id => certificates.find(c => c.id === id)).filter(Boolean);
 let transfers = [];
-try {
-  transfers = await fetchTransfers();
-} catch (error) {
-  console.error('[onchain] unable to fetch Blockscout:', error.message);
-}
+try { transfers = await fetchTransfers(); }
+catch (error) { console.error('[onchain] unable to fetch Blockscout:', error.message); }
 
 const matches = {};
 const used = new Set();
@@ -116,16 +106,7 @@ for (const cert of targets) {
     matches[cert.id] = txRecord(tx, cert, match);
     used.add(hash.toLowerCase());
   } else {
-    matches[cert.id] = {
-      txHash: hash,
-      txUrl: `https://etherscan.io/tx/${hash}`,
-      receivedAmount: null,
-      timestamp: null,
-      expectedAmount: Math.round(expectedAmounts(cert)[0] * 100) / 100,
-      amountDelta: null,
-      dayDelta: 0,
-      confidence: 'confirmed',
-    };
+    matches[cert.id] = { txHash: hash, txUrl: `https://etherscan.io/tx/${hash}`, receivedAmount: null, timestamp: null, expectedAmount: Math.round(expectedAmounts(cert)[0] * 100) / 100, amountDelta: null, dayDelta: 0, confidence: 'confirmed' };
     used.add(hash.toLowerCase());
   }
 }
@@ -140,10 +121,8 @@ for (const cert of targets) {
     if (match) candidates.push({ cert, tx, match });
   }
 }
-
 candidates.sort((a, b) => a.match.score - b.match.score);
-for (const candidate of candidates) {
-  const { cert, tx, match } = candidate;
+for (const { cert, tx, match } of candidates) {
   const hash = String(tx.transaction_hash).toLowerCase();
   if (matches[cert.id] || used.has(hash)) continue;
   matches[cert.id] = txRecord(tx, cert, match);
@@ -154,25 +133,11 @@ await mkdir(new URL('../src/components/payoutlab/', import.meta.url), { recursiv
 await writeFile(OUT, JSON.stringify(matches, null, 2) + '\n', 'utf8');
 
 console.log(`[onchain] fetched ${transfers.length} incoming USDC transfers for ${WALLET}`);
+[...transfers].sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp)).forEach(tx => {
+  console.log(`[onchain] TRANSFER   ${tx.timestamp} amount=${amountOf(tx).toFixed(6)} tx=${tx.transaction_hash}`);
+});
 for (const cert of targets) {
   const m = matches[cert.id];
-  if (!m) {
-    console.log(`[onchain] NO MATCH  ${cert.id} ${cert.date} ${cert.amount}`);
-    const cDate = certDate(cert.date);
-    const expected = expectedAmounts(cert)[0];
-    const nearby = transfers
-      .map(tx => ({
-        tx,
-        amount: amountOf(tx),
-        days: cDate == null || dateOnly(tx.timestamp) == null ? Infinity : Math.abs(dateOnly(tx.timestamp) - cDate) / 86400000,
-      }))
-      .filter(x => x.days <= 30)
-      .sort((a, b) => (a.days - b.days) || (Math.abs(a.amount - expected) - Math.abs(b.amount - expected)))
-      .slice(0, 15);
-    for (const x of nearby) {
-      console.log(`[onchain] NEARBY    ${cert.id} day=${x.days} expected=${expected.toFixed(2)} got=${x.amount.toFixed(6)} at=${x.tx.timestamp} tx=${x.tx.transaction_hash}`);
-    }
-    continue;
-  }
-  console.log(`[onchain] MATCH     ${cert.id} ${cert.date} ${cert.amount} -> ${m.receivedAmount ?? '?'} USDC ${m.txHash}`);
+  if (!m) console.log(`[onchain] NO MATCH  ${cert.id} ${cert.date} ${cert.amount}`);
+  else console.log(`[onchain] MATCH     ${cert.id} ${cert.date} ${cert.amount} -> ${m.receivedAmount ?? '?'} USDC ${m.txHash}`);
 }
