@@ -62,7 +62,13 @@ export const firmProfiles = {
   "Propr": {
     market: "Perps",
     url: "https://app.propr.xyz/r/7gJmpEjv",
+    icon: "https://www.propr.xyz/favicon.ico",
     referral: true,
+    pick: {
+      name: "Classic 1-Step · 10/6/3",
+      why: "The clean static structure is the easy part. The real True R question is what execution fees do to a large notional position.",
+      stats: [["Target", "10%"], ["Max DD", "6%"], ["Daily", "3%"], ["Split", "80%"]],
+    },
   },
   "Hypernova": {
     market: "Perps",
