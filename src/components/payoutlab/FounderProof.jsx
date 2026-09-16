@@ -27,30 +27,30 @@ export default function FounderProof() {
   }, []);
 
   return (
-    <section className="relative border-y border-white/[0.055] bg-[#050505] py-16 md:py-20">
+    <section className="relative border-y border-white/[0.055] bg-[#050505] py-10 md:py-12">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
-        style={{ background: "radial-gradient(circle at 18% 45%, rgba(155,135,245,.10), transparent 30%), radial-gradient(circle at 82% 60%, rgba(182,255,74,.035), transparent 28%)" }}
+        style={{ background: "radial-gradient(circle at 18% 45%, rgba(155,135,245,.09), transparent 30%), radial-gradient(circle at 82% 60%, rgba(182,255,74,.028), transparent 28%)" }}
       />
-      <div className="relative mx-auto grid max-w-[1180px] gap-8 px-6 md:px-12 lg:grid-cols-[.78fr_1.22fr] lg:items-center">
-        <div className="max-w-md">
-          <div className="inline-flex items-center gap-2 rounded-full border border-violetglow/20 bg-violetglow/[0.04] px-3 py-1.5 font-mono-lab text-[9px] font-semibold uppercase tracking-[0.18em] text-violetglow">
+      <div className="relative mx-auto grid max-w-[980px] gap-6 px-6 md:px-10 lg:grid-cols-[1fr_auto] lg:items-center">
+        <div className="max-w-[390px]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-violetglow/20 bg-violetglow/[0.04] px-3 py-1.5 font-mono-lab text-[8px] font-semibold uppercase tracking-[0.18em] text-violetglow">
             <BadgeCheck className="h-3 w-3" /> Public receipt
           </div>
-          <h2 className="mt-5 font-display text-4xl font-semibold leading-[0.95] tracking-[-0.055em] text-spectral md:text-5xl">The firm said it.</h2>
-          <p className="mt-4 max-w-sm font-mono-lab text-[11px] leading-6 text-white/42">Maven's CEO quoting my payout history on his own feed. That's the proof layer I actually want public.</p>
-          <a href={TWEET_URL} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex items-center gap-2 font-mono-lab text-[10px] font-semibold uppercase tracking-[0.15em] text-lucid transition-colors hover:text-white">
-            Open original on X <ArrowUpRight className="h-3.5 w-3.5" />
+          <h2 className="mt-4 font-display text-3xl font-semibold leading-[0.96] tracking-[-0.05em] text-spectral md:text-4xl">The firm said it.</h2>
+          <p className="mt-3 max-w-sm font-mono-lab text-[10px] leading-5 text-white/40">Maven's CEO quoting my payout history on his own feed.</p>
+          <a href={TWEET_URL} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 font-mono-lab text-[9px] font-semibold uppercase tracking-[0.14em] text-lucid transition-colors hover:text-white">
+            Open original on X <ArrowUpRight className="h-3 w-3" />
           </a>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-white/[0.07] bg-[#080808] p-3 shadow-2xl shadow-black/30 md:p-5">
-          <div className="mb-3 flex items-center justify-between px-1 font-mono-lab text-[8px] uppercase tracking-[0.18em] text-white/24">
+        <div className="mx-auto w-full max-w-[410px] overflow-hidden rounded-xl border border-white/[0.07] bg-[#080808] p-2.5 shadow-xl shadow-black/25 lg:mx-0">
+          <div className="mb-2 flex items-center justify-between px-1 font-mono-lab text-[7px] uppercase tracking-[0.16em] text-white/22">
             <span>@traderjon</span><span>Maven · external proof</span>
           </div>
-          <div ref={embedRef} className="mx-auto max-w-[560px] overflow-hidden rounded-xl">
-            <blockquote className="twitter-tweet" data-theme="dark" data-dnt="true" data-align="center">
+          <div ref={embedRef} className="mx-auto max-w-[390px] overflow-hidden rounded-lg">
+            <blockquote className="twitter-tweet" data-theme="dark" data-dnt="true" data-align="center" data-width="390">
               <a href={TWEET_URL}>View the Maven CEO post on X</a>
             </blockquote>
           </div>
