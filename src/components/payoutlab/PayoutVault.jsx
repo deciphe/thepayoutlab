@@ -3,11 +3,22 @@ import { ArrowUpRight, X, ArrowLeft } from "lucide-react";
 import { certificates } from "./data";
 import { track } from "../../lib/analytics";
 
+const privateNameIds = new Set(["fundednext-004", "fundednext-005"]);
 const ordered = [...certificates].sort((a, b) => b.amountNum - a.amountNum || a.id.localeCompare(b.id));
 const firms = [...new Set(certificates.map(c => c.firm))];
 const groups = firms.map(firm => ordered.filter(c => c.firm === firm));
-const previewCards = Array.from({ length: Math.max(...groups.map(g => g.length)) }, (_, i) => groups.map(g => g[i]).filter(Boolean)).flat();
+const previewCards = Array.from({ length: Math.max(...groups.map(g => g.length)) }, (_, i) => groups.map(g => g[i]).filter(Boolean)).flat().filter(c => !privateNameIds.has(c.id));
 const total = Math.round(certificates.reduce((sum, c) => sum + c.amountNum, 0)).toLocaleString("en-US");
+
+function ProofImage({ certificate, className = "", loading = "lazy" }) {
+  const privateName = privateNameIds.has(certificate.id);
+  return (
+    <div className="relative mx-auto w-fit max-w-full overflow-hidden rounded-lg">
+      <img src={certificate.url} alt={`${certificate.firm} payout of ${certificate.amount}`} loading={loading} className={`block max-w-full object-contain ${className}`} />
+      {privateName && <div aria-label="Last name censored" className="pointer-events-none absolute left-[51.5%] top-[31.7%] h-[8.7%] w-[45%] bg-[#1a1a1b]/92 backdrop-blur-md" style={{ maskImage: "linear-gradient(to right, transparent 0%, black 9%, black 100%)" }} />}
+    </div>
+  );
+}
 
 export default function PayoutVault() {
   const dialog = useRef(null);
@@ -50,9 +61,9 @@ export default function PayoutVault() {
         <div className="max-h-[calc(92vh-82px)] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {active ? <div className="p-5 md:p-8">
             <button onClick={() => setActive(null)} className="mb-6 flex items-center gap-2 font-mono-lab text-[11px] text-muted-foreground transition-colors hover:text-lucid"><ArrowLeft className="h-4 w-4" />Back</button>
-            <div className="mx-auto max-w-4xl"><img src={active.url} alt={`${active.firm} payout of ${active.amount}`} className="mx-auto max-h-[66vh] max-w-full rounded-lg object-contain" /><div className="mt-5 border-t border-white/[0.06] pt-4 font-mono-lab text-[11px] text-muted-foreground">{active.firm} · {active.date}</div></div>
+            <div className="mx-auto max-w-4xl"><ProofImage certificate={active} className="max-h-[66vh]" /><div className="mt-5 border-t border-white/[0.06] pt-4 font-mono-lab text-[11px] text-muted-foreground">{active.firm} · {active.date}</div></div>
           </div> : <div className="columns-2 gap-3 p-3 sm:columns-3 md:columns-4 md:gap-4 md:p-5 lg:columns-5">
-            {visible.map(c => <button key={c.id} onClick={() => inspect(c)} className="group mb-3 block w-full break-inside-avoid text-left md:mb-4"><div className="overflow-hidden rounded-lg bg-white/[0.025] transition-all duration-300 group-hover:bg-white/[0.05] group-hover:ring-1 group-hover:ring-white/[0.10]"><img src={c.url} alt={`${c.firm} payout of ${c.amount}`} loading="lazy" className="block h-auto w-full object-contain transition-transform duration-300 group-hover:scale-[1.015]" /></div><div className="mt-2.5 px-0.5 font-mono-lab text-[9px] text-muted-foreground"><span className="truncate">{c.firm}</span></div></button>)}
+            {visible.map(c => <button key={c.id} onClick={() => inspect(c)} className="group mb-3 block w-full break-inside-avoid text-left md:mb-4"><div className="overflow-hidden rounded-lg bg-white/[0.025] transition-all duration-300 group-hover:bg-white/[0.05] group-hover:ring-1 group-hover:ring-white/[0.10]"><ProofImage certificate={c} className="h-auto w-full transition-transform duration-300 group-hover:scale-[1.015]" /></div><div className="mt-2.5 px-0.5 font-mono-lab text-[9px] text-muted-foreground"><span className="truncate">{c.firm}</span></div></button>)}
           </div>}
         </div>
       </dialog>
