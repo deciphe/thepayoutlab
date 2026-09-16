@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { ArrowDown, Send } from "lucide-react";
+import { ArrowDown, Zap } from "lucide-react";
 import { certificates } from "./data";
 import { track } from "../../lib/analytics";
 import CardWheel from "./CardWheel";
@@ -15,7 +15,7 @@ export default function Hero() {
         <a href="#hero" className="font-display text-lg font-semibold tracking-tight text-spectral">gigaprop<span className="text-lucid">.</span></a>
         <nav aria-label="Main navigation" className="flex gap-5 font-mono-lab text-[10px] uppercase tracking-widest text-muted-foreground">
           <a href="#vault" className="hover:text-lucid">Vault</a>
-          <a href="#access" className="text-lucid hover:text-white">1:1 access</a>
+          <a href="#access" className="text-lucid hover:text-white">1:1 training</a>
         </nav>
       </header>
 
@@ -34,7 +34,7 @@ export default function Hero() {
               Open payout vault <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
             </a>
             <a href="#access" onClick={() => track("hero_cta_click", { target: "access" })} className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-6 py-3.5 font-mono-lab text-sm font-medium uppercase tracking-wider text-spectral transition-colors hover:border-violetglow/60 hover:text-violetglow">
-              1:1 access <Send className="h-4 w-4" />
+              Intuition speedrun <Zap className="h-4 w-4" />
             </a>
           </motion.div>
         </div>
