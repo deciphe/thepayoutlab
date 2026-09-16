@@ -52,7 +52,7 @@ export default function EmailCapture() {
               NOT READY?<br /><span className="text-lucid">DON'T WAIT.</span>
             </h2>
             <p className="mt-4 max-w-xl font-display text-base leading-6 text-white/52 md:text-lg">
-              Prop traders move fast. I'll still drop free sauce, free game, M1 notes, intuition drills and True R.
+              Prop traders move fast. Proprietary gigaprop knowledge that will transform your trading.
             </p>
           </div>
 
