@@ -42,6 +42,10 @@ export default function DirectAccess() {
             INTUITION<br /><span className="text-lucid">SPEEDRUN.</span>
           </h2>
           <div className="mt-5 font-mono-lab text-[9px] uppercase tracking-[0.2em] text-white/34">Start with the 3-part lesson pack.</div>
+          <p className="mx-auto mt-4 max-w-2xl font-display text-base leading-6 text-white/48 md:text-lg">
+            Intuition can&apos;t be learned from a PDF. I learned it over thousands of chart hours. I&apos;m condensing that down to only what you actually need to know.
+          </p>
+          <div className="mt-3 font-mono-lab text-[8px] font-semibold uppercase tracking-[0.16em] text-lucid">Don&apos;t make it complicated.</div>
         </div>
 
         <div className="mt-7 grid gap-2 sm:grid-cols-3">
