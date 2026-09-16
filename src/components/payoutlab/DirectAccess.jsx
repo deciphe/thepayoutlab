@@ -7,7 +7,7 @@ const TELEGRAM_URL = "https://t.me/+ioeT_HyGyJs1NzNh";
 const lessons = [
   { icon: Zap, number: "01", title: "M1 METHOD", note: "my core lesson" },
   { icon: Eye, number: "02", title: "INTUITION", note: "speedlearn the read" },
-  { icon: Gauge, number: "03", title: "TRUE R", note: "trade what is real" },
+  { icon: Gauge, number: "03", title: "PROP ACCOUNT MANAGEMENT", note: "the hidden gem" },
 ];
 
 export default function DirectAccess() {
