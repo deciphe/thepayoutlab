@@ -158,6 +158,20 @@ for (const cert of targets) {
   const m = matches[cert.id];
   if (!m) {
     console.log(`[onchain] NO MATCH  ${cert.id} ${cert.date} ${cert.amount}`);
+    const cDate = certDate(cert.date);
+    const expected = expectedAmounts(cert)[0];
+    const nearby = transfers
+      .map(tx => ({
+        tx,
+        amount: amountOf(tx),
+        days: cDate == null || dateOnly(tx.timestamp) == null ? Infinity : Math.abs(dateOnly(tx.timestamp) - cDate) / 86400000,
+      }))
+      .filter(x => x.days <= 30)
+      .sort((a, b) => (a.days - b.days) || (Math.abs(a.amount - expected) - Math.abs(b.amount - expected)))
+      .slice(0, 15);
+    for (const x of nearby) {
+      console.log(`[onchain] NEARBY    ${cert.id} day=${x.days} expected=${expected.toFixed(2)} got=${x.amount.toFixed(6)} at=${x.tx.timestamp} tx=${x.tx.transaction_hash}`);
+    }
     continue;
   }
   console.log(`[onchain] MATCH     ${cert.id} ${cert.date} ${cert.amount} -> ${m.receivedAmount ?? '?'} USDC ${m.txHash}`);
