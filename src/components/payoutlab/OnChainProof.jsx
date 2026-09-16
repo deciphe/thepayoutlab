@@ -1,99 +1,75 @@
 import React, { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Check, ChevronRight, CircleDollarSign, Link2 } from "lucide-react";
+import { Check, ChevronRight, Copy, Fingerprint, ShieldCheck } from "lucide-react";
 import { certificates } from "./data";
 import { track } from "../../lib/analytics";
 
-const mavenDepositOrder = [
-  "maven-001", "maven-002", "maven-003", "maven-004", "maven-005", "maven-006", "maven-008",
-  "maven-009", "maven-010", "maven-011", "maven-012", "maven-013", "maven-014", "maven-015",
-  "maven-016", "maven-017", "maven-018", "maven-019", "maven-020", "maven-021", "maven-022",
-  "maven-023", "maven-024", "maven-025", "maven-027", "maven-028",
-];
-const verifiedMavenIds = new Set(mavenDepositOrder);
-const depositIndex = Object.fromEntries(mavenDepositOrder.map((id, index) => [id, index]));
-const spriteUrl = `${import.meta.env.BASE_URL}onchain/maven-deposit-sprite.jpg`;
-const filters = ["All", "Maven", "FundedNext", "Lucid Trading"];
+const proofMeta = {
+  "maven-011": { proofHash: "d4be45a9bca6bc74badf15df50d2ad57f87005d7cb42d502552c2021f5f3d8ee" },
+  "maven-020": { proofHash: "f306b06cb34c3d018bc62298be91cd30d3fe5e6375dd25a92932794b963b1de9" },
+  "maven-002": { proofHash: "198ddb7a139bac870ca97e17c6aa26ae8ec45adb702a0db110c7e51391698c1e" },
+  "maven-017": { proofHash: "3ec860cf034954eb24bb662ccaebe593b49665cd3127757763162015cb58dcf0" },
+  "maven-023": { proofHash: "c5a1a27cf67497988932b8a1dd72a85517e846b06f1050b04d83e4fab1d49947" },
+  "lucid-trading-004": { proofHash: "66d79f2d1c306b6505ce306f71ced598859616cfdf3d6954badc40443efd570e" },
+  "lucid-trading-001": { proofHash: "9510057b73ca7cbf9522fd85604cb4452629ebf39ee2489e237cb7565e67bd7f" },
+  "lucid-trading-002": { proofHash: "02a3e59d0b4511bddf84ac3c4303a28336ea3a2d0d39f60d45458e71bc77876e" },
+  "lucid-trading-005": { proofHash: "21faea778fddbdfe468e9f92a8b2ad458ef1230a40407c045ebbbc9cf54aecea" },
+  "lucid-trading-003": { proofHash: "e36582dcf88068b11688de24eaa2360f4f291699d17b5144f94e05a1ba9c974b" },
+};
+
+const topMavenIds = ["maven-011", "maven-020", "maven-002", "maven-017", "maven-023"];
+const topLucidIds = ["lucid-trading-004", "lucid-trading-001", "lucid-trading-002", "lucid-trading-005", "lucid-trading-003"];
+const rankIds = [...topMavenIds, ...topLucidIds];
 
 const money = (value, decimals = 2) => Number(value || 0).toLocaleString("en-US", {
   minimumFractionDigits: decimals,
   maximumFractionDigits: decimals,
 });
-const settlementAmount = (cert) => Math.round(cert.amountNum * 80) / 100;
+const shortHash = hash => `${hash.slice(0, 8)}...${hash.slice(-6)}`;
+const mavenSettlement = amount => Math.round(amount * 0.8 * 100) / 100;
 
 function buildRows() {
-  const verified = certificates
-    .filter((cert) => cert.firm === "Maven" && verifiedMavenIds.has(cert.id))
-    .map((cert) => ({ ...cert, settlement: settlementAmount(cert), state: "verified", rail: "USDC", depositIndex: depositIndex[cert.id] }));
-
-  const matchReady = certificates
-    .filter((cert) => cert.firm === "FundedNext" || cert.firm === "Lucid Trading")
-    .map((cert) => ({ ...cert, settlement: cert.amountNum, state: "pending", rail: "USDC", depositIndex: null }));
-
-  return [...verified, ...matchReady].sort((a, b) => b.amountNum - a.amountNum);
+  const byId = Object.fromEntries(certificates.map(cert => [cert.id, cert]));
+  return rankIds.map((id, index) => {
+    const cert = byId[id];
+    const isMaven = cert.firm === "Maven";
+    return {
+      ...cert,
+      rank: index + 1,
+      proofHash: proofMeta[id].proofHash,
+      type: isMaven ? "wallet" : "certificate",
+      status: isMaven ? "MATCHED USDC" : "PAYOUT VERIFIED",
+      displayAmount: isMaven ? mavenSettlement(cert.amountNum) : cert.amountNum,
+      unit: isMaven ? "USDC" : "USD",
+      splitReference: cert.firm === "Lucid Trading" ? Math.round(cert.amountNum * 0.9 * 100) / 100 : null,
+    };
+  });
 }
 
-function SettlementRow({ row, active, onSelect, duplicate = false }) {
-  const verified = row.state === "verified";
+function ProofRow({ row, active, onSelect }) {
+  const matched = row.type === "wallet";
   return (
-    <button
-      type="button"
-      tabIndex={duplicate ? -1 : 0}
-      aria-hidden={duplicate ? "true" : undefined}
-      onClick={() => !duplicate && onSelect(row)}
-      className={`group grid w-full grid-cols-[1fr_auto] items-center gap-4 border-b border-white/[0.055] px-5 py-4 text-left transition-all ${active ? "bg-gradient-to-r from-violetglow/80 via-violetglow/45 to-white/8" : "bg-white/[0.012] hover:bg-white/[0.035]"}`}
-    >
-      <div className="min-w-0">
-        <div className="flex items-center gap-2">
-          <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${verified ? "bg-lucid shadow-[0_0_14px_rgba(210,255,0,.55)]" : "bg-white/20"}`} />
-          <span className="truncate font-display text-[13px] font-medium tracking-tight text-spectral">{row.firm} <span className="text-white/35">·</span> {row.id.replace(/^.*-/, "#")}</span>
-        </div>
-        <div className="mt-1 pl-3.5 font-mono-lab text-[8px] uppercase tracking-[0.18em] text-white/35">{verified ? "VERIFIED ON-CHAIN" : "WALLET MATCH PENDING"} · {row.date}</div>
-      </div>
-      <div className="flex items-center gap-3">
-        <div className="text-right">
-          <div className={`font-display text-lg font-semibold tracking-tight ${active ? "text-white" : verified ? "text-lucid" : "text-white/55"}`}>+${money(row.settlement)}</div>
-          <div className="mt-0.5 font-mono-lab text-[8px] uppercase tracking-[0.16em] text-white/30">{row.rail}</div>
-        </div>
-        {!duplicate && <ChevronRight className="h-3.5 w-3.5 text-white/20 transition-transform group-hover:translate-x-0.5 group-hover:text-white/55" />}
-      </div>
+    <button type="button" onClick={() => onSelect(row)} className={`group grid w-full grid-cols-[34px_92px_1fr_auto] items-center gap-3 border-b border-white/[0.055] px-4 py-4 text-left transition-all md:grid-cols-[42px_110px_1fr_130px_170px] md:px-5 ${active ? "bg-[linear-gradient(90deg,rgba(139,92,246,.88),rgba(139,92,246,.46),rgba(255,255,255,.035))] shadow-[inset_2px_0_0_rgba(198,160,255,.9)]" : "bg-white/[0.012] hover:bg-white/[0.035]"}`}>
+      <div className="font-display text-xs text-white/35">{String(row.rank).padStart(2, "0")}</div>
+      <div><div className="font-display text-xs font-semibold uppercase tracking-[0.08em] text-spectral">{row.firm === "Lucid Trading" ? "Lucid" : row.firm}</div><div className="mt-1 font-display text-[10px] text-white/28">{row.date}</div></div>
+      <div className={`font-display text-base font-semibold tracking-tight md:text-lg ${active ? "text-white" : matched ? "text-lucid" : "text-violetglow"}`}>+{money(row.displayAmount)} <span className="text-[0.6em] font-medium text-white/38">{row.unit}</span></div>
+      <div className="hidden font-display text-[11px] text-white/36 md:block">{shortHash(row.proofHash)}</div>
+      <div className="flex items-center justify-end gap-2"><span className={`hidden rounded-full border px-2.5 py-1 font-display text-[9px] font-semibold uppercase tracking-[0.12em] sm:inline-flex ${matched ? "border-lucid/20 bg-lucid/[0.05] text-lucid" : "border-violetglow/25 bg-violetglow/[0.08] text-violetglow"}`}>{row.status}</span><ChevronRight className="h-3.5 w-3.5 text-white/22 transition-transform group-hover:translate-x-0.5 group-hover:text-white/60" /></div>
     </button>
   );
 }
 
-function DepositSprite({ index }) {
-  const pct = mavenDepositOrder.length <= 1 ? 0 : (index / (mavenDepositOrder.length - 1)) * 100;
+function DetailPanel({ row, total }) {
+  const matched = row.type === "wallet";
+  const copyHash = async () => { try { await navigator.clipboard.writeText(row.proofHash); } catch {} track("proof_hash_copy", { firm: row.firm, id: row.id }); };
   return (
-    <div className="flex flex-1 items-center justify-center overflow-hidden rounded-xl bg-[#030305] px-2">
-      <div
-        role="img"
-        aria-label="Matching USDC deposit"
-        className="w-full max-w-[520px] rounded-lg border border-white/[0.055] bg-no-repeat shadow-2xl shadow-black/40"
-        style={{
-          aspectRatio: "360 / 66",
-          backgroundImage: `url(${spriteUrl})`,
-          backgroundSize: "100% auto",
-          backgroundPosition: `center ${pct}%`,
-        }}
-      />
-    </div>
-  );
-}
-
-function ReceiptCard({ row }) {
-  return (
-    <div className="relative flex min-h-[285px] flex-col overflow-hidden rounded-2xl border border-white/[0.07] bg-[#080808] p-6">
-      <div aria-hidden="true" className="absolute inset-0 opacity-80" style={{ background: "radial-gradient(circle at 85% 5%, rgba(210,255,0,.11), transparent 32%), radial-gradient(circle at 12% 100%, rgba(138,43,226,.13), transparent 34%)" }} />
-      <div className="relative flex items-start justify-between gap-4">
-        <div><div className="font-mono-lab text-[8px] uppercase tracking-[0.22em] text-white/35">Wallet settlement</div><div className="mt-2 font-display text-xl font-semibold text-spectral">{row.firm}</div></div>
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.025] px-2.5 py-1 font-mono-lab text-[8px] uppercase tracking-[0.17em] text-white/40">pending</div>
-      </div>
-      <div className="relative mt-auto">
-        <div className="font-display font-semibold leading-none tracking-[-0.065em] text-spectral" style={{ fontSize: "clamp(2.6rem,6vw,4.4rem)" }}>{money(row.settlement, 2)} <span className="text-[0.28em] font-medium tracking-normal text-white/35">USD</span></div>
-        <div className="mt-5 grid grid-cols-2 gap-4 border-t border-white/[0.07] pt-4">
-          <div><div className="font-mono-lab text-[8px] uppercase tracking-[0.16em] text-white/30">Payout proof</div><div className="mt-1 font-display text-sm text-white/75">{row.amount}</div></div>
-          <div><div className="font-mono-lab text-[8px] uppercase tracking-[0.16em] text-white/30">Date</div><div className="mt-1 font-display text-sm text-white/75">{row.date}</div></div>
-        </div>
+    <div className="relative h-full overflow-hidden rounded-2xl border border-white/[0.07] bg-[#080808] p-6 md:p-8">
+      <div aria-hidden="true" className="absolute inset-0" style={{ background: "radial-gradient(circle at 90% 0%, rgba(139,92,246,.14), transparent 34%), radial-gradient(circle at 0% 100%, rgba(210,255,0,.055), transparent 30%)" }} />
+      <div className="relative">
+        <div className="flex items-start justify-between gap-5"><div><div className="font-display text-[11px] text-violetglow">{String(row.rank).padStart(2, "0")} / {String(total).padStart(2, "0")}</div><div className="mt-6 font-display text-2xl font-semibold tracking-[-0.03em] text-spectral">{row.firm === "Lucid Trading" ? "Lucid payout" : "Maven settlement"}</div><div className="mt-1 font-display text-xs text-white/35">{row.date}</div></div><div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 font-display text-[9px] font-semibold uppercase tracking-[0.12em] ${matched ? "border-lucid/20 bg-lucid/[0.045] text-lucid" : "border-violetglow/25 bg-violetglow/[0.075] text-violetglow"}`}>{matched ? <Check className="h-3 w-3" /> : <ShieldCheck className="h-3 w-3" />}{row.status}</div></div>
+        <div className={`mt-12 font-display text-5xl font-semibold leading-none tracking-[-0.065em] md:text-6xl ${matched ? "text-spectral" : "text-violetglow"}`}>+{money(row.displayAmount)}<span className="ml-2 text-[0.25em] font-medium tracking-normal text-white/34">{row.unit}</span></div>
+        <div className="mt-12"><div className="font-display text-[9px] font-semibold uppercase tracking-[0.16em] text-white/28">Proof hash · SHA-256</div><button onClick={copyHash} className="mt-3 flex w-full items-center gap-3 rounded-xl border border-white/[0.075] bg-white/[0.018] px-4 py-4 text-left transition-colors hover:bg-white/[0.035]"><Fingerprint className="h-4 w-4 shrink-0 text-violetglow" /><span className="min-w-0 flex-1 break-all font-display text-[11px] leading-relaxed text-white/62">{row.proofHash}</span><Copy className="h-3.5 w-3.5 shrink-0 text-white/25" /></button></div>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2"><div className="rounded-xl border border-white/[0.065] bg-white/[0.014] p-4"><div className="font-display text-[9px] font-semibold uppercase tracking-[0.14em] text-white/26">{matched ? "Payout certificate" : "Certificate payout"}</div><div className="mt-2 font-display text-xl font-semibold text-spectral">{row.amount}</div></div><div className="rounded-xl border border-white/[0.065] bg-white/[0.014] p-4"><div className="font-display text-[9px] font-semibold uppercase tracking-[0.14em] text-white/26">{matched ? "Settlement rail" : "90% split reference"}</div><div className="mt-2 font-display text-xl font-semibold text-spectral">{matched ? "USDC" : `$${money(row.splitReference)}`}</div></div></div>
+        <div className={`mt-6 flex items-center gap-3 rounded-xl border px-4 py-4 ${matched ? "border-lucid/15 bg-lucid/[0.025]" : "border-violetglow/15 bg-violetglow/[0.025]"}`}><span className={`h-2 w-2 shrink-0 rounded-full ${matched ? "bg-lucid shadow-[0_0_16px_rgba(210,255,0,.65)]" : "bg-violetglow shadow-[0_0_16px_rgba(139,92,246,.55)]"}`} /><div className="font-display text-[10px] uppercase tracking-[0.12em] text-white/44">{matched ? "Certificate + USDC deposit matched" : "Certificate verified · wallet-side deposit not in archive"}</div></div>
       </div>
     </div>
   );
@@ -101,65 +77,21 @@ function ReceiptCard({ row }) {
 
 export default function OnChainProof() {
   const rows = useMemo(buildRows, []);
-  const verifiedRows = rows.filter((row) => row.state === "verified");
   const [filter, setFilter] = useState("All");
-  const [selected, setSelected] = useState(() => verifiedRows.find((row) => row.id === "maven-011") || verifiedRows[0]);
-  const visibleRows = filter === "All" ? rows : rows.filter((row) => row.firm === filter);
-  const verifiedTotal = verifiedRows.reduce((sum, row) => sum + row.settlement, 0);
-  const tickerRows = [...verifiedRows, ...verifiedRows];
-
-  const choose = (row) => { setSelected(row); track("onchain_proof_select", { firm: row.firm, id: row.id, state: row.state }); };
-  const switchFilter = (next) => {
-    setFilter(next);
-    const nextRows = next === "All" ? rows : rows.filter((row) => row.firm === next);
-    if (nextRows.length) setSelected(nextRows[0]);
-    track("onchain_filter", { firm: next });
-  };
+  const [selected, setSelected] = useState(rows[0]);
+  const visibleRows = filter === "All" ? rows : rows.filter(row => row.firm === filter);
+  const matchedCount = rows.filter(row => row.type === "wallet").length;
+  const choose = row => { setSelected(row); track("proof_rail_select", { firm: row.firm, id: row.id, type: row.type }); };
+  const switchFilter = next => { setFilter(next); const nextRows = next === "All" ? rows : rows.filter(row => row.firm === next); if (nextRows.length) setSelected(nextRows[0]); track("proof_rail_filter", { firm: next }); };
 
   return (
     <section id="onchain" className="relative overflow-hidden border-y border-white/[0.055] bg-[#050505] py-24 md:py-32">
-      <style>{`@keyframes gp-settlement-scroll{from{transform:translateY(0)}to{transform:translateY(-50%)}}.gp-settlement-track{animation:gp-settlement-scroll 34s linear infinite}.gp-settlement-log:hover .gp-settlement-track{animation-play-state:paused}@media(prefers-reduced-motion:reduce){.gp-settlement-track{animation:none}}`}</style>
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(circle at 18% 32%, rgba(138,43,226,.10), transparent 30%), radial-gradient(circle at 78% 58%, rgba(210,255,0,.055), transparent 30%)" }} />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(circle at 18% 22%, rgba(139,92,246,.12), transparent 28%), radial-gradient(circle at 82% 68%, rgba(210,255,0,.04), transparent 28%)" }} />
       <div className="relative mx-auto max-w-[1500px] px-6 md:px-12">
-        <div className="grid gap-12 lg:grid-cols-[0.78fr_1.22fr] lg:items-end">
-          <div>
-            <div className="font-mono-lab text-[9px] uppercase tracking-[0.25em] text-lucid">Verified on-chain</div>
-            <h2 className="mt-4 max-w-xl font-display text-5xl font-semibold leading-[0.92] tracking-[-0.055em] text-spectral md:text-7xl">USDC.<br /><span className="text-white/35">Received.</span></h2>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <div className="rounded-full border border-white/[0.08] bg-white/[0.018] px-4 py-2 font-mono-lab text-[9px] uppercase tracking-[0.18em] text-white/55"><span className="text-spectral">{verifiedRows.length}</span> matched deposits</div>
-              <div className="rounded-full border border-lucid/20 bg-lucid/[0.035] px-4 py-2 font-mono-lab text-[9px] uppercase tracking-[0.18em] text-lucid">${money(verifiedTotal, 0)} settled</div>
-            </div>
-          </div>
-
-          <div className="gp-settlement-log relative h-[390px] overflow-hidden rounded-2xl border border-white/[0.07] bg-[#080808]/90 shadow-2xl shadow-black/30">
-            <div className="flex h-12 items-center justify-between border-b border-white/[0.06] px-5">
-              <div className="font-display text-sm font-medium text-white/65">settlement log</div>
-              <div className="flex items-center gap-2 font-mono-lab text-[8px] uppercase tracking-[0.18em] text-white/28"><span className="h-1.5 w-1.5 rounded-full bg-lucid shadow-[0_0_12px_rgba(210,255,0,.65)]" /> live archive</div>
-            </div>
-            <div className="pointer-events-none absolute inset-x-0 top-12 z-10 h-16 bg-gradient-to-b from-[#080808] to-transparent" />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-20 bg-gradient-to-t from-[#080808] to-transparent" />
-            <div className="gp-settlement-track">{tickerRows.map((row, index) => <SettlementRow key={`${row.id}-${index}`} row={row} active={selected?.id === row.id && index < verifiedRows.length} onSelect={choose} duplicate={index >= verifiedRows.length} />)}</div>
-          </div>
-        </div>
-
-        <div className="mt-14 flex flex-wrap gap-2">{filters.map((name) => <button key={name} onClick={() => switchFilter(name)} className={`rounded-full px-4 py-2 font-mono-lab text-[9px] uppercase tracking-[0.18em] transition-colors ${filter === name ? "bg-spectral text-void" : "border border-white/[0.07] bg-white/[0.018] text-white/38 hover:text-white/75"}`}>{name === "Lucid Trading" ? "Lucid" : name}</button>)}</div>
-
-        <div className="mt-5 grid overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.012] lg:grid-cols-[0.82fr_1.18fr]">
-          <div className="max-h-[560px] overflow-y-auto no-scrollbar border-b border-white/[0.07] lg:border-b-0 lg:border-r">{visibleRows.map((row) => <SettlementRow key={row.id} row={row} active={selected?.id === row.id} onSelect={choose} />)}</div>
-          <div className="min-h-[500px] p-4 md:p-6">
-            <AnimatePresence mode="wait">
-              {selected && <motion.div key={selected.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.22 }} className="grid h-full gap-4 xl:grid-cols-2">
-                <div className="flex min-h-[285px] items-center justify-center overflow-hidden rounded-2xl border border-white/[0.07] bg-[#080808] p-3"><img src={selected.url} alt={`${selected.firm} payout proof ${selected.amount}`} className="max-h-[410px] w-full rounded-xl object-contain" loading="lazy" /></div>
-                {selected.state === "verified" ? <div className="flex min-h-[285px] flex-col rounded-2xl border border-lucid/15 bg-[#080808] p-4"><div className="mb-3 flex items-center justify-between"><div className="font-mono-lab text-[8px] uppercase tracking-[0.19em] text-white/35">USDC deposit</div><div className="flex items-center gap-1.5 font-mono-lab text-[8px] uppercase tracking-[0.16em] text-lucid"><Check className="h-3 w-3" /> matched</div></div><DepositSprite index={selected.depositIndex} /></div> : <ReceiptCard row={selected} />}
-              </motion.div>}
-            </AnimatePresence>
-          </div>
-        </div>
-
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 font-mono-lab text-[8px] uppercase tracking-[0.16em] text-white/28">
-          <div className="flex items-center gap-2"><CircleDollarSign className="h-3.5 w-3.5" /> Maven · 26 matched certificate / USDC deposits</div>
-          <div className="flex items-center gap-2"><Link2 className="h-3.5 w-3.5" /> FundedNext + Lucid · matching next</div>
-        </div>
+        <div className="grid gap-10 border-b border-white/[0.055] pb-12 lg:grid-cols-[1.35fr_.65fr] lg:items-end"><div><div className="font-display text-[10px] font-semibold uppercase tracking-[0.18em] text-violetglow">USDC settlements</div><h2 className="mt-5 font-display text-5xl font-semibold leading-[0.92] tracking-[-0.06em] text-spectral md:text-7xl">Verified proof.</h2><div className="mt-4 font-display text-lg text-white/42 md:text-2xl">5 matched USDC settlements. 5 Lucid payout proofs.</div></div><div className="lg:text-right"><div className="font-display text-[10px] uppercase leading-6 tracking-[0.13em] text-white/28">Maven · wallet matched<br />Lucid · certificate verified<br />10 proofs shown</div><div className="mt-5 h-px w-14 bg-violetglow/70 lg:ml-auto" /></div></div>
+        <div className="mt-7 flex flex-wrap items-center justify-between gap-4"><div className="flex gap-2">{[["All","All"],["Maven","Maven"],["Lucid Trading","Lucid"]].map(([value,label]) => <button key={value} onClick={() => switchFilter(value)} className={`rounded-lg border px-5 py-3 font-display text-[10px] font-semibold uppercase tracking-[0.12em] transition-colors ${filter === value ? "border-violetglow/70 bg-violetglow text-white shadow-[0_0_28px_rgba(139,92,246,.18)]" : "border-white/[0.075] bg-white/[0.012] text-white/38 hover:text-white/72"}`}>{label}</button>)}</div><div className="flex items-center gap-2 font-display text-[10px] font-semibold uppercase tracking-[0.12em] text-white/30"><span className="h-1.5 w-1.5 rounded-full bg-lucid shadow-[0_0_14px_rgba(210,255,0,.7)]" /><span className="text-lucid">{matchedCount} matched</span><span>/</span><span>10 shown</span></div></div>
+        <div className="mt-6 grid overflow-hidden rounded-2xl border border-white/[0.07] bg-[#080808]/92 shadow-2xl shadow-black/30 lg:grid-cols-[1.1fr_.9fr]"><div className="border-b border-white/[0.07] lg:border-b-0 lg:border-r"><div className="grid grid-cols-[34px_92px_1fr_auto] gap-3 border-b border-white/[0.055] px-4 py-3 font-display text-[8px] font-semibold uppercase tracking-[0.14em] text-white/22 md:grid-cols-[42px_110px_1fr_130px_170px] md:px-5"><span>#</span><span>Firm</span><span>Amount</span><span className="hidden md:block">Proof</span><span className="text-right">Status</span></div><div>{visibleRows.map(row => <ProofRow key={row.id} row={row} active={selected?.id === row.id} onSelect={choose} />)}</div></div><div className="min-h-[560px] p-4 md:p-6">{selected && <DetailPanel row={selected} total={rows.length} />}</div></div>
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 font-display text-[9px] uppercase tracking-[0.13em] text-white/24"><span>gigaprop.xyz</span><span>real payouts · real proof</span></div>
       </div>
     </section>
   );
