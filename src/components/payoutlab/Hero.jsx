@@ -15,6 +15,7 @@ export default function Hero() {
         <a href="#hero" className="font-display text-lg font-semibold tracking-tight text-spectral">gigaprop<span className="text-lucid">.</span></a>
         <nav aria-label="Main navigation" className="flex gap-5 font-mono-lab text-[10px] uppercase tracking-widest text-muted-foreground">
           <a href="#vault" className="hover:text-lucid">Vault</a>
+          <a href="#drops" className="hover:text-lucid">Free drops</a>
           <a href="#access" className="text-lucid hover:text-white">1:1 training</a>
         </nav>
       </header>
