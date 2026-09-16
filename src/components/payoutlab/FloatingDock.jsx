@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Layers, Trophy, Ghost, ArrowUp, CircleDollarSign } from "lucide-react";
+import { Layers, Send, ArrowUp } from "lucide-react";
 
 const links = [
-  { label: "Proof", href: "#vault", icon: Layers },
-  { label: "USDC", href: "#onchain", icon: CircleDollarSign },
-  { label: "True R", href: "#rankings", icon: Trophy },
-  { label: "Maven", href: "./maven/", icon: Ghost },
+  { label: "Vault", href: "#vault", icon: Layers },
+  { label: "1:1", href: "#access", icon: Send },
 ];
 
 export default function FloatingDock() {
@@ -18,7 +16,7 @@ export default function FloatingDock() {
           {links.map((l) => {
             const Icon = l.icon;
             const active = hovered === l.label;
-            return <a key={l.label} href={l.href} aria-label={l.label} onMouseEnter={() => setHovered(l.label)} onMouseLeave={() => setHovered(null)} className="relative flex items-center gap-2 rounded-full px-3.5 py-2 font-mono-lab text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-spectral sm:px-4"><Icon className={`h-4 w-4 ${active ? "text-lucid" : ""}`} /><span className="hidden md:inline">{l.label}</span></a>;
+            return <a key={l.label} href={l.href} aria-label={l.label} onMouseEnter={() => setHovered(l.label)} onMouseLeave={() => setHovered(null)} className="relative flex items-center gap-2 rounded-full px-4 py-2 font-mono-lab text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-spectral"><Icon className={`h-4 w-4 ${active ? "text-lucid" : ""}`} /><span>{l.label}</span></a>;
           })}
           <a href="#hero" className="ml-1 flex h-9 w-9 items-center justify-center rounded-full bg-lucid text-void transition-transform hover:scale-105" aria-label="Back to top"><ArrowUp className="h-4 w-4" /></a>
         </div>
