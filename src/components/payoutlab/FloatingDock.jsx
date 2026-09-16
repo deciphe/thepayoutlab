@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Layers, Send, ArrowUp } from "lucide-react";
+import { Layers, Mail, Send, ArrowUp } from "lucide-react";
 
 const links = [
   { label: "Vault", href: "#vault", icon: Layers },
+  { label: "Drops", href: "#drops", icon: Mail },
   { label: "1:1", href: "#access", icon: Send },
 ];
 
