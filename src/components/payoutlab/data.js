@@ -459,7 +459,7 @@ export const certificates = [
     "amountNum": 1400,
     "date": "2025-01-24",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-001-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-001.png"
   },
   {
     "id": "topstep-002",
@@ -469,7 +469,7 @@ export const certificates = [
     "amountNum": 1160,
     "date": "2025-03-06",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-002-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-002.png"
   },
   {
     "id": "topstep-004",
@@ -479,7 +479,7 @@ export const certificates = [
     "amountNum": 2400,
     "date": "2025-04-16",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-004-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-004.png"
   },
   {
     "id": "topstep-005",
@@ -489,7 +489,7 @@ export const certificates = [
     "amountNum": 1550,
     "date": "2025-05-20",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-005-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-005.png"
   },
   {
     "id": "topstep-006",
@@ -499,7 +499,7 @@ export const certificates = [
     "amountNum": 945,
     "date": "2025-06-17",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-006-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-006.png"
   },
   {
     "id": "topstep-007",
@@ -509,7 +509,7 @@ export const certificates = [
     "amountNum": 2700,
     "date": "2025-07-15",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-007-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-007.png"
   },
   {
     "id": "topstep-008",
@@ -519,7 +519,7 @@ export const certificates = [
     "amountNum": 2361,
     "date": "2025-08-25",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-008-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-008.png"
   },
   {
     "id": "topstep-009",
@@ -529,7 +529,7 @@ export const certificates = [
     "amountNum": 1200,
     "date": "2025-09-30",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-009-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-009.png"
   },
   {
     "id": "topstep-010",
@@ -539,7 +539,7 @@ export const certificates = [
     "amountNum": 1000,
     "date": "2025-10-09",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-010-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-010.png"
   },
   {
     "id": "topstep-011",
@@ -549,7 +549,7 @@ export const certificates = [
     "amountNum": 853,
     "date": "2025-11-10",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-011-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-011.png"
   },
   {
     "id": "topstep-012",
@@ -559,7 +559,7 @@ export const certificates = [
     "amountNum": 928,
     "date": "2025-11-10",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-012-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-012.png"
   },
   {
     "id": "topstep-013",
@@ -569,7 +569,7 @@ export const certificates = [
     "amountNum": 869,
     "date": "2025-11-21",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-013-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-013.png"
   },
   {
     "id": "topstep-014",
@@ -579,7 +579,7 @@ export const certificates = [
     "amountNum": 918,
     "date": "2025-11-21",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-014-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-014.png"
   },
   {
     "id": "topstep-015",
@@ -589,7 +589,7 @@ export const certificates = [
     "amountNum": 732,
     "date": "2026-01-29",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-015-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-015.png"
   },
   {
     "id": "topstep-016",
@@ -599,7 +599,7 @@ export const certificates = [
     "amountNum": 993,
     "date": "2026-01-29",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-016-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-016.png"
   },
   {
     "id": "topstep-017",
@@ -609,7 +609,7 @@ export const certificates = [
     "amountNum": 1102,
     "date": "2026-01-29",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-017-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-017.png"
   },
   {
     "id": "topstep-018",
@@ -619,7 +619,7 @@ export const certificates = [
     "amountNum": 1103,
     "date": "2026-02-13",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-018-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-018.png"
   },
   {
     "id": "topstep-019",
@@ -629,7 +629,7 @@ export const certificates = [
     "amountNum": 1170,
     "date": "2026-03-02",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-019-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-019.png"
   },
   {
     "id": "topstep-020",
@@ -639,7 +639,7 @@ export const certificates = [
     "amountNum": 1265,
     "date": "2026-03-16",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-020-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-020.png"
   },
   {
     "id": "topstep-021",
@@ -649,7 +649,7 @@ export const certificates = [
     "amountNum": 1011,
     "date": "2026-03-31",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-021-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-021.png"
   },
   {
     "id": "topstep-022",
@@ -659,7 +659,7 @@ export const certificates = [
     "amountNum": 1225,
     "date": "2026-04-13",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-022-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-022.png"
   },
   {
     "id": "topstep-023",
@@ -669,7 +669,7 @@ export const certificates = [
     "amountNum": 783,
     "date": "2026-08-20",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-023-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-023.png"
   },
   {
     "id": "topstep-024",
@@ -679,7 +679,7 @@ export const certificates = [
     "amountNum": 617,
     "date": "2026-09-03",
     "kind": "personal-payout-record",
-    "image": "payouts/topstep/topstep-024-gold.jpg"
+    "image": "payouts/topstep-studio/topstep-024.png"
   },
   {
     "id": "tradeify-001",
@@ -830,3 +830,4 @@ export const unscoredFirms = [
   { name: "Propr", logo: assetUrl("brands/propr.svg"), url: "https://propr.xyz" },
   { name: "Hypernova", logo: assetUrl("brands/hypernova.svg"), url: "https://hypernova.xyz" },
 ];
+
