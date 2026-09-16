@@ -13,7 +13,7 @@ export default function EmailCapture() {
     if (!email || status === "loading") return;
 
     setStatus("loading");
-    track("email_capture_submit", { source: "gigaprop_knowledge" });
+    track("email_capture_submit", { source: "free_lesson_waitlist" });
 
     try {
       const response = await fetch(ENDPOINT, {
@@ -21,8 +21,9 @@ export default function EmailCapture() {
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
           email,
-          _subject: "gigaprop. — new knowledge subscriber",
+          _subject: "gigaprop. — free lessons waitlist",
           source: "gigaprop.xyz",
+          interest: "free lessons",
           _honey: "",
         }),
       });
@@ -32,7 +33,7 @@ export default function EmailCapture() {
 
       setStatus("success");
       setEmail("");
-      track("email_capture_success", { source: "gigaprop_knowledge" });
+      track("email_capture_success", { source: "free_lesson_waitlist" });
     } catch {
       setStatus("error");
     }
@@ -46,14 +47,15 @@ export default function EmailCapture() {
         <div className="grid items-center gap-6 md:grid-cols-[1fr_.9fr]">
           <div>
             <div className="inline-flex items-center gap-2 font-mono-lab text-[9px] font-semibold uppercase tracking-[0.22em] text-lucid">
-              <Sparkles className="h-3.5 w-3.5" /> a taste of gigaprop
+              <Sparkles className="h-3.5 w-3.5" /> free lessons waitlist
             </div>
             <h2 className="mt-3 font-display text-4xl font-semibold leading-[.95] tracking-[-0.055em] text-spectral md:text-5xl">
-              SEE PROP TRADING<br /><span className="text-lucid">DIFFERENTLY.</span>
+              GET A TASTE OF<br /><span className="text-lucid">GIGAPROP.</span>
             </h2>
             <p className="mt-4 max-w-xl font-display text-base leading-6 text-white/52 md:text-lg">
-              Proprietary gigaprop knowledge designed to open your eyes, challenge how you think and change the way you see prop trading.
+              Free lessons and proprietary gigaprop knowledge built to open your eyes and make you see prop trading differently.
             </p>
+            <div className="mt-3 font-mono-lab text-[8px] font-semibold uppercase tracking-[0.16em] text-violetglow">Only what actually matters.</div>
           </div>
 
           <div>
@@ -73,15 +75,15 @@ export default function EmailCapture() {
                   />
                 </label>
                 <button type="submit" disabled={status === "loading"} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-lucid px-5 py-3.5 font-mono-lab text-[10px] font-semibold uppercase tracking-[0.14em] text-void transition-all hover:glow-lucid disabled:cursor-wait disabled:opacity-60">
-                  {status === "loading" ? "Joining..." : "Get a taste"} <ArrowUpRight className="h-4 w-4" />
+                  {status === "loading" ? "Joining..." : "Join the waitlist"} <ArrowUpRight className="h-4 w-4" />
                 </button>
               </div>
             </form>
 
             <div className="mt-3 min-h-[16px] font-mono-lab text-[8px] uppercase tracking-[0.12em]">
-              {status === "success" && <span className="text-lucid">You're in. First drop soon.</span>}
-              {status === "error" && <span className="text-violetglow">Couldn't add you yet. Try again in a minute.</span>}
-              {status === "idle" && <span className="text-white/22">No spam. Just gigaprop knowledge.</span>}
+              {status === "success" && <span className="text-lucid">You&apos;re in. Free lessons coming.</span>}
+              {status === "error" && <span className="text-violetglow">Couldn&apos;t add you yet. Try again in a minute.</span>}
+              {status === "idle" && <span className="text-white/22">Free lessons. No spam.</span>}
             </div>
           </div>
         </div>
