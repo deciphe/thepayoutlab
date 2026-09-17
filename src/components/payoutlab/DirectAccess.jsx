@@ -12,13 +12,14 @@ const lessons = [
 
 export default function DirectAccess() {
   const [handle, setHandle] = useState("");
+  const [discord, setDiscord] = useState("");
   const [stage, setStage] = useState("Never funded");
   const [focus, setFocus] = useState("");
   const [status, setStatus] = useState("idle");
 
   const submit = async (event) => {
     event.preventDefault();
-    if (!handle || !focus || status === "loading") return;
+    if (!handle || !discord || !focus || status === "loading") return;
 
     setStatus("loading");
     track("direct_access_apply", { stage, offer: "intuition_speedrun" });
@@ -29,6 +30,7 @@ export default function DirectAccess() {
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
           telegram: handle,
+          discord,
           stage,
           why: focus,
           source: "gigaprop.xyz",
@@ -43,6 +45,7 @@ export default function DirectAccess() {
 
       setStatus("success");
       setHandle("");
+      setDiscord("");
       setStage("Never funded");
       setFocus("");
       track("direct_access_apply_success", { stage, offer: "intuition_speedrun" });
@@ -93,10 +96,15 @@ export default function DirectAccess() {
         </div>
 
         <form onSubmit={submit} className="mt-4 rounded-2xl border border-white/[0.07] bg-white/[0.018] p-4 md:p-5">
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-3 md:grid-cols-3">
             <label className="block rounded-xl border border-white/[0.06] bg-black/25 px-4 py-3">
               <span className="font-mono-lab text-[8px] uppercase tracking-[0.15em] text-white/30">Telegram @</span>
               <input required value={handle} onChange={(e) => { setHandle(e.target.value); if (status !== "idle") setStatus("idle"); }} placeholder="@handle" className="mt-1.5 w-full bg-transparent font-display text-base text-spectral outline-none placeholder:text-white/18" />
+            </label>
+
+            <label className="block rounded-xl border border-white/[0.06] bg-black/25 px-4 py-3">
+              <span className="font-mono-lab text-[8px] uppercase tracking-[0.15em] text-white/30">Discord username</span>
+              <input required value={discord} onChange={(e) => { setDiscord(e.target.value.toLowerCase()); if (status !== "idle") setStatus("idle"); }} minLength={2} maxLength={32} pattern="[a-z0-9._]+" title="2–32 lowercase letters, numbers, periods or underscores" placeholder="username" autoCapitalize="none" autoCorrect="off" spellCheck="false" className="mt-1.5 w-full bg-transparent font-display text-base text-spectral outline-none placeholder:text-white/18" />
             </label>
 
             <label className="block rounded-xl border border-white/[0.06] bg-black/25 px-4 py-3">
@@ -119,7 +127,7 @@ export default function DirectAccess() {
           </button>
 
           <div className="mt-3 min-h-[16px] text-center font-mono-lab text-[8px] uppercase tracking-[0.13em]">
-            {status === "success" && <span className="text-lucid">Application received. I&apos;ll contact accepted applicants on Telegram.</span>}
+            {status === "success" && <span className="text-lucid">Application received. I&apos;ll contact accepted applicants directly.</span>}
             {status === "error" && <span className="text-violetglow">Couldn&apos;t send your application. Try again in a minute.</span>}
             {status === "idle" && <span className="text-white/22">Accepted applicants only.</span>}
           </div>
