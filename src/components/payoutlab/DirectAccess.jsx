@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ArrowUpRight, Send, Zap, Eye, Gauge, MessageCircle, TicketCheck } from "lucide-react";
 import { track } from "../../lib/analytics";
 
-const TELEGRAM_URL = "https://t.me/+ioeT_HyGyJs1NzNh";
+const ENDPOINT = "https://formsubmit.co/ajax/gp@gigaprop.xyz";
 
 const lessons = [
   { icon: Zap, number: "01", title: "M1 METHOD", note: "my core lesson" },
@@ -14,21 +14,41 @@ export default function DirectAccess() {
   const [handle, setHandle] = useState("");
   const [stage, setStage] = useState("Never funded");
   const [focus, setFocus] = useState("");
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState("idle");
 
   const submit = async (event) => {
     event.preventDefault();
-    const application = [
-      "gigaprop. — intuition speedrun application",
-      `Telegram: ${handle || "—"}`,
-      `Stage: ${stage}`,
-      `Why: ${focus || "—"}`,
-    ].join("\n");
+    if (!handle || !focus || status === "loading") return;
 
-    try { await navigator.clipboard.writeText(application); } catch {}
+    setStatus("loading");
     track("direct_access_apply", { stage, offer: "intuition_speedrun" });
-    setSent(true);
-    window.open(TELEGRAM_URL, "_blank", "noopener,noreferrer");
+
+    try {
+      const response = await fetch(ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          telegram: handle,
+          stage,
+          why: focus,
+          source: "gigaprop.xyz",
+          application: "intuition speedrun / 1:1",
+          _subject: `GIGAPROP APPLICATION — ${stage} — ${handle}`,
+          _honey: "",
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || data.success === false) throw new Error(data.message || "application failed");
+
+      setStatus("success");
+      setHandle("");
+      setStage("Never funded");
+      setFocus("");
+      track("direct_access_apply_success", { stage, offer: "intuition_speedrun" });
+    } catch {
+      setStatus("error");
+    }
   };
 
   return (
@@ -76,12 +96,12 @@ export default function DirectAccess() {
           <div className="grid gap-3 md:grid-cols-2">
             <label className="block rounded-xl border border-white/[0.06] bg-black/25 px-4 py-3">
               <span className="font-mono-lab text-[8px] uppercase tracking-[0.15em] text-white/30">Telegram @</span>
-              <input value={handle} onChange={(e) => setHandle(e.target.value)} placeholder="@handle" className="mt-1.5 w-full bg-transparent font-display text-base text-spectral outline-none placeholder:text-white/18" />
+              <input required value={handle} onChange={(e) => { setHandle(e.target.value); if (status !== "idle") setStatus("idle"); }} placeholder="@handle" className="mt-1.5 w-full bg-transparent font-display text-base text-spectral outline-none placeholder:text-white/18" />
             </label>
 
             <label className="block rounded-xl border border-white/[0.06] bg-black/25 px-4 py-3">
               <span className="font-mono-lab text-[8px] uppercase tracking-[0.15em] text-white/30">Stage</span>
-              <select value={stage} onChange={(e) => setStage(e.target.value)} className="mt-1.5 w-full bg-transparent font-display text-base text-spectral outline-none">
+              <select value={stage} onChange={(e) => { setStage(e.target.value); if (status !== "idle") setStatus("idle"); }} className="mt-1.5 w-full bg-transparent font-display text-base text-spectral outline-none">
                 <option className="bg-[#0a0a0a]">Never funded</option>
                 <option className="bg-[#0a0a0a]">Passing evals, no payouts</option>
                 <option className="bg-[#0a0a0a]">Already getting payouts</option>
@@ -91,15 +111,17 @@ export default function DirectAccess() {
 
           <label className="mt-3 block rounded-xl border border-white/[0.06] bg-black/25 px-4 py-3">
             <span className="font-mono-lab text-[8px] uppercase tracking-[0.15em] text-lucid">Are you ready?</span>
-            <textarea value={focus} onChange={(e) => setFocus(e.target.value)} rows={3} placeholder="Tell me why." className="mt-1.5 w-full resize-none bg-transparent font-display text-base leading-6 text-spectral outline-none placeholder:text-white/20" />
+            <textarea required value={focus} onChange={(e) => { setFocus(e.target.value); if (status !== "idle") setStatus("idle"); }} rows={3} placeholder="Tell me why." className="mt-1.5 w-full resize-none bg-transparent font-display text-base leading-6 text-spectral outline-none placeholder:text-white/20" />
           </label>
 
-          <button type="submit" className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-lucid px-5 py-4 font-mono-lab text-[11px] font-semibold uppercase tracking-[0.14em] text-void transition-all hover:glow-lucid">
-            <Send className="h-4 w-4" /> Apply for 1:1 <ArrowUpRight className="h-4 w-4" />
+          <button type="submit" disabled={status === "loading"} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-lucid px-5 py-4 font-mono-lab text-[11px] font-semibold uppercase tracking-[0.14em] text-void transition-all hover:glow-lucid disabled:cursor-wait disabled:opacity-60">
+            <Send className="h-4 w-4" /> {status === "loading" ? "Sending..." : "Apply for 1:1"} <ArrowUpRight className="h-4 w-4" />
           </button>
 
-          <div className="mt-3 text-center font-mono-lab text-[8px] uppercase tracking-[0.13em] text-white/22">
-            {sent ? "Application copied — paste into Telegram." : "Accepted applicants only."}
+          <div className="mt-3 min-h-[16px] text-center font-mono-lab text-[8px] uppercase tracking-[0.13em]">
+            {status === "success" && <span className="text-lucid">Application received. I&apos;ll contact accepted applicants on Telegram.</span>}
+            {status === "error" && <span className="text-violetglow">Couldn&apos;t send your application. Try again in a minute.</span>}
+            {status === "idle" && <span className="text-white/22">Accepted applicants only.</span>}
           </div>
         </form>
       </div>
