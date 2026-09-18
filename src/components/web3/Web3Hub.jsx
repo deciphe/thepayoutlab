@@ -67,12 +67,12 @@ const fees = {
 };
 
 const leaders = [
-  ["LOWEST 25K ENTRY","Breakout","Turbo · $95"],
-  ["LOWEST 1-STEP TARGET","Hypernova / Breakout","Tight / Turbo · 9%"],
-  ["WIDEST 1-STEP DD","Hypernova","Medium · 7% static"],
-  ["HIGHEST DEFAULT SPLIT","Vanta","Classic · 100%"],
-  ["NQ LEVERAGE","Vest","50x"],
-  ["PAYOUT SPEED","Hypernova","~6.1s avg"]
+  {metric:"LOWEST 25K ENTRY",firm:"Breakout",firmId:"breakout",value:"$95",detail:"Turbo"},
+  {metric:"LOWEST 1-STEP TARGET",firm:"Hypernova + Breakout",firmId:null,value:"9%",detail:"Tight / Turbo"},
+  {metric:"WIDEST 1-STEP DD",firm:"Hypernova",firmId:"hypernova",value:"7%",detail:"Medium · static"},
+  {metric:"HIGHEST DEFAULT SPLIT",firm:"Vanta",firmId:"vanta",value:"100%",detail:"Classic"},
+  {metric:"NQ LEVERAGE",firm:"Vest",firmId:"vest",value:"50x",detail:"NQ"},
+  {metric:"PAYOUT SPEED",firm:"Hypernova",firmId:"hypernova",value:"~6.1s",detail:"average"}
 ];
 
 function money(n){
@@ -366,14 +366,34 @@ export default function Web3Hub(){
     </section>
 
     <section className="gp-standouts">
-      <div className="gp-section-head compact"><div><span className="gp-section-no">03</span><h2>25K leaders</h2></div></div>
-      <div className="gp-leader-grid">
-        {leaders.map(([metric,firm,value],index)=><div className="gp-leader" key={metric}>
-          <span className="gp-leader-no">{String(index+1).padStart(2,"0")}</span>
-          <span className="gp-leader-metric">{metric}</span>
-          <strong>{firm}</strong>
-          <small>{value}</small>
-        </div>)}
+      <div className="gp-section-head compact"><div><span className="gp-section-no">03</span><h2>Review board</h2></div></div>
+
+      <div className="gp-review-board">
+        <div className="gp-review-head">
+          <span>METRIC</span>
+          <span>LEADER</span>
+          <span>BEST VALUE</span>
+        </div>
+
+        {leaders.map((item,index)=>{
+          const leaderFirm=item.firmId ? firms.find(f=>f.id===item.firmId) : null;
+          return <div className="gp-review-row" key={item.metric}>
+            <div className="gp-review-metric">
+              <span className="gp-review-no">{String(index+1).padStart(2,"0")}</span>
+              <strong>{item.metric}</strong>
+            </div>
+
+            <div className="gp-review-firm">
+              {leaderFirm && <FirmLogo firm={leaderFirm}/>}
+              <span>{item.firm}</span>
+            </div>
+
+            <div className="gp-review-value">
+              <strong>{item.value}</strong>
+              <span>{item.detail}</span>
+            </div>
+          </div>;
+        })}
       </div>
     </section>
 
