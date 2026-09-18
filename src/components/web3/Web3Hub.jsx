@@ -7,6 +7,8 @@ const firms = [
     id: "hypernova",
     name: "Hypernova",
     mark: "HN",
+    domain: "hypernova.xyz",
+    logo: "https://hypernova.xyz/favicon.ico",
     url: "https://hypernova.xyz/",
     status: "ON-CHAIN",
     venue: "Hyperliquid",
@@ -20,12 +22,15 @@ const firms = [
     execution: "Hyperliquid liquidity",
     api: "—",
     note: "Configurable risk tiers, public payout reserve, on-chain trader state and programmatic payouts.",
-    signal: "Infrastructure-first"
+    signal: "Infrastructure-first",
+    orbit: { x: "49%", y: "8%", delay: "-1.5s" }
   },
   {
     id: "propr",
     name: "Propr",
     mark: "PR",
+    domain: "propr.xyz",
+    logo: "https://www.propr.xyz/favicon.ico",
     url: "https://www.propr.xyz/",
     status: "ON-CHAIN",
     venue: "Hyperliquid",
@@ -39,12 +44,15 @@ const firms = [
     execution: "HL fees passed through",
     api: "REST + Python / JS",
     note: "Public rule changelog with a production API beta aimed directly at agentic and automated trading.",
-    signal: "Automation-first"
+    signal: "Automation-first",
+    orbit: { x: "78%", y: "20%", delay: "-4.2s" }
   },
   {
     id: "doji",
     name: "DojiFunded",
     mark: "DJ",
+    domain: "dojifunded.com",
+    logo: "https://www.dojifunded.com/favicon.ico",
     url: "https://www.dojifunded.com/",
     status: "ARBITRUM",
     venue: "On-chain",
@@ -58,12 +66,15 @@ const firms = [
     execution: "Auditable execution",
     api: "SDK / automation",
     note: "Arbitrum-native funded trading protocol built around verifiable trades, vault-native capital and developer tooling.",
-    signal: "Protocol-native"
+    signal: "Protocol-native",
+    orbit: { x: "91%", y: "50%", delay: "-2.8s" }
   },
   {
     id: "vanta",
     name: "Vanta",
     mark: "VA",
+    domain: "vantatrading.io",
+    logo: "https://www.vantatrading.io/favicon.ico",
     url: "https://www.vantatrading.io/",
     status: "DECENTRALIZED",
     venue: "Multi-asset",
@@ -77,12 +88,15 @@ const firms = [
     execution: "API-enabled",
     api: "Trading API",
     note: "One-step evaluation with a 100% reward split, transparent rules and a strong API / decentralized infrastructure angle.",
-    signal: "Value + scale"
+    signal: "Value + scale",
+    orbit: { x: "75%", y: "80%", delay: "-5.4s" }
   },
   {
     id: "vest",
     name: "Vest",
     mark: "VE",
+    domain: "vestmarkets.com",
+    logo: "https://www.vestmarkets.com/favicon.ico",
     url: "https://www.vestmarkets.com/",
     status: "PERPS",
     venue: "Vest Markets",
@@ -96,12 +110,15 @@ const firms = [
     execution: "Up to 100x",
     api: "—",
     note: "24/7 multi-asset derivatives with wallet-native access, high leverage and instant USDC withdrawals.",
-    signal: "Leverage + breadth"
+    signal: "Leverage + breadth",
+    orbit: { x: "43%", y: "91%", delay: "-3.6s" }
   },
   {
     id: "hyperpnl",
     name: "HyperPNL",
     mark: "HP",
+    domain: "hyperpnl.com",
+    logo: "https://hyperpnl.com/favicon.ico",
     url: "https://hyperpnl.com/",
     status: "ON-CHAIN",
     venue: "Hyperliquid + Ostium",
@@ -115,12 +132,15 @@ const firms = [
     execution: "Multi-venue",
     api: "—",
     note: "Smart-contract payout model with Hyperliquid and Ostium market access across crypto, FX and commodities.",
-    signal: "Payout rails"
+    signal: "Payout rails",
+    orbit: { x: "13%", y: "70%", delay: "-6.1s" }
   },
   {
     id: "breakout",
     name: "Breakout",
     mark: "BR",
+    domain: "breakoutprop.com",
+    logo: "https://www.breakoutprop.com/favicon.ico",
     url: "https://www.breakoutprop.com/",
     status: "ESTABLISHED",
     venue: "Breakout / DXtrade",
@@ -134,7 +154,8 @@ const firms = [
     execution: "0.04% / side",
     api: "—",
     note: "Mature crypto prop stack with simple rules and fast payouts, but execution cost is a material part of True R.",
-    signal: "Baseline benchmark"
+    signal: "Baseline benchmark",
+    orbit: { x: "10%", y: "30%", delay: "-.7s" }
   }
 ];
 
@@ -154,6 +175,28 @@ function money(n) {
     currency: "USD",
     maximumFractionDigits: 0
   }).format(n);
+}
+
+function FirmLogo({ firm, className = "" }) {
+  return (
+    <span className={"gp-logo " + className} aria-hidden="true">
+      <span className="gp-logo-fallback">{firm.mark}</span>
+      <img
+        src={firm.logo}
+        alt=""
+        loading="lazy"
+        onError={(event) => {
+          const img = event.currentTarget;
+          if (!img.dataset.fallback) {
+            img.dataset.fallback = "1";
+            img.src = `https://www.google.com/s2/favicons?domain=${firm.domain}&sz=128`;
+            return;
+          }
+          img.style.display = "none";
+        }}
+      />
+    </span>
+  );
 }
 
 export default function Web3Hub() {
@@ -177,6 +220,15 @@ export default function Web3Hub() {
       retained: Math.max(0, 1 - roundTrip / safeRisk)
     };
   }, [notional, fee, slippage, risk]);
+
+  function inspectFirm(id, move = false) {
+    setActiveId(id);
+    if (move) {
+      window.setTimeout(() => {
+        document.getElementById("index")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 120);
+    }
+  }
 
   return (
     <main className="gp-site">
@@ -221,16 +273,32 @@ export default function Web3Hub() {
           </div>
         </div>
 
-        <div className="gp-orbit" aria-hidden="true">
-          <div className="gp-orbit-core">
+        <div className="gp-orbit" aria-label="Web3 prop firm orbit">
+          <div className="gp-orbit-halo" aria-hidden="true" />
+          <div className="gp-orbit-core" aria-hidden="true">
             <span>GP</span>
           </div>
-          <div className="gp-orbit-ring gp-ring-a" />
-          <div className="gp-orbit-ring gp-ring-b" />
-          <div className="gp-orbit-ring gp-ring-c" />
-          <div className="gp-orbit-node gp-node-a"><i /> HYPERLIQUID</div>
-          <div className="gp-orbit-node gp-node-b"><i /> ON-CHAIN</div>
-          <div className="gp-orbit-node gp-node-c"><i /> PERPS</div>
+          <div className="gp-orbit-ring gp-ring-a" aria-hidden="true" />
+          <div className="gp-orbit-ring gp-ring-b" aria-hidden="true" />
+          <div className="gp-orbit-ring gp-ring-c" aria-hidden="true" />
+
+          {firms.map((firm) => (
+            <button
+              type="button"
+              key={firm.id}
+              className={"gp-orbit-firm" + (firm.id === activeId ? " is-active" : "")}
+              style={{
+                "--node-x": firm.orbit.x,
+                "--node-y": firm.orbit.y,
+                "--node-delay": firm.orbit.delay
+              }}
+              data-name={firm.name}
+              aria-label={`Inspect ${firm.name}`}
+              onClick={() => inspectFirm(firm.id, true)}
+            >
+              <FirmLogo firm={firm} className="gp-orbit-logo" />
+            </button>
+          ))}
         </div>
       </section>
 
@@ -253,10 +321,10 @@ export default function Web3Hub() {
                 type="button"
                 key={firm.id}
                 className={"gp-firm-row" + (firm.id === activeId ? " is-active" : "")}
-                onClick={() => setActiveId(firm.id)}
+                onClick={() => inspectFirm(firm.id)}
               >
                 <span className="gp-rank">{String(index + 1).padStart(2, "0")}</span>
-                <span className="gp-firm-mark">{firm.mark}</span>
+                <span className="gp-firm-mark"><FirmLogo firm={firm} /></span>
                 <span className="gp-firm-name">
                   <strong>{firm.name}</strong>
                   <small>{firm.status}</small>
@@ -270,9 +338,12 @@ export default function Web3Hub() {
 
           <aside className="gp-detail">
             <div className="gp-detail-top">
-              <div>
-                <span className="gp-detail-kicker">{active.signal}</span>
-                <h3>{active.name}</h3>
+              <div className="gp-detail-identity">
+                <FirmLogo firm={active} className="gp-detail-logo" />
+                <div>
+                  <span className="gp-detail-kicker">{active.signal}</span>
+                  <h3>{active.name}</h3>
+                </div>
               </div>
               <a href={active.url} target="_blank" rel="noreferrer" aria-label={"Open " + active.name}>
                 <ArrowUpRight size={18} />
