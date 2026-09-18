@@ -21,15 +21,13 @@ const fees = {
   }
 };
 
-const standouts = [
-  ["25K ENTRY","Vest","$198 observed"],
-  ["SPLIT","Vanta","100% default"],
+const leaders = [
+  ["LOWEST 25K ENTRY","Breakout","Turbo · $95"],
+  ["LOWEST 1-STEP TARGET","Hypernova / Breakout","Tight / Turbo · 9%"],
+  ["WIDEST 1-STEP DD","Hypernova","Medium · 7% static"],
+  ["HIGHEST DEFAULT SPLIT","Vanta","Classic · 100%"],
   ["NQ LEVERAGE","Vest","50x"],
-  ["AUTOMATION","Propr","REST + Python / JS"],
-  ["PAYOUT SPEED","Hypernova","~6.1s avg"],
-  ["ON-DEMAND","Breakout","24/7"],
-  ["CODE PAYOUTS","HyperPNL","smart-contract"],
-  ["LOWEST ENTRY","DojiFunded","$10 · 1K"]
+  ["PAYOUT SPEED","Hypernova","~6.1s avg"]
 ];
 
 function money(n){
@@ -166,6 +164,13 @@ export default function Web3Hub(){
     const retained=fee==null ? null : 1-((fee/100)*2*10);
     const barPct=retained==null ? 0 : Math.max(0,Math.min(100,((retained-BAR_MIN)/(1-BAR_MIN))*100));
     return {...f,fee,retained,barPct};
+  }).sort((a,b)=>{
+    if(a.retained==null && b.retained==null) return a.name.localeCompare(b.name);
+    if(a.retained==null) return 1;
+    if(b.retained==null) return -1;
+    if(b.retained!==a.retained) return b.retained-a.retained;
+    if(a.fee!==b.fee) return (a.fee??Infinity)-(b.fee??Infinity);
+    return a.name.localeCompare(b.name);
   }),[asset,feeMode]);
 
   const degenFirm=firms.find(f=>f.id===degenId)||firms[4];
@@ -261,8 +266,8 @@ export default function Web3Hub(){
         <span>R KEPT</span>
       </div>
       <div className="gp-fee-map">
-        {feeRows.map(f=><button type="button" className={"gp-fee-row"+(degenId===f.id?" is-active":"")} key={f.id} onClick={()=>setDegenId(f.id)}>
-          <div className="gp-fee-name"><FirmLogo firm={f}/><span><b>{f.name}</b><small>{f.leverage}</small></span></div>
+        {feeRows.map((f,index)=><button type="button" className={"gp-fee-row"+(degenId===f.id?" is-active":"")} key={f.id} onClick={()=>setDegenId(f.id)}>
+          <div className="gp-fee-name"><span className="gp-fee-rank">{String(index+1).padStart(2,"0")}</span><FirmLogo firm={f}/><span><b>{f.name}</b><small>{f.leverage}</small></span></div>
           <div className="gp-rbar" aria-label={f.retained==null?"fee unavailable":f.retained.toFixed(3)+" R retained on a 0.980 to 1.000 R scale"}>
             <div className="gp-rbar-grid"/>
             <div className="gp-rbar-fill" style={{width:f.retained==null?"0%":f.barPct+"%"}}/>
@@ -278,8 +283,15 @@ export default function Web3Hub(){
     </section>
 
     <section className="gp-standouts">
-      <div className="gp-section-head compact"><div><span className="gp-section-no">03</span><h2>Standouts</h2></div></div>
-      <div className="gp-standout-grid">{standouts.map(([k,n,v])=><div className="gp-standout" key={k}><span>{k}</span><strong>{n}</strong><small>{v}</small></div>)}</div>
+      <div className="gp-section-head compact"><div><span className="gp-section-no">03</span><h2>25K leaders</h2></div></div>
+      <div className="gp-leader-grid">
+        {leaders.map(([metric,firm,value],index)=><div className="gp-leader" key={metric}>
+          <span className="gp-leader-no">{String(index+1).padStart(2,"0")}</span>
+          <span className="gp-leader-metric">{metric}</span>
+          <strong>{firm}</strong>
+          <small>{value}</small>
+        </div>)}
+      </div>
     </section>
 
     <section className="gp-compare-section" id="matrix">
