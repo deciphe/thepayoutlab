@@ -3,6 +3,7 @@ import { ArrowUpRight, ChevronRight, Circle, ExternalLink } from "lucide-react";
 import "./web3-hub.css";
 
 const NQ = 29679;
+const BAR_MIN = 0.80;
 
 const firms = [
   {
@@ -111,6 +112,7 @@ function FirmLogo({firm,className=""}) {
 
 export default function Web3Hub(){
   const [activeId,setActiveId]=useState("vest");
+  const [degenId,setDegenId]=useState("vest");
   const [asset,setAsset]=useState("indices");
   const [feeMode,setFeeMode]=useState("taker");
   const active=firms.find(f=>f.id===activeId)||firms[0];
@@ -119,9 +121,15 @@ export default function Web3Hub(){
     const pair=fees[asset][f.id];
     const raw=pair?.[feeMode==="maker"?0:1];
     const fee=feeMode==="avg" ? (pair && pair[0]!=null && pair[1]!=null ? (pair[0]+pair[1])/2 : null) : raw;
-    const retained=fee==null ? null : Math.max(.75,1-(fee*2));
-    return {...f,fee,retained};
+    const retained=fee==null ? null : 1-((fee/100)*2*10);
+    const barPct=retained==null ? 0 : Math.max(0,Math.min(100,((retained-BAR_MIN)/(1-BAR_MIN))*100));
+    return {...f,fee,retained,barPct};
   }),[asset,feeMode]);
+
+  const degenFirm=firms.find(f=>f.id===degenId)||firms[4];
+  const degenFee=feeRows.find(f=>f.id===degenFirm.id);
+  const targetMove=degenFirm.indexLev ? degenFirm.target/degenFirm.indexLev : null;
+  const targetPoints=targetMove==null ? null : NQ*(targetMove/100);
 
   function inspectFirm(id,scroll=false){
     setActiveId(id);
@@ -209,35 +217,42 @@ export default function Web3Hub(){
         </div>
       </div>
 
+      <div className="gp-firm-switcher" aria-label="Select fullport firm">
+        {firms.map(f=><button type="button" key={f.id} className={degenId===f.id?"is-active":""} onClick={()=>setDegenId(f.id)}>
+          <FirmLogo firm={f}/><span>{f.name}</span>
+        </button>)}
+      </div>
+
       <div className="gp-degen-hero">
         <div>
-          <span className="gp-kicker">VEST · NQ · 50X</span>
-          <strong>0.20%</strong>
-          <p>underlying move to hit a 10% target</p>
+          <span className="gp-kicker">{degenFirm.name.toUpperCase()} · {degenFirm.leverage.toUpperCase()}</span>
+          <strong>{targetMove==null?"—":targetMove.toFixed(2)+"%"}</strong>
+          <p>{targetMove==null?"market-specific leverage":"underlying move to hit a "+degenFirm.target+"% target"}</p>
         </div>
         <div className="gp-nq-points">
-          <span>≈59</span><small>NQ points @ 29.7K</small>
+          <span>{targetPoints==null?"—":"≈"+Math.round(targetPoints)}</span><small>{targetPoints==null?"NQ leverage not published":"NQ points @ 29.7K"}</small>
         </div>
         <div className="gp-vs">
-          <span>VANTA BASE INDICES · 2.5X</span>
-          <b>4.00%</b>
-          <small>≈1,187 NQ points</small>
+          <span>{asset.toUpperCase()} · {feeMode.toUpperCase()} · ROUND TRIP</span>
+          <b>{degenFee?.retained==null?"n/a":degenFee.retained.toFixed(3)+"R"}</b>
+          <small>{degenFee?.fee==null?"fee data unavailable":degenFee.fee.toFixed(degenFee.fee<.01?4:3)+"% / side · 10x reference"}</small>
         </div>
       </div>
 
-      <div className="gp-fee-head"><span>1.00R GROSS</span><span>10X REFERENCE NOTIONAL · ROUND TRIP</span><span>R KEPT</span></div>
+      <div className="gp-fee-head"><span>FIRM</span><span>0.80R ← FEE-ADJUSTED WINDOW → 1.00R</span><span>R KEPT</span></div>
       <div className="gp-fee-map">
-        {feeRows.map(f=><div className="gp-fee-row" key={f.id}>
+        {feeRows.map(f=><button type="button" className={"gp-fee-row"+(degenId===f.id?" is-active":"")} key={f.id} onClick={()=>setDegenId(f.id)}>
           <div className="gp-fee-name"><FirmLogo firm={f}/><span><b>{f.name}</b><small>{f.leverage}</small></span></div>
-          <div className="gp-rbar">
-            <div className="gp-rbar-fill" style={{width:f.retained==null?"0%":`${f.retained*100}%`}}/>
-            {f.retained!=null && <div className="gp-rbar-cut" style={{width:`${(1-f.retained)*100}%`}}/>}
+          <div className="gp-rbar" aria-label={f.retained==null?"fee unavailable":f.retained.toFixed(3)+" R retained"}>
+            <div className="gp-rbar-floor"/>
+            <div className="gp-rbar-fill" style={{width:f.retained==null?"0%":f.barPct+"%"}}/>
+            {f.retained!=null && <div className="gp-rbar-cut" style={{width:(100-f.barPct)+"%"}}/>}
           </div>
           <div className="gp-fee-number">
             <b>{f.retained==null?"n/a":f.retained.toFixed(3)+"R"}</b>
             <small>{f.fee==null?"—":f.fee.toFixed(f.fee<.01?4:3)+"% / side"}</small>
           </div>
-        </div>)}
+        </button>)}
       </div>
     </section>
 
