@@ -1,8 +1,8 @@
 export const firms = [
   {
     id:"hypernova", name:"Hypernova", mark:"HN", domain:"hypernova.xyz", logo:"https://hypernova.xyz/favicon.ico", url:"https://hypernova.xyz/",
-    status:"ON-CHAIN", venue:"Hyperliquid", price:275, plan:"Low Risk", target:10, daily:"3%", drawdown:"6% static", split:"80%",
-    payout:"Instant · on-chain", leverage:"Per-symbol · 5x ref", indexLev:5, edge:"~6.1s avg payouts",
+    status:"ON-CHAIN", venue:"Hyperliquid", price:280, plan:"Low Risk", target:10, daily:"3%", drawdown:"6% static", split:"80%",
+    payout:"Instant · on-chain", leverage:"10x NQ · 5x BTC · 10x CL", indexLev:10, edge:"sub-second on-chain payouts",
     note:"On-chain risk engine, public payout reserve and Hyperliquid-sourced market data.",
     orbit:{x:"49%",y:"8%",delay:"-1.5s"},
     defaultProgram:"low",
@@ -15,7 +15,7 @@ export const firms = [
       {
         id:"low", label:"Low", badge:"LIVE", target:"10%", daily:"3%", drawdown:"6% static", split:"80%", leverage:"Per-symbol", payout:"Instant · 24/7 USDC", minDays:"0", timeLimit:"None",
         tags:["1-step","No consistency","No profit cap"],
-        sizes:[{balance:5000,fee:60},{balance:10000,fee:115},{balance:25000,fee:275},{balance:50000,fee:495},{balance:100000,fee:999},{balance:200000,fee:1850}]
+        sizes:[{balance:5000,fee:60},{balance:10000,fee:115},{balance:25000,fee:280},{balance:50000,fee:495},{balance:100000,fee:999},{balance:200000,fee:1850}]
       },
       {
         id:"medium", label:"Medium", badge:"LIVE", target:"10%", daily:"4%", drawdown:"7% static", split:"80%", leverage:"Per-symbol", payout:"Instant · 24/7 USDC", minDays:"0", timeLimit:"None",
