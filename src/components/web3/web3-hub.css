@@ -375,3 +375,206 @@
 }
 
 @media(prefers-reduced-motion:reduce){.gp-orbit-ring,.gp-core-glow,.gp-core-pulse-ring,.gp-orbit-firm{animation:none!important}}
+
+/* no-chart fullport + legibility pass */
+.gp-fullport-stage-data{
+  display:block;
+  border-bottom:1px solid var(--gp-line);
+}
+.gp-stage-title-wide{
+  min-height:86px;
+  height:auto;
+  padding:18px 24px;
+}
+.gp-stage-title-wide>div:last-child{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.gp-fullport-readout-wide{
+  display:grid;
+  grid-template-columns:1.15fr 1.85fr;
+  background:#090c0a;
+}
+.gp-move-hero-wide{
+  min-height:280px;
+  border-right:1px solid var(--gp-line);
+  border-bottom:0;
+  padding:30px 28px;
+}
+.gp-move-hero-wide strong{
+  font-size:clamp(88px,9vw,148px);
+}
+.gp-move-hero-wide small{
+  font-size:14px!important;
+  margin-top:8px;
+}
+.gp-readout-grid-wide{
+  grid-template-columns:1fr 1fr;
+}
+.gp-readout-grid-wide>div{
+  min-height:140px;
+  padding:22px;
+}
+.gp-readout-grid-wide strong{
+  font-size:30px;
+}
+.gp-readout-grid-wide .gp-fee-dollar strong{
+  font-size:38px;
+}
+.gp-trade-levels-wide{
+  grid-column:1/-1;
+  border-top:1px solid var(--gp-line);
+}
+.gp-trade-levels-wide>div{
+  min-height:92px;
+  padding:18px 22px;
+}
+.gp-trade-levels-wide b{
+  font-size:18px;
+}
+
+/* minimum readable information size */
+.gp-nav-meta,
+.gp-eyebrow,
+.gp-section-no,
+.gp-profile-name-line span,
+.gp-profile-id p,
+.gp-program-tabs button small,
+.gp-size-row>span,
+.gp-size-tabs button small,
+.gp-profile-price>span,
+.gp-profile-metric>span,
+.gp-profile-price small,
+.gp-profile-metric small,
+.gp-profile-foot>div>span,
+.gp-rule-strip span,
+.gp-market-switch button small,
+.gp-exec-switch>span,
+.gp-fullport-rank,
+.gp-fullport-firms small,
+.gp-stage-title>div:first-child span,
+.gp-stage-title>div:last-child span,
+.gp-move-hero>span,
+.gp-readout-grid span,
+.gp-readout-grid small,
+.gp-trade-levels span,
+.gp-fee-board-head span,
+.gp-fee-name small,
+.gp-fee-number small,
+.gp-fee-cash small,
+.gp-leader-no,
+.gp-leader-metric,
+.gp-matrix th,
+.gp-footer>span{
+  font-size:10px!important;
+  line-height:1.35!important;
+  color:#98a29b!important;
+}
+
+.gp-profile-name-line span,
+.gp-profile-id p,
+.gp-stage-title>div:first-child span,
+.gp-move-hero>span,
+.gp-leader-metric{
+  color:#b0b8b2!important;
+}
+
+.gp-program-tabs button{font-size:11px!important}
+.gp-size-tabs button b{font-size:13px!important}
+.gp-profile-foot>div>strong{font-size:13px!important}
+.gp-rule-strip span{padding:7px 9px!important}
+.gp-market-switch button b{font-size:19px}
+.gp-exec-switch button{font-size:11px!important}
+.gp-fullport-firms b{font-size:12px!important}
+.gp-stage-title>div:first-child strong{font-size:22px}
+.gp-readout-grid strong{font-size:28px}
+.gp-trade-levels b{font-size:16px}
+.gp-fee-board-head strong{font-size:11px!important}
+.gp-fee-name b{font-size:14px!important}
+.gp-fee-number b{font-size:15px!important}
+.gp-fee-cash b{font-size:16px!important}
+.gp-leader small{font-size:12px!important}
+.gp-matrix td{font-size:13.5px}
+
+@media(max-width:720px){
+  .gp-stage-title-wide{
+    min-height:72px;
+    padding:14px 16px;
+  }
+  .gp-stage-title-wide>div:last-child{
+    display:flex!important;
+  }
+  .gp-fullport-readout-wide{
+    display:block;
+  }
+  .gp-move-hero-wide{
+    min-height:210px;
+    border-right:0;
+    border-bottom:1px solid var(--gp-line);
+    padding:22px 16px;
+  }
+  .gp-move-hero-wide strong{
+    font-size:86px;
+  }
+  .gp-move-hero-wide small{
+    font-size:11px!important;
+  }
+  .gp-readout-grid-wide>div{
+    min-height:108px;
+    padding:15px;
+  }
+  .gp-readout-grid-wide strong{
+    font-size:23px!important;
+  }
+  .gp-readout-grid-wide .gp-fee-dollar strong{
+    font-size:28px!important;
+  }
+  .gp-trade-levels-wide>div{
+    min-height:76px;
+    padding:13px 10px;
+  }
+
+  .gp-eyebrow,
+  .gp-section-no,
+  .gp-profile-name-line span,
+  .gp-profile-id p,
+  .gp-program-tabs button small,
+  .gp-size-row>span,
+  .gp-size-tabs button small,
+  .gp-profile-price>span,
+  .gp-profile-metric>span,
+  .gp-profile-price small,
+  .gp-profile-metric small,
+  .gp-profile-foot>div>span,
+  .gp-rule-strip span,
+  .gp-market-switch button small,
+  .gp-exec-switch>span,
+  .gp-fullport-rank,
+  .gp-fullport-firms small,
+  .gp-stage-title>div:first-child span,
+  .gp-stage-title>div:last-child span,
+  .gp-move-hero>span,
+  .gp-readout-grid span,
+  .gp-readout-grid small,
+  .gp-trade-levels span,
+  .gp-fee-name small,
+  .gp-fee-number small,
+  .gp-fee-cash small,
+  .gp-leader-no,
+  .gp-leader-metric,
+  .gp-matrix th,
+  .gp-footer>span{
+    font-size:9px!important;
+  }
+
+  .gp-program-tabs button{font-size:10px!important}
+  .gp-size-tabs button b{font-size:12px!important}
+  .gp-profile-foot>div>strong{font-size:12px!important}
+  .gp-rule-strip span{font-size:9px!important}
+  .gp-fullport-firms b{font-size:11px!important}
+  .gp-trade-levels b{font-size:13px!important}
+  .gp-fee-name b,.gp-fee-number b{font-size:13px!important}
+  .gp-fee-cash b{font-size:15px!important}
+  .gp-leader small{font-size:10px!important}
+}
