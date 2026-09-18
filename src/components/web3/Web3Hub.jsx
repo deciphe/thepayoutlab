@@ -133,7 +133,7 @@ export default function Web3Hub(){
 
   function inspectFirm(id,scroll=false){
     setActiveId(id);
-    if(scroll) setTimeout(()=>document.getElementById("field")?.scrollIntoView({behavior:"smooth",block:"start"}),100);
+    if(scroll) setTimeout(()=>document.getElementById("firm-"+id)?.scrollIntoView({behavior:"smooth",block:"center"}),100);
   }
 
   return <main className="gp-site">
@@ -172,39 +172,57 @@ export default function Web3Hub(){
 
     <section className="gp-index-section" id="field">
       <div className="gp-section-head compact">
-        <div><span className="gp-section-no">01</span><h2>25K field</h2></div>
+        <div><span className="gp-section-no">01</span><h2>25K profiles</h2></div>
       </div>
 
-      <div className="gp-index-layout">
-        <div className="gp-firm-list">
-          {firms.map(f=><button type="button" key={f.id}
-            className={"gp-firm-row"+(f.id===activeId?" is-active":"")} onClick={()=>inspectFirm(f.id)}>
-            <span className="gp-firm-mark"><FirmLogo firm={f}/></span>
-            <span className="gp-firm-name"><strong>{f.name}</strong><small>{f.plan}</small></span>
-            <span className="gp-firm-price">{money(f.price)}</span>
-            <span className="gp-firm-metric"><b>{f.target}%</b><small>TARGET</small></span>
-            <span className="gp-firm-metric"><b>{f.split}</b><small>SPLIT</small></span>
-            <ChevronRight className="gp-row-arrow" size={16}/>
-          </button>)}
-        </div>
-
-        <aside className="gp-detail">
-          <div className="gp-detail-top">
-            <div className="gp-detail-identity"><FirmLogo firm={active} className="gp-detail-logo"/><div><span className="gp-detail-kicker">{active.edge}</span><h3>{active.name}</h3></div></div>
-            <a href={active.url} target="_blank" rel="noreferrer"><ArrowUpRight size={18}/></a>
+      <div className="gp-profile-stack">
+        {firms.map(f=><article id={"firm-"+f.id} key={f.id} className={"gp-profile"+(f.id===activeId?" is-active":"")} onMouseEnter={()=>setActiveId(f.id)}>
+          <div className="gp-profile-head">
+            <div className="gp-profile-id">
+              <span className="gp-profile-logo"><FirmLogo firm={f}/></span>
+              <div>
+                <div className="gp-profile-name-line"><h3>{f.name}</h3><span>{f.status}</span></div>
+                <p>{f.edge}</p>
+              </div>
+            </div>
+            <a href={f.url} target="_blank" rel="noreferrer" aria-label={"Open "+f.name}><ArrowUpRight size={18}/></a>
           </div>
-          <p className="gp-detail-note">{active.note}</p>
-          <div className="gp-plan-chips">{active.plans.map(p=><span key={p}>{p}</span>)}</div>
-          <dl className="gp-detail-grid">
-            <div><dt>25K entry</dt><dd>{money(active.price)}</dd></div>
-            <div><dt>Profit target</dt><dd>{active.target}%</dd></div>
-            <div><dt>Daily loss</dt><dd>{active.daily}</dd></div>
-            <div><dt>Max drawdown</dt><dd>{active.drawdown}</dd></div>
-            <div><dt>Reward split</dt><dd>{active.split}</dd></div>
-            <div><dt>Leverage</dt><dd>{active.leverage}</dd></div>
-          </dl>
-          <div className="gp-detail-bottom"><span>{active.venue}</span><span>{active.payout}</span></div>
-        </aside>
+
+          <div className="gp-profile-metrics">
+            <div className="gp-profile-price">
+              <span>25K ENTRY</span>
+              <strong>{money(f.price)}</strong>
+              <small>{f.plan}</small>
+            </div>
+            <div className="gp-profile-metric">
+              <span>TARGET</span>
+              <strong>{f.target}%</strong>
+            </div>
+            <div className="gp-profile-metric">
+              <span>MAX DD</span>
+              <strong>{String(f.drawdown).replace(" static","")}</strong>
+              <small>{String(f.drawdown).includes("static")?"STATIC":""}</small>
+            </div>
+            <div className="gp-profile-metric">
+              <span>SPLIT</span>
+              <strong>{f.split}</strong>
+            </div>
+            <div className="gp-profile-metric">
+              <span>DAILY</span>
+              <strong>{f.daily}</strong>
+            </div>
+            <div className="gp-profile-metric gp-profile-leverage">
+              <span>LEVERAGE</span>
+              <strong>{f.leverage}</strong>
+            </div>
+          </div>
+
+          <div className="gp-profile-foot">
+            <div><span>PAYOUT</span><strong>{f.payout}</strong></div>
+            <div><span>VENUE</span><strong>{f.venue}</strong></div>
+            <div className="gp-profile-plans">{f.plans.map(p=><span key={p}>{p}</span>)}</div>
+          </div>
+        </article>)}
       </div>
     </section>
 
