@@ -61,7 +61,7 @@ function FullportChart({market,firm,program,leverage}){
   const sl=stopMove!=null ? entry*(1-stopMove/100) : null;
 
   const volatility=Math.max(.0025,Math.min(.014,(Math.max(targetMove||1,stopMove||1)/100)*.28));
-  const candles=Array.from({length:42},(_,i)=>{
+  const candles=Array.from({length:30},(_,i)=>{
     const wave=Math.sin(i*.57)*.52+Math.sin(i*.19+1.8)*.34;
     const drift=(i-21)*.012;
     const center=entry*(1+(wave*.55+drift)*volatility);
@@ -78,28 +78,24 @@ function FullportChart({market,firm,program,leverage}){
   let max=Math.max(...highs,tp??entry);
   const pad=(max-min)*.08 || entry*.01;
   min-=pad; max+=pad;
-  const y=v=>390-((v-min)/(max-min))*330;
-  const x=i=>24+i*(820/Math.max(1,candles.length-1));
+  const y=v=>330-((v-min)/(max-min))*270;
+  const x=i=>28+i*(790/Math.max(1,candles.length-1));
   const tpY=tp==null?null:y(tp), entryY=y(entry), slY=sl==null?null:y(sl);
 
   return <div className="gp-trade-chart">
-    <div className="gp-chart-head">
-      <div><strong>{market.label}</strong><span>{market.name}</span></div>
-      <div><span>3D / 1H</span><span>REFERENCE · {market.snapshot}</span></div>
-    </div>
-    <svg viewBox="0 0 940 420" role="img" aria-label={firm.name+" "+market.label+" fullport trade illustration"}>
-      {[0,1,2,3,4].map(i=><line key={"g"+i} x1="20" x2="920" y1={62+i*74} y2={62+i*74} className="gp-chart-grid"/>)}
+    <svg viewBox="0 0 900 360" role="img" aria-label={firm.name+" "+market.label+" fullport trade illustration"}>
+      {[0,1,2].map(i=><line key={"g"+i} x1="24" x2="876" y1={86+i*92} y2={86+i*92} className="gp-chart-grid"/>)}
       {candles.map((c,i)=>{
         const xi=x(i), oy=y(c.open), cy=y(c.close), hy=y(c.high), ly=y(c.low);
         const up=c.close>=c.open;
         return <g key={i} className={up?"gp-candle up":"gp-candle down"}>
           <line x1={xi} x2={xi} y1={hy} y2={ly}/>
-          <rect x={xi-4} y={Math.min(oy,cy)} width="8" height={Math.max(2,Math.abs(cy-oy))}/>
+          <rect x={xi-4.5} y={Math.min(oy,cy)} width="9" height={Math.max(2.5,Math.abs(cy-oy))}/>
         </g>;
       })}
-      {tpY!=null && <g><line x1="20" x2="920" y1={tpY} y2={tpY} className="gp-chart-level tp"/><text x="915" y={tpY-7} textAnchor="end" className="gp-chart-label tp">TP {priceText(tp,market.precision)}</text></g>}
-      <g><line x1="20" x2="920" y1={entryY} y2={entryY} className="gp-chart-level entry"/><text x="915" y={entryY-7} textAnchor="end" className="gp-chart-label entry">ENTRY {priceText(entry,market.precision)}</text></g>
-      {slY!=null && <g><line x1="20" x2="920" y1={slY} y2={slY} className="gp-chart-level sl"/><text x="915" y={slY-7} textAnchor="end" className="gp-chart-label sl">SL {priceText(sl,market.precision)}</text></g>}
+      {tpY!=null && <g><line x1="24" x2="876" y1={tpY} y2={tpY} className="gp-chart-level tp"/><text x="868" y={tpY-9} textAnchor="end" className="gp-chart-label tp">TP {priceText(tp,market.precision)}</text></g>}
+      <g><line x1="24" x2="876" y1={entryY} y2={entryY} className="gp-chart-level entry"/><text x="868" y={entryY-9} textAnchor="end" className="gp-chart-label entry">ENTRY {priceText(entry,market.precision)}</text></g>
+      {slY!=null && <g><line x1="24" x2="876" y1={slY} y2={slY} className="gp-chart-level sl"/><text x="868" y={slY-9} textAnchor="end" className="gp-chart-label sl">SL {priceText(sl,market.precision)}</text></g>}
     </svg>
   </div>;
 }
