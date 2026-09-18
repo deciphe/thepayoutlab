@@ -95,6 +95,77 @@
 @keyframes coreRing{0%{transform:scale(.72);opacity:.7}72%,100%{transform:scale(2);opacity:0}}
 @keyframes ringA{from{transform:rotate(-12deg)}to{transform:rotate(348deg)}}@keyframes ringB{from{transform:rotate(28deg)}to{transform:rotate(388deg)}}@keyframes ringC{from{transform:rotate(68deg)}to{transform:rotate(428deg)}}@keyframes nodeDrift{from{margin-left:-2px;margin-top:-2px}to{margin-left:3px;margin-top:4px}}
 
+
+/* precision pass */
+.gp-profile{border-bottom-color:var(--gp-line)}
+.gp-profile::before{display:none}
+.gp-profile.is-active{background:rgba(255,255,255,.014);box-shadow:inset 2px 0 0 var(--gp-accent)}
+.gp-profile-head{padding-top:2px}
+.gp-profile-logo{border-color:var(--gp-line)}
+.gp-program-tabs{gap:5px}
+.gp-program-tabs button{
+  min-height:38px;border-color:var(--gp-line);border-radius:5px;background:#090c0a;padding:7px 10px
+}
+.gp-program-tabs button:hover,.gp-program-tabs button.is-active{
+  border-color:rgba(182,255,74,.55);background:#0c110d;box-shadow:inset 0 -2px 0 var(--gp-accent)
+}
+.gp-profile-actions>a{border-color:var(--gp-line);border-radius:5px;background:#090c0a}
+.gp-size-row{padding-top:12px;padding-bottom:12px;border-top-color:var(--gp-line)}
+.gp-size-tabs{gap:5px}
+.gp-size-tabs button{border-color:var(--gp-line);border-radius:4px;background:#090c0a}
+.gp-size-tabs button:hover,.gp-size-tabs button.is-active{border-color:rgba(182,255,74,.55);background:#0c110d}
+.gp-profile-metrics{border-top:1px solid var(--gp-line)}
+.gp-profile-price,.gp-profile-metric{border-right-color:var(--gp-line);padding-top:18px;padding-bottom:18px}
+.gp-profile-foot-deep{border-top-color:var(--gp-line)}
+.gp-profile-foot-deep>div{border-right-color:var(--gp-line)}
+.gp-rule-strip{border-top-color:var(--gp-line);gap:5px}
+.gp-rule-strip span{border-color:var(--gp-line);border-radius:4px;background:#090c0a;padding:6px 8px}
+
+.gp-segment{border-color:var(--gp-line);border-radius:5px;padding:2px;background:#090c0a}
+.gp-segment button{border-radius:3px}
+.gp-firm-switcher{gap:5px}
+.gp-firm-switcher button{height:40px;border-color:var(--gp-line);border-radius:5px;background:#090c0a}
+.gp-firm-switcher button:hover,.gp-firm-switcher button.is-active{border-color:rgba(182,255,74,.55);background:#0c110d;box-shadow:inset 0 -2px 0 var(--gp-accent)}
+.gp-degen-hero{border-color:var(--gp-line);border-radius:6px;background:var(--gp-line)}
+.gp-degen-hero>div{background:#090c0a}
+
+.gp-fee-head{border-bottom:1px solid var(--gp-line);padding-bottom:12px}
+.gp-rbar-axis{display:flex;align-items:center;justify-content:space-between;color:#7d8780;font:500 8px/1 "DM Mono",monospace;letter-spacing:.04em}
+.gp-rbar-axis span:last-child{color:#aab3ad}
+.gp-fee-map{border-top:0}
+.gp-fee-row{border-bottom-color:var(--gp-line);min-height:80px}
+.gp-fee-row:hover,.gp-fee-row.is-active{background:#0a0d0b}
+.gp-rbar{
+  height:18px;border-radius:3px;overflow:visible;background:#0b0e0c;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)
+}
+.gp-rbar-grid{
+  position:absolute;inset:0;border-radius:3px;overflow:hidden;z-index:1;
+  background:
+    linear-gradient(to right,transparent 24.8%,rgba(255,255,255,.16) 25%,transparent 25.2%),
+    linear-gradient(to right,transparent 49.8%,rgba(255,255,255,.16) 50%,transparent 50.2%),
+    linear-gradient(to right,transparent 74.8%,rgba(255,255,255,.16) 75%,transparent 75.2%)
+}
+.gp-rbar-fill{
+  z-index:2;background:#f4f6f2;border-radius:2px 0 0 2px;
+  box-shadow:0 0 14px rgba(255,255,255,.08)
+}
+.gp-rbar-cut{
+  z-index:3;border-radius:0 2px 2px 0;
+  background:repeating-linear-gradient(135deg,rgba(182,255,74,.20) 0 4px,rgba(182,255,74,.045) 4px 8px);
+  border-left:0
+}
+.gp-rbar-marker{
+  position:absolute;z-index:4;top:-3px;bottom:-3px;width:2px;background:#fff;transform:translateX(-1px);
+  box-shadow:0 0 8px rgba(255,255,255,.25);pointer-events:none
+}
+
+.gp-standout-grid{border-top-color:var(--gp-line);border-left-color:var(--gp-line)}
+.gp-standout{border-right-color:var(--gp-line);border-bottom-color:var(--gp-line)}
+.gp-matrix-wrap{border-top-color:var(--gp-line);border-bottom-color:var(--gp-line)}
+.gp-matrix th{border-bottom-color:var(--gp-line)}
+.gp-matrix td{border-bottom-color:var(--gp-line-soft)}
+
 @media(max-width:1050px){
   .gp-nav{grid-template-columns:1fr auto}.gp-nav-links{display:none}.gp-hero{grid-template-columns:1fr .75fr;min-height:590px}.gp-orbit{width:430px;margin-right:-120px}
   .gp-index-layout{grid-template-columns:1fr;gap:55px}.gp-section-head{grid-template-columns:1fr}.gp-degen-controls{justify-content:flex-start}.gp-standout-grid{grid-template-columns:repeat(2,1fr)}
@@ -178,7 +249,7 @@
   .gp-section-head{display:block;margin-bottom:28px}.gp-section-head h2{font-size:40px}.gp-section-head>div:first-child{gap:11px}
 
   .gp-profile-stack{border-top:0;display:grid;gap:14px}
-  .gp-profile{border:1px solid var(--gp-line);border-radius:10px;padding:0;background:rgba(255,255,255,.012);overflow:hidden;box-shadow:none!important}
+  .gp-profile{border:1px solid var(--gp-line);border-radius:6px;padding:0;background:#090c0a;overflow:hidden;box-shadow:none!important}
   .gp-profile::before{display:none}
   .gp-profile-head{padding:16px 16px 14px}.gp-profile-logo{width:42px;height:42px}
   .gp-profile-name-line{display:block}.gp-profile-name-line h3{font-size:21px}.gp-profile-name-line span{display:block;margin-top:5px;font-size:7px}
@@ -203,7 +274,10 @@
   .gp-nq-points span{font-size:42px}.gp-vs b{font-size:34px;margin-top:12px}
 
   .gp-fee-head{display:none}
-  .gp-fee-row{grid-template-columns:1fr auto;gap:8px 14px;min-height:94px;padding:15px 4px 14px}
+  .gp-fee-row{grid-template-columns:1fr auto;gap:8px 14px;min-height:104px;padding:15px 4px 17px}
+  .gp-rbar{margin-top:13px}
+  .gp-rbar::before{content:"0.980R";position:absolute;left:0;top:-14px;color:#68716b;font:500 6px/1 "DM Mono",monospace}
+  .gp-rbar::after{content:"1.000R";position:absolute;right:0;top:-14px;color:#8d9690;font:500 6px/1 "DM Mono",monospace}
   .gp-fee-name{grid-column:1}.gp-fee-number{grid-column:2;text-align:right}
   .gp-rbar{grid-column:1/-1;grid-row:2;height:14px;width:100%}
   .gp-fee-name b{font-size:12.5px}.gp-fee-name small{font-size:7.5px}.gp-fee-name>.gp-logo{width:30px;height:30px}
