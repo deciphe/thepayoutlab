@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ArrowUpRight, ChevronRight, Circle, ExternalLink } from "lucide-react";
 import { firms, shortBalance } from "./firmCatalog";
 import "./web3-hub.css";
@@ -199,19 +199,26 @@ function FirmProfile({firm,isActive,onActive}){
 export default function Web3Hub(){
   const [activeId,setActiveId]=useState("vest");
   const [asset,setAsset]=useState("indices");
+  const [feeMode,setFeeMode]=useState("taker");
 
-  const leverageRows=firms.map(f=>({
-    ...f,
-    marketLev:marketLeverage[f.id]?.[asset] ?? null
-  })).sort((a,b)=>{
-    if(a.marketLev==null && b.marketLev==null) return a.name.localeCompare(b.name);
-    if(a.marketLev==null) return 1;
-    if(b.marketLev==null) return -1;
-    if(b.marketLev!==a.marketLev) return b.marketLev-a.marketLev;
+  const feeRows=useMemo(()=>firms.map(f=>{
+    const pair=fees[asset][f.id];
+    const raw=pair?.[feeMode==="maker"?0:1];
+    const fee=feeMode==="avg" ? (pair && pair[0]!=null && pair[1]!=null ? (pair[0]+pair[1])/2 : null) : raw;
+    const retained=fee==null ? null : 1-((fee/100)*2*10);
+    const barPct=retained==null ? 0 : Math.max(0,Math.min(100,((retained-BAR_MIN)/(1-BAR_MIN))*100));
+    const leverage=marketLeverage[f.id]?.[asset] ?? null;
+    const fullportNotional=leverage ? EQ_BASE*leverage : null;
+    const roundTripFee=fee!=null && fullportNotional!=null ? fullportNotional*(fee/100)*2 : null;
+    return {...f,fee,retained,barPct,marketLev:leverage,fullportNotional,roundTripFee};
+  }).sort((a,b)=>{
+    if(a.retained==null && b.retained==null) return a.name.localeCompare(b.name);
+    if(a.retained==null) return 1;
+    if(b.retained==null) return -1;
+    if(b.retained!==a.retained) return b.retained-a.retained;
+    if(a.fee!==b.fee) return (a.fee??Infinity)-(b.fee??Infinity);
     return a.name.localeCompare(b.name);
-  });
-
-  const maxLeverage=Math.max(1,...leverageRows.filter(f=>f.marketLev!=null).map(f=>f.marketLev));
+  }),[asset,feeMode]);
 
   function inspectFirm(id,scroll=false){
     setActiveId(id);
@@ -222,7 +229,7 @@ export default function Web3Hub(){
     <header className="gp-nav">
       <a className="gp-wordmark" href="#top">GIGAPROP<span>.</span></a>
       <nav className="gp-nav-links">
-        <a href="#field">Programs</a><a href="#degen">Leverage</a><a href="#matrix">Matrix</a>
+        <a href="#field">Programs</a><a href="#degen">Fullport</a><a href="#matrix">Matrix</a>
       </nav>
       <div className="gp-nav-meta"><span>PERPETUAL PROP INTELLIGENCE</span><i/><span>SEP 2026</span></div>
     </header>
@@ -234,7 +241,7 @@ export default function Web3Hub(){
         <p>Prices, plans, leverage, execution and payout rails across the new Web3 prop stack.</p>
         <div className="gp-hero-actions">
           <a className="gp-primary-link" href="#field">Explore programs <ChevronRight size={16}/></a>
-          <a className="gp-quiet-link" href="#degen">Compare leverage</a>
+          <a className="gp-quiet-link" href="#degen">Open fullport map</a>
         </div>
       </div>
 
@@ -263,39 +270,49 @@ export default function Web3Hub(){
     </section>
 
     <section className="gp-degen-section" id="degen">
-      <div className="gp-section-head compact">
-        <div><span className="gp-section-no">02</span><h2>Leverage map</h2></div>
+      <div className="gp-section-head">
+        <div><span className="gp-section-no">02</span><h2>Fullport map</h2></div>
+        <div className="gp-degen-controls">
+          <div className="gp-segment">
+            {["crypto","fx","indices","commodities"].map(x=><button type="button" key={x} className={asset===x?"is-active":""} onClick={()=>setAsset(x)}>{marketProfiles[x].label}</button>)}
+          </div>
+          <div className="gp-segment mini gp-execution-segment">
+            {["maker","taker","avg"].map(x=><button type="button" key={x} className={feeMode===x?"is-active":""} onClick={()=>setFeeMode(x)}>{x}</button>)}
+          </div>
+        </div>
       </div>
 
-      <div className="gp-leverage-map">
-        <div className="gp-leverage-tabs" aria-label="Market">
-          {Object.entries(marketProfiles).map(([key,m])=><button type="button" key={key} className={asset===key?"is-active":""} onClick={()=>setAsset(key)}>
-            <strong>{m.label}</strong>
-            <span>{m.name}</span>
-          </button>)}
+      <div className="gp-fee-board gp-fee-board-clean">
+        <div className="gp-fee-board-head">
+          <div><span>FEE RANK</span><strong>{marketProfiles[asset].label} · {feeMode.toUpperCase()}</strong></div>
+          <div className="gp-fee-scale"><span>0.980R</span><i/><span>0.990R</span><i/><span>1.000R</span></div>
+          <div><span>100K EQ</span><strong>ROUND TRIP</strong></div>
         </div>
 
-        <div className="gp-leverage-board">
-          {leverageRows.map((f,index)=>{
-            const pct=f.marketLev==null ? 0 : (f.marketLev/maxLeverage)*100;
-            return <div className={"gp-leverage-row"+(index===0 && f.marketLev!=null?" is-top":"")} key={f.id}>
-              <div className="gp-leverage-firm">
-                <span className="gp-leverage-rank">{String(index+1).padStart(2,"0")}</span>
-                <FirmLogo firm={f}/>
-                <strong>{f.name}</strong>
-              </div>
+        {feeRows.map((f,index)=><div className="gp-fee-row gp-fee-row-v2" key={f.id}>
+          <div className="gp-fee-name">
+            <span className="gp-fee-rank">{String(index+1).padStart(2,"0")}</span>
+            <FirmLogo firm={f}/>
+            <span><b>{f.name}</b><small>{f.marketLev?f.marketLev+"x "+marketProfiles[asset].label:"LEVERAGE —"}</small></span>
+          </div>
 
-              <div className="gp-leverage-track">
-                <div style={{width:pct+"%"}}/>
-              </div>
+          <div className="gp-rbar" aria-label={f.retained==null?"fee unavailable":f.retained.toFixed(3)+" R retained"}>
+            <div className="gp-rbar-grid"/>
+            <div className="gp-rbar-fill" style={{width:f.retained==null?"0%":f.barPct+"%"}}/>
+            {f.retained!=null && <div className="gp-rbar-cut" style={{width:(100-f.barPct)+"%"}}/>}
+            {f.retained!=null && <i className="gp-rbar-marker" style={{left:f.barPct+"%"}}/>}
+          </div>
 
-              <div className="gp-leverage-value">
-                <strong>{f.marketLev==null?"—":f.marketLev+"x"}</strong>
-                <span>{f.marketLev==null?"NOT PUBLISHED":marketProfiles[asset].label}</span>
-              </div>
-            </div>;
-          })}
-        </div>
+          <div className="gp-fee-number">
+            <b>{f.retained==null?"n/a":f.retained.toFixed(3)+"R"}</b>
+            <small>{f.fee==null?"—":f.fee.toFixed(f.fee<.01?4:3)+"% / side"}</small>
+          </div>
+
+          <div className="gp-fee-cash">
+            <b>{f.roundTripFee==null?"—":money(f.roundTripFee)}</b>
+            <small>{f.fullportNotional?money(f.fullportNotional)+" notional":"actual leverage n/a"}</small>
+          </div>
+        </div>)}
       </div>
     </section>
 
@@ -342,7 +359,7 @@ export default function Web3Hub(){
 
     <section className="gp-thesis">
       <div className="gp-thesis-line"/><p>Price is the ticket. <span>Leverage and execution decide how much edge survives.</span></p>
-      <a href="#degen">Leverage map <ExternalLink size={14}/></a>
+      <a href="#degen">Fullport map <ExternalLink size={14}/></a>
     </section>
 
     <footer className="gp-footer"><a className="gp-wordmark" href="#top">GIGAPROP<span>.</span></a><p>Perpetual prop intelligence.</p><span>SEP 2026</span></footer>
