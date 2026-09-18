@@ -4,7 +4,7 @@ import { firms, shortBalance } from "./firmCatalog";
 import "./web3-hub.css";
 
 const NQ = 29679;
-const BAR_MIN = 0.80;
+const BAR_MIN = 0.98;
 
 const fees = {
   crypto: {
@@ -253,14 +253,21 @@ export default function Web3Hub(){
         </div>
       </div>
 
-      <div className="gp-fee-head"><span>FIRM</span><span>0.80R ← FEE-ADJUSTED WINDOW → 1.00R</span><span>R KEPT</span></div>
+      <div className="gp-fee-head">
+        <span>FIRM</span>
+        <div className="gp-rbar-axis" aria-label="Shared R scale from 0.980R to 1.000R">
+          <span>0.980</span><span>0.985</span><span>0.990</span><span>0.995</span><span>1.000R</span>
+        </div>
+        <span>R KEPT</span>
+      </div>
       <div className="gp-fee-map">
         {feeRows.map(f=><button type="button" className={"gp-fee-row"+(degenId===f.id?" is-active":"")} key={f.id} onClick={()=>setDegenId(f.id)}>
           <div className="gp-fee-name"><FirmLogo firm={f}/><span><b>{f.name}</b><small>{f.leverage}</small></span></div>
-          <div className="gp-rbar" aria-label={f.retained==null?"fee unavailable":f.retained.toFixed(3)+" R retained"}>
-            <div className="gp-rbar-floor"/>
+          <div className="gp-rbar" aria-label={f.retained==null?"fee unavailable":f.retained.toFixed(3)+" R retained on a 0.980 to 1.000 R scale"}>
+            <div className="gp-rbar-grid"/>
             <div className="gp-rbar-fill" style={{width:f.retained==null?"0%":f.barPct+"%"}}/>
             {f.retained!=null && <div className="gp-rbar-cut" style={{width:(100-f.barPct)+"%"}}/>}
+            {f.retained!=null && <i className="gp-rbar-marker" style={{left:f.barPct+"%"}}/>}
           </div>
           <div className="gp-fee-number">
             <b>{f.retained==null?"n/a":f.retained.toFixed(3)+"R"}</b>
