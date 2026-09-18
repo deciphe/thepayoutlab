@@ -122,6 +122,21 @@ function FirmProfile({firm,isActive,onActive}){
   const account=size?.balance!=null ? shortBalance(size.balance) : "—";
   const hasList=size?.listFee!=null && size.listFee!==size.fee;
 
+  const splitMetric=(value)=>{
+    const parts=String(value??"—").split(" · ");
+    return {main:parts[0],detail:parts.slice(1).join(" · ")};
+  };
+  const firstTokenMetric=(value)=>{
+    const parts=String(value??"—").split(" ");
+    return {main:parts.shift()||"—",detail:parts.join(" ")};
+  };
+
+  const targetMetric=splitMetric(program.target);
+  const drawdownMetric=firstTokenMetric(program.drawdown);
+  const splitValueMetric=splitMetric(program.split);
+  const dailyMetric=splitMetric(program.daily);
+  const leverageMetric=splitMetric(program.leverage);
+
   return <article id={"firm-"+firm.id} className={"gp-profile"+(isActive?" is-active":"")} onMouseEnter={()=>onActive(firm.id)}>
     <div className="gp-profile-head">
       <div className="gp-profile-id">
@@ -155,31 +170,41 @@ function FirmProfile({firm,isActive,onActive}){
       </div>
     </div>
 
-    <div className="gp-profile-metrics">
-      <div className="gp-profile-price">
-        <span>ENTRY · {account}</span>
-        <strong>{price}</strong>
-        <small>{hasList?"was "+money(size.listFee):program.label}</small>
+    <div className="gp-spec-board">
+      <div className="gp-spec-entry">
+        <div className="gp-spec-label">ENTRY · {account}</div>
+        <div className="gp-spec-entry-value">{price}</div>
+        <div className="gp-spec-note">{hasList?"was "+money(size.listFee):program.label}</div>
       </div>
-      <div className="gp-profile-metric">
-        <span>TARGET</span>
-        <strong>{program.target}</strong>
+
+      <div className="gp-spec-metric">
+        <div className="gp-spec-label">TARGET</div>
+        <div className="gp-spec-value">{targetMetric.main}</div>
+        <div className="gp-spec-note">{targetMetric.detail || "PROFIT TARGET"}</div>
       </div>
-      <div className="gp-profile-metric">
-        <span>MAX DD</span>
-        <strong>{program.drawdown}</strong>
+
+      <div className="gp-spec-metric">
+        <div className="gp-spec-label">MAX DD</div>
+        <div className="gp-spec-value">{drawdownMetric.main}</div>
+        <div className="gp-spec-note">{drawdownMetric.detail || "MAXIMUM LOSS"}</div>
       </div>
-      <div className="gp-profile-metric">
-        <span>SPLIT</span>
-        <strong>{program.split}</strong>
+
+      <div className="gp-spec-metric">
+        <div className="gp-spec-label">SPLIT</div>
+        <div className="gp-spec-value">{splitValueMetric.main}</div>
+        <div className="gp-spec-note">{splitValueMetric.detail || "REWARD SPLIT"}</div>
       </div>
-      <div className="gp-profile-metric">
-        <span>DAILY</span>
-        <strong>{program.daily}</strong>
+
+      <div className="gp-spec-metric">
+        <div className="gp-spec-label">DAILY</div>
+        <div className="gp-spec-value">{dailyMetric.main}</div>
+        <div className="gp-spec-note">{dailyMetric.detail || "DAILY LOSS"}</div>
       </div>
-      <div className="gp-profile-metric gp-profile-leverage">
-        <span>LEVERAGE</span>
-        <strong>{program.leverage}</strong>
+
+      <div className="gp-spec-metric gp-spec-metric-wide">
+        <div className="gp-spec-label">LEVERAGE</div>
+        <div className="gp-spec-value gp-spec-value-leverage">{leverageMetric.main}</div>
+        <div className="gp-spec-note">{leverageMetric.detail || "MARKET-SPECIFIC"}</div>
       </div>
     </div>
 
