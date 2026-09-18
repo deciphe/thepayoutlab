@@ -51,55 +51,6 @@ function priceText(value,precision){
   return Number(value).toLocaleString("en-US",{minimumFractionDigits:precision,maximumFractionDigits:precision});
 }
 
-function FullportChart({market,firm,program,leverage}){
-  const target=pctNumber(program?.target);
-  const dd=pctNumber(program?.drawdown);
-  const entry=market.entry;
-  const targetMove=leverage && target!=null ? target/leverage : null;
-  const stopMove=leverage && dd!=null ? dd/leverage : null;
-  const tp=targetMove!=null ? entry*(1+targetMove/100) : null;
-  const sl=stopMove!=null ? entry*(1-stopMove/100) : null;
-
-  const volatility=Math.max(.0025,Math.min(.014,(Math.max(targetMove||1,stopMove||1)/100)*.28));
-  const candles=Array.from({length:30},(_,i)=>{
-    const wave=Math.sin(i*.57)*.52+Math.sin(i*.19+1.8)*.34;
-    const drift=(i-21)*.012;
-    const center=entry*(1+(wave*.55+drift)*volatility);
-    const open=center*(1+Math.sin(i*1.17)*volatility*.14);
-    const close=center*(1+Math.cos(i*.83+.7)*volatility*.16);
-    const high=Math.max(open,close)*(1+volatility*(.10+.05*((i%4)+1)));
-    const low=Math.min(open,close)*(1-volatility*(.10+.04*((i%3)+1)));
-    return {open,close,high,low};
-  });
-
-  const lows=candles.map(c=>c.low);
-  const highs=candles.map(c=>c.high);
-  let min=Math.min(...lows,sl??entry);
-  let max=Math.max(...highs,tp??entry);
-  const pad=(max-min)*.08 || entry*.01;
-  min-=pad; max+=pad;
-  const y=v=>330-((v-min)/(max-min))*270;
-  const x=i=>28+i*(790/Math.max(1,candles.length-1));
-  const tpY=tp==null?null:y(tp), entryY=y(entry), slY=sl==null?null:y(sl);
-
-  return <div className="gp-trade-chart">
-    <svg viewBox="0 0 900 360" role="img" aria-label={firm.name+" "+market.label+" fullport trade illustration"}>
-      {[0,1,2].map(i=><line key={"g"+i} x1="24" x2="876" y1={86+i*92} y2={86+i*92} className="gp-chart-grid"/>)}
-      {candles.map((c,i)=>{
-        const xi=x(i), oy=y(c.open), cy=y(c.close), hy=y(c.high), ly=y(c.low);
-        const up=c.close>=c.open;
-        return <g key={i} className={up?"gp-candle up":"gp-candle down"}>
-          <line x1={xi} x2={xi} y1={hy} y2={ly}/>
-          <rect x={xi-4.5} y={Math.min(oy,cy)} width="9" height={Math.max(2.5,Math.abs(cy-oy))}/>
-        </g>;
-      })}
-      {tpY!=null && <g><line x1="24" x2="876" y1={tpY} y2={tpY} className="gp-chart-level tp"/><text x="868" y={tpY-9} textAnchor="end" className="gp-chart-label tp">TP {priceText(tp,market.precision)}</text></g>}
-      <g><line x1="24" x2="876" y1={entryY} y2={entryY} className="gp-chart-level entry"/><text x="868" y={entryY-9} textAnchor="end" className="gp-chart-label entry">ENTRY {priceText(entry,market.precision)}</text></g>
-      {slY!=null && <g><line x1="24" x2="876" y1={slY} y2={slY} className="gp-chart-level sl"/><text x="868" y={slY-9} textAnchor="end" className="gp-chart-label sl">SL {priceText(sl,market.precision)}</text></g>}
-    </svg>
-  </div>;
-}
-
 const fees = {
   crypto: {
     hypernova:[.01,.04], vanta:[.03,.03], propr:[.015,.045], doji:[.02,.02], vest:[.01,.01], hyperpnl:[.015,.045], breakout:[.04,.04]
@@ -357,30 +308,34 @@ export default function Web3Hub(){
           </button>)}
         </div>
 
-        <div className="gp-fullport-stage">
-          <div className="gp-fullport-chartpane">
-            <div className="gp-stage-title">
-              <div><span>{degenFirm.name.toUpperCase()} · {degenProgram.label.toUpperCase()}</span><strong>{market.label} FULLPORT</strong></div>
-              <div><span>{accountEquivalent(degenFirm)}</span><span>{degenLeverage?degenLeverage+"X":"LEV —"}</span></div>
+        <div className="gp-fullport-stage gp-fullport-stage-data">
+          <div className="gp-stage-title gp-stage-title-wide">
+            <div>
+              <span>{degenFirm.name.toUpperCase()} · {degenProgram.label.toUpperCase()}</span>
+              <strong>{market.label} FULLPORT</strong>
             </div>
-            <FullportChart market={market} firm={degenFirm} program={degenProgram} leverage={degenLeverage}/>
+            <div>
+              <span>{accountEquivalent(degenFirm)}</span>
+              <span>{degenLeverage?degenLeverage+"X":"LEV —"}</span>
+              <span>{feeMode.toUpperCase()}</span>
+            </div>
           </div>
 
-          <aside className="gp-fullport-readout">
-            <div className="gp-move-hero">
+          <aside className="gp-fullport-readout gp-fullport-readout-wide">
+            <div className="gp-move-hero gp-move-hero-wide">
               <span>MOVE TO TARGET</span>
               <strong>{targetMove==null?"—":targetMove.toFixed(2)+"%"}</strong>
               <small>{targetPoints==null?"LEVERAGE UNPUBLISHED":(market.label==="NQ"?"≈"+Math.round(targetPoints)+" NQ POINTS":"+"+priceText(targetPoints,market.precision)+" "+market.unit)}</small>
             </div>
 
-            <div className="gp-readout-grid">
+            <div className="gp-readout-grid gp-readout-grid-wide">
               <div><span>STOP / DD MOVE</span><strong>{stopMove==null?"—":stopMove.toFixed(2)+"%"}</strong><small>{stopPoints==null?"—":priceText(stopPoints,market.precision)+" "+market.unit}</small></div>
               <div><span>MARKET LEVERAGE</span><strong>{degenLeverage?degenLeverage+"x":"—"}</strong><small>{market.label}</small></div>
               <div><span>FULLPORT NOTIONAL</span><strong>{degenFee?.fullportNotional?money(degenFee.fullportNotional):"—"}</strong><small>{accountEquivalent(degenFirm)}</small></div>
               <div className="gp-fee-dollar"><span>ROUND-TRIP FEES</span><strong>{degenFee?.roundTripFee!=null?money(degenFee.roundTripFee):"—"}</strong><small>{degenFee?.fee==null?"FEE / LEVERAGE UNAVAILABLE":degenFee.fee.toFixed(degenFee.fee<.01?4:3)+"% / SIDE · "+feeMode.toUpperCase()}</small></div>
             </div>
 
-            <div className="gp-trade-levels">
+            <div className="gp-trade-levels gp-trade-levels-wide">
               <div><span>TP</span><b>{targetMove==null?"—":priceText(market.entry*(1+targetMove/100),market.precision)}</b></div>
               <div><span>ENTRY</span><b>{priceText(market.entry,market.precision)}</b></div>
               <div><span>SL</span><b>{stopMove==null?"—":priceText(market.entry*(1-stopMove/100),market.precision)}</b></div>
