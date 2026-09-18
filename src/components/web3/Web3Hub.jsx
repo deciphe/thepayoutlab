@@ -221,6 +221,24 @@ export default function Web3Hub(){
     return a.name.localeCompare(b.name);
   }),[asset,feeMode]);
 
+  const moveRows=useMemo(()=>firms.map(f=>{
+    const program=defaultProgram(f);
+    const leverage=marketLeverage[f.id]?.[asset] ?? null;
+    const target=pctNumber(program?.target);
+    const dd=pctNumber(program?.drawdown);
+    const move=leverage && target!=null ? target/leverage : null;
+    const stop=leverage && dd!=null ? dd/leverage : null;
+    const points=move==null ? null : marketProfiles[asset].entry*(move/100);
+    return {...f,program,move,stop,points,moveLeverage:leverage};
+  }).sort((a,b)=>{
+    if(a.move==null && b.move==null) return a.name.localeCompare(b.name);
+    if(a.move==null) return 1;
+    if(b.move==null) return -1;
+    return a.move-b.move;
+  }),[asset]);
+
+  const moveMax=Math.max(.5,...moveRows.filter(r=>r.move!=null).map(r=>r.move))*1.08;
+
   const degenFirm=firms.find(f=>f.id===degenId)||firms[4];
   const degenFee=feeRows.find(f=>f.id===degenFirm.id);
   const market=marketProfiles[asset];
@@ -300,45 +318,74 @@ export default function Web3Hub(){
           </div>
         </div>
 
-        <div className="gp-fullport-firms" aria-label="Firm">
-          {feeRows.map((f,index)=><button type="button" key={f.id} className={degenId===f.id?"is-active":""} onClick={()=>setDegenId(f.id)}>
-            <span className="gp-fullport-rank">{String(index+1).padStart(2,"0")}</span>
-            <FirmLogo firm={f}/>
-            <span><b>{f.name}</b><small>{f.retained==null?"—":f.retained.toFixed(3)+"R"}</small></span>
-          </button>)}
-        </div>
-
-        <div className="gp-fullport-stage gp-fullport-stage-data">
-          <div className="gp-stage-title gp-stage-title-wide">
-            <div>
-              <span>{degenFirm.name.toUpperCase()} · {degenProgram.label.toUpperCase()}</span>
-              <strong>{market.label} FULLPORT</strong>
+        <div className="gp-fullport-lens">
+          <div className="gp-runway-panel">
+            <div className="gp-lens-head">
+              <div>
+                <span>MOVE TO PASS</span>
+                <strong>{market.label} · DEFAULT PROGRAM</strong>
+              </div>
+              <div className="gp-runway-axis">
+                <span>0%</span>
+                <i/>
+                <span>{moveMax.toFixed(1)}%</span>
+              </div>
             </div>
-            <div>
-              <span>{accountEquivalent(degenFirm)}</span>
-              <span>{degenLeverage?degenLeverage+"X":"LEV —"}</span>
-              <span>{feeMode.toUpperCase()}</span>
+
+            <div className="gp-runway-list">
+              {moveRows.map((f,index)=>{
+                const pos=f.move==null?0:Math.max(1,Math.min(100,(f.move/moveMax)*100));
+                return <button type="button" key={f.id} className={"gp-runway-row"+(degenId===f.id?" is-active":"")} onClick={()=>setDegenId(f.id)}>
+                  <div className="gp-runway-id">
+                    <span className="gp-runway-rank">{String(index+1).padStart(2,"0")}</span>
+                    <FirmLogo firm={f}/>
+                    <span><b>{f.name}</b><small>{f.moveLeverage?f.moveLeverage+"x "+market.label:"LEVERAGE —"}</small></span>
+                  </div>
+                  <div className="gp-runway-track">
+                    <i className="gp-runway-fill" style={{width:f.move==null?"0%":pos+"%"}}/>
+                    {f.move!=null && <i className="gp-runway-pin" style={{left:pos+"%"}}/>}
+                  </div>
+                  <div className="gp-runway-value">
+                    <b>{f.move==null?"—":f.move.toFixed(2)+"%"}</b>
+                    <small>{f.points==null?"":(market.label==="NQ"?"≈"+Math.round(f.points)+" pts":priceText(f.points,market.precision)+" "+market.unit)}</small>
+                  </div>
+                </button>;
+              })}
             </div>
           </div>
 
-          <aside className="gp-fullport-readout gp-fullport-readout-wide">
-            <div className="gp-move-hero gp-move-hero-wide">
-              <span>MOVE TO TARGET</span>
+          <aside className="gp-impact-panel">
+            <div className="gp-impact-head">
+              <div className="gp-impact-firm">
+                <FirmLogo firm={degenFirm}/>
+                <div><span>{degenProgram.label}</span><strong>{degenFirm.name}</strong></div>
+              </div>
+              <div className="gp-impact-tags">
+                <span>{accountEquivalent(degenFirm)}</span>
+                <span>{market.label}</span>
+              </div>
+            </div>
+
+            <div className="gp-impact-hero">
+              <span>UNDERLYING MOVE</span>
               <strong>{targetMove==null?"—":targetMove.toFixed(2)+"%"}</strong>
               <small>{targetPoints==null?"LEVERAGE UNPUBLISHED":(market.label==="NQ"?"≈"+Math.round(targetPoints)+" NQ POINTS":"+"+priceText(targetPoints,market.precision)+" "+market.unit)}</small>
             </div>
 
-            <div className="gp-readout-grid gp-readout-grid-wide">
-              <div><span>STOP / DD MOVE</span><strong>{stopMove==null?"—":stopMove.toFixed(2)+"%"}</strong><small>{stopPoints==null?"—":priceText(stopPoints,market.precision)+" "+market.unit}</small></div>
-              <div><span>MARKET LEVERAGE</span><strong>{degenLeverage?degenLeverage+"x":"—"}</strong><small>{market.label}</small></div>
-              <div><span>FULLPORT NOTIONAL</span><strong>{degenFee?.fullportNotional?money(degenFee.fullportNotional):"—"}</strong><small>{accountEquivalent(degenFirm)}</small></div>
-              <div className="gp-fee-dollar"><span>ROUND-TRIP FEES</span><strong>{degenFee?.roundTripFee!=null?money(degenFee.roundTripFee):"—"}</strong><small>{degenFee?.fee==null?"FEE / LEVERAGE UNAVAILABLE":degenFee.fee.toFixed(degenFee.fee<.01?4:3)+"% / SIDE · "+feeMode.toUpperCase()}</small></div>
+            <div className="gp-impact-grid">
+              <div><span>LEVERAGE</span><strong>{degenLeverage?degenLeverage+"x":"—"}</strong></div>
+              <div><span>ROUND TRIP</span><strong>{degenFee?.roundTripFee!=null?money(degenFee.roundTripFee):"—"}</strong></div>
+              <div><span>R KEPT</span><strong>{degenFee?.retained==null?"—":degenFee.retained.toFixed(3)+"R"}</strong></div>
+              <div><span>FULLPORT NOTIONAL</span><strong>{degenFee?.fullportNotional?money(degenFee.fullportNotional):"—"}</strong></div>
             </div>
 
-            <div className="gp-trade-levels gp-trade-levels-wide">
-              <div><span>TP</span><b>{targetMove==null?"—":priceText(market.entry*(1+targetMove/100),market.precision)}</b></div>
-              <div><span>ENTRY</span><b>{priceText(market.entry,market.precision)}</b></div>
-              <div><span>SL</span><b>{stopMove==null?"—":priceText(market.entry*(1-stopMove/100),market.precision)}</b></div>
+            <div className="gp-distance-tape">
+              <div className="gp-distance-head"><span>TRADE DISTANCE</span><span>{feeMode.toUpperCase()} · {degenFee?.fee==null?"—":degenFee.fee.toFixed(degenFee.fee<.01?4:3)+"% / SIDE"}</span></div>
+              <div className="gp-distance-line">
+                <div className="gp-distance-sl" style={{width:(stopMove!=null && targetMove!=null ? (stopMove/(stopMove+targetMove))*100 : 50)+"%"}}><span>SL {stopMove==null?"—":"-"+stopMove.toFixed(2)+"%"}</span></div>
+                <div className="gp-distance-entry"><i/>ENTRY</div>
+                <div className="gp-distance-tp"><span>TP {targetMove==null?"—":"+"+targetMove.toFixed(2)+"%"}</span></div>
+              </div>
             </div>
           </aside>
         </div>
