@@ -286,6 +286,7 @@ export default function Web3Hub(){
         <div className="gp-fee-board-head">
           <div><span>FEE RANK</span><strong>{marketProfiles[asset].label} · {feeMode.toUpperCase()}</strong></div>
           <div className="gp-fee-scale"><span>0.980R</span><i/><span>0.990R</span><i/><span>1.000R</span></div>
+          <div><span>R KEPT</span><strong>AFTER FEES</strong></div>
           <div><span>100K EQ</span><strong>ROUND TRIP</strong></div>
         </div>
 
