@@ -6,6 +6,104 @@ import "./web3-hub.css";
 const NQ = 29679;
 const BAR_MIN = 0.98;
 
+const EQ_BASE = 100000;
+
+const marketProfiles = {
+  indices:{label:"NQ",name:"Nasdaq 100",entry:29043,precision:0,unit:"pts",snapshot:"SEP 18"},
+  crypto:{label:"BTC",name:"Bitcoin",entry:77370,precision:0,unit:"$",snapshot:"SEP 18"},
+  commodities:{label:"CL",name:"WTI Crude",entry:98.76,precision:2,unit:"$",snapshot:"SEP 18"},
+  fx:{label:"EURUSD",name:"EUR / USD",entry:1.1463,precision:4,unit:"",snapshot:"SEP 18"}
+};
+
+const marketLeverage = {
+  hypernova:{indices:10,crypto:5,commodities:10,fx:null},
+  propr:{indices:10,crypto:10,commodities:8,fx:25},
+  doji:{indices:10,crypto:5,commodities:null,fx:25},
+  vanta:{indices:2.5,crypto:1.5,commodities:1.5,fx:10},
+  vest:{indices:50,crypto:10,commodities:null,fx:null},
+  hyperpnl:{indices:null,crypto:null,commodities:null,fx:null},
+  breakout:{indices:10,crypto:10,commodities:5,fx:null}
+};
+
+function pctNumber(value){
+  const m=String(value??"").match(/-?\d+(?:\.\d+)?/);
+  return m ? Number(m[0]) : null;
+}
+
+function defaultProgram(firm){
+  return firm.programs.find(p=>p.id===firm.defaultProgram) || firm.programs[0];
+}
+
+function maxLiveBalance(firm){
+  return Math.max(0,...firm.programs.flatMap(p=>p.sizes||[]).filter(x=>!x.disabled && x.balance).map(x=>x.balance));
+}
+
+function accountEquivalent(firm){
+  const max=maxLiveBalance(firm);
+  if(!max) return "100K EQ";
+  if(max>=EQ_BASE) return "100K";
+  const units=Math.round(EQ_BASE/max);
+  return units+"×"+shortBalance(max)+" EQ";
+}
+
+function priceText(value,precision){
+  if(value==null) return "—";
+  return Number(value).toLocaleString("en-US",{minimumFractionDigits:precision,maximumFractionDigits:precision});
+}
+
+function FullportChart({market,firm,program,leverage}){
+  const target=pctNumber(program?.target);
+  const dd=pctNumber(program?.drawdown);
+  const entry=market.entry;
+  const targetMove=leverage && target!=null ? target/leverage : null;
+  const stopMove=leverage && dd!=null ? dd/leverage : null;
+  const tp=targetMove!=null ? entry*(1+targetMove/100) : null;
+  const sl=stopMove!=null ? entry*(1-stopMove/100) : null;
+
+  const volatility=Math.max(.0025,Math.min(.014,(Math.max(targetMove||1,stopMove||1)/100)*.28));
+  const candles=Array.from({length:42},(_,i)=>{
+    const wave=Math.sin(i*.57)*.52+Math.sin(i*.19+1.8)*.34;
+    const drift=(i-21)*.012;
+    const center=entry*(1+(wave*.55+drift)*volatility);
+    const open=center*(1+Math.sin(i*1.17)*volatility*.14);
+    const close=center*(1+Math.cos(i*.83+.7)*volatility*.16);
+    const high=Math.max(open,close)*(1+volatility*(.10+.05*((i%4)+1)));
+    const low=Math.min(open,close)*(1-volatility*(.10+.04*((i%3)+1)));
+    return {open,close,high,low};
+  });
+
+  const lows=candles.map(c=>c.low);
+  const highs=candles.map(c=>c.high);
+  let min=Math.min(...lows,sl??entry);
+  let max=Math.max(...highs,tp??entry);
+  const pad=(max-min)*.08 || entry*.01;
+  min-=pad; max+=pad;
+  const y=v=>390-((v-min)/(max-min))*330;
+  const x=i=>24+i*(820/Math.max(1,candles.length-1));
+  const tpY=tp==null?null:y(tp), entryY=y(entry), slY=sl==null?null:y(sl);
+
+  return <div className="gp-trade-chart">
+    <div className="gp-chart-head">
+      <div><strong>{market.label}</strong><span>{market.name}</span></div>
+      <div><span>3D / 1H</span><span>REFERENCE · {market.snapshot}</span></div>
+    </div>
+    <svg viewBox="0 0 940 420" role="img" aria-label={firm.name+" "+market.label+" fullport trade illustration"}>
+      {[0,1,2,3,4].map(i=><line key={"g"+i} x1="20" x2="920" y1={62+i*74} y2={62+i*74} className="gp-chart-grid"/>)}
+      {candles.map((c,i)=>{
+        const xi=x(i), oy=y(c.open), cy=y(c.close), hy=y(c.high), ly=y(c.low);
+        const up=c.close>=c.open;
+        return <g key={i} className={up?"gp-candle up":"gp-candle down"}>
+          <line x1={xi} x2={xi} y1={hy} y2={ly}/>
+          <rect x={xi-4} y={Math.min(oy,cy)} width="8" height={Math.max(2,Math.abs(cy-oy))}/>
+        </g>;
+      })}
+      {tpY!=null && <g><line x1="20" x2="920" y1={tpY} y2={tpY} className="gp-chart-level tp"/><text x="915" y={tpY-7} textAnchor="end" className="gp-chart-label tp">TP {priceText(tp,market.precision)}</text></g>}
+      <g><line x1="20" x2="920" y1={entryY} y2={entryY} className="gp-chart-level entry"/><text x="915" y={entryY-7} textAnchor="end" className="gp-chart-label entry">ENTRY {priceText(entry,market.precision)}</text></g>
+      {slY!=null && <g><line x1="20" x2="920" y1={slY} y2={slY} className="gp-chart-level sl"/><text x="915" y={slY-7} textAnchor="end" className="gp-chart-label sl">SL {priceText(sl,market.precision)}</text></g>}
+    </svg>
+  </div>;
+}
+
 const fees = {
   crypto: {
     hypernova:[.01,.04], vanta:[.03,.03], propr:[.015,.045], doji:[.02,.02], vest:[.01,.01], hyperpnl:[.015,.045], breakout:[.04,.04]
@@ -163,7 +261,10 @@ export default function Web3Hub(){
     const fee=feeMode==="avg" ? (pair && pair[0]!=null && pair[1]!=null ? (pair[0]+pair[1])/2 : null) : raw;
     const retained=fee==null ? null : 1-((fee/100)*2*10);
     const barPct=retained==null ? 0 : Math.max(0,Math.min(100,((retained-BAR_MIN)/(1-BAR_MIN))*100));
-    return {...f,fee,retained,barPct};
+    const leverage=marketLeverage[f.id]?.[asset] ?? null;
+    const fullportNotional=leverage ? EQ_BASE*leverage : null;
+    const roundTripFee=fee!=null && fullportNotional!=null ? fullportNotional*(fee/100)*2 : null;
+    return {...f,fee,retained,barPct,marketLev:leverage,fullportNotional,roundTripFee};
   }).sort((a,b)=>{
     if(a.retained==null && b.retained==null) return a.name.localeCompare(b.name);
     if(a.retained==null) return 1;
@@ -175,8 +276,15 @@ export default function Web3Hub(){
 
   const degenFirm=firms.find(f=>f.id===degenId)||firms[4];
   const degenFee=feeRows.find(f=>f.id===degenFirm.id);
-  const targetMove=degenFirm.indexLev ? degenFirm.target/degenFirm.indexLev : null;
-  const targetPoints=targetMove==null ? null : NQ*(targetMove/100);
+  const market=marketProfiles[asset];
+  const degenProgram=defaultProgram(degenFirm);
+  const degenLeverage=marketLeverage[degenFirm.id]?.[asset] ?? null;
+  const degenTarget=pctNumber(degenProgram?.target);
+  const degenDd=pctNumber(degenProgram?.drawdown);
+  const targetMove=degenLeverage && degenTarget!=null ? degenTarget/degenLeverage : null;
+  const stopMove=degenLeverage && degenDd!=null ? degenDd/degenLeverage : null;
+  const targetPoints=targetMove==null ? null : market.entry*(targetMove/100);
+  const stopPoints=stopMove==null ? null : market.entry*(stopMove/100);
 
   function inspectFirm(id,scroll=false){
     setActiveId(id);
@@ -228,57 +336,81 @@ export default function Web3Hub(){
     </section>
 
     <section className="gp-degen-section" id="degen">
-      <div className="gp-section-head">
-        <div><span className="gp-section-no">02</span><h2>Fullport map</h2></div>
-        <div className="gp-degen-controls">
-          <div className="gp-segment">{["crypto","fx","indices","commodities"].map(x=><button key={x} className={asset===x?"is-active":""} onClick={()=>setAsset(x)}>{x}</button>)}</div>
-          <div className="gp-segment mini">{["maker","taker","avg"].map(x=><button key={x} className={feeMode===x?"is-active":""} onClick={()=>setFeeMode(x)}>{x}</button>)}</div>
-        </div>
+      <div className="gp-section-head compact">
+        <div><span className="gp-section-no">02</span><h2>Fullport lab</h2></div>
       </div>
 
-      <div className="gp-firm-switcher" aria-label="Select fullport firm">
-        {firms.map(f=><button type="button" key={f.id} className={degenId===f.id?"is-active":""} onClick={()=>setDegenId(f.id)}>
-          <FirmLogo firm={f}/><span>{f.name}</span>
-        </button>)}
-      </div>
-
-      <div className="gp-degen-hero">
-        <div>
-          <span className="gp-kicker">{degenFirm.name.toUpperCase()} · {degenFirm.leverage.toUpperCase()}</span>
-          <strong>{targetMove==null?"—":targetMove.toFixed(2)+"%"}</strong>
-          <p>{targetMove==null?"market-specific leverage":"underlying move to hit a "+degenFirm.target+"% target"}</p>
-        </div>
-        <div className="gp-nq-points">
-          <span>{targetPoints==null?"—":"≈"+Math.round(targetPoints)}</span><small>{targetPoints==null?"NQ leverage not published":"NQ points @ 29.7K"}</small>
-        </div>
-        <div className="gp-vs">
-          <span>{asset.toUpperCase()} · {feeMode.toUpperCase()} · ROUND TRIP</span>
-          <b>{degenFee?.retained==null?"n/a":degenFee.retained.toFixed(3)+"R"}</b>
-          <small>{degenFee?.fee==null?"fee data unavailable":degenFee.fee.toFixed(degenFee.fee<.01?4:3)+"% / side · 10x reference"}</small>
-        </div>
-      </div>
-
-      <div className="gp-fee-head">
-        <span>FIRM</span>
-        <div className="gp-rbar-axis" aria-label="Shared R scale from 0.980R to 1.000R">
-          <span>0.980</span><span>0.985</span><span>0.990</span><span>0.995</span><span>1.000R</span>
-        </div>
-        <span>R KEPT</span>
-      </div>
-      <div className="gp-fee-map">
-        {feeRows.map((f,index)=><button type="button" className={"gp-fee-row"+(degenId===f.id?" is-active":"")} key={f.id} onClick={()=>setDegenId(f.id)}>
-          <div className="gp-fee-name"><span className="gp-fee-rank">{String(index+1).padStart(2,"0")}</span><FirmLogo firm={f}/><span><b>{f.name}</b><small>{f.leverage}</small></span></div>
-          <div className="gp-rbar" aria-label={f.retained==null?"fee unavailable":f.retained.toFixed(3)+" R retained on a 0.980 to 1.000 R scale"}>
-            <div className="gp-rbar-grid"/>
-            <div className="gp-rbar-fill" style={{width:f.retained==null?"0%":f.barPct+"%"}}/>
-            {f.retained!=null && <div className="gp-rbar-cut" style={{width:(100-f.barPct)+"%"}}/>}
-            {f.retained!=null && <i className="gp-rbar-marker" style={{left:f.barPct+"%"}}/>}
+      <div className="gp-fullport-shell">
+        <div className="gp-fullport-toolbar">
+          <div className="gp-market-switch" aria-label="Market">
+            {Object.entries(marketProfiles).map(([key,m])=><button type="button" key={key} className={asset===key?"is-active":""} onClick={()=>setAsset(key)}>
+              <b>{m.label}</b><small>{m.name}</small>
+            </button>)}
           </div>
-          <div className="gp-fee-number">
-            <b>{f.retained==null?"n/a":f.retained.toFixed(3)+"R"}</b>
-            <small>{f.fee==null?"—":f.fee.toFixed(f.fee<.01?4:3)+"% / side"}</small>
+          <div className="gp-exec-switch" aria-label="Execution fee mode">
+            <span>EXECUTION</span>
+            <div>{["maker","taker","avg"].map(x=><button type="button" key={x} className={feeMode===x?"is-active":""} onClick={()=>setFeeMode(x)}>{x}</button>)}</div>
           </div>
-        </button>)}
+        </div>
+
+        <div className="gp-fullport-firms" aria-label="Firm">
+          {feeRows.map((f,index)=><button type="button" key={f.id} className={degenId===f.id?"is-active":""} onClick={()=>setDegenId(f.id)}>
+            <span className="gp-fullport-rank">{String(index+1).padStart(2,"0")}</span>
+            <FirmLogo firm={f}/>
+            <span><b>{f.name}</b><small>{f.retained==null?"—":f.retained.toFixed(3)+"R"}</small></span>
+          </button>)}
+        </div>
+
+        <div className="gp-fullport-stage">
+          <div className="gp-fullport-chartpane">
+            <div className="gp-stage-title">
+              <div><span>{degenFirm.name.toUpperCase()} · {degenProgram.label.toUpperCase()}</span><strong>{market.label} FULLPORT</strong></div>
+              <div><span>{accountEquivalent(degenFirm)}</span><span>{degenLeverage?degenLeverage+"X":"LEV —"}</span></div>
+            </div>
+            <FullportChart market={market} firm={degenFirm} program={degenProgram} leverage={degenLeverage}/>
+          </div>
+
+          <aside className="gp-fullport-readout">
+            <div className="gp-move-hero">
+              <span>MOVE TO TARGET</span>
+              <strong>{targetMove==null?"—":targetMove.toFixed(2)+"%"}</strong>
+              <small>{targetPoints==null?"LEVERAGE UNPUBLISHED":(market.label==="NQ"?"≈"+Math.round(targetPoints)+" NQ POINTS":"+"+priceText(targetPoints,market.precision)+" "+market.unit)}</small>
+            </div>
+
+            <div className="gp-readout-grid">
+              <div><span>STOP / DD MOVE</span><strong>{stopMove==null?"—":stopMove.toFixed(2)+"%"}</strong><small>{stopPoints==null?"—":priceText(stopPoints,market.precision)+" "+market.unit}</small></div>
+              <div><span>MARKET LEVERAGE</span><strong>{degenLeverage?degenLeverage+"x":"—"}</strong><small>{market.label}</small></div>
+              <div><span>FULLPORT NOTIONAL</span><strong>{degenFee?.fullportNotional?money(degenFee.fullportNotional):"—"}</strong><small>{accountEquivalent(degenFirm)}</small></div>
+              <div className="gp-fee-dollar"><span>ROUND-TRIP FEES</span><strong>{degenFee?.roundTripFee!=null?money(degenFee.roundTripFee):"—"}</strong><small>{degenFee?.fee==null?"FEE / LEVERAGE UNAVAILABLE":degenFee.fee.toFixed(degenFee.fee<.01?4:3)+"% / SIDE · "+feeMode.toUpperCase()}</small></div>
+            </div>
+
+            <div className="gp-trade-levels">
+              <div><span>TP</span><b>{targetMove==null?"—":priceText(market.entry*(1+targetMove/100),market.precision)}</b></div>
+              <div><span>ENTRY</span><b>{priceText(market.entry,market.precision)}</b></div>
+              <div><span>SL</span><b>{stopMove==null?"—":priceText(market.entry*(1-stopMove/100),market.precision)}</b></div>
+            </div>
+          </aside>
+        </div>
+
+        <div className="gp-fee-board">
+          <div className="gp-fee-board-head">
+            <div><span>FEE RANK</span><strong>{market.label} · {feeMode.toUpperCase()}</strong></div>
+            <div className="gp-fee-scale"><span>0.980R</span><i/><span>0.990R</span><i/><span>1.000R</span></div>
+            <div><span>100K EQ</span><strong>ROUND TRIP</strong></div>
+          </div>
+
+          {feeRows.map((f,index)=><button type="button" className={"gp-fee-row gp-fee-row-v2"+(degenId===f.id?" is-active":"")} key={f.id} onClick={()=>setDegenId(f.id)}>
+            <div className="gp-fee-name"><span className="gp-fee-rank">{String(index+1).padStart(2,"0")}</span><FirmLogo firm={f}/><span><b>{f.name}</b><small>{f.marketLev?f.marketLev+"x "+market.label:"LEVERAGE —"}</small></span></div>
+            <div className="gp-rbar" aria-label={f.retained==null?"fee unavailable":f.retained.toFixed(3)+" R retained"}>
+              <div className="gp-rbar-grid"/>
+              <div className="gp-rbar-fill" style={{width:f.retained==null?"0%":f.barPct+"%"}}/>
+              {f.retained!=null && <div className="gp-rbar-cut" style={{width:(100-f.barPct)+"%"}}/>}
+              {f.retained!=null && <i className="gp-rbar-marker" style={{left:f.barPct+"%"}}/>}
+            </div>
+            <div className="gp-fee-number"><b>{f.retained==null?"n/a":f.retained.toFixed(3)+"R"}</b><small>{f.fee==null?"—":f.fee.toFixed(f.fee<.01?4:3)+"% / side"}</small></div>
+            <div className="gp-fee-cash"><b>{f.roundTripFee==null?"—":money(f.roundTripFee)}</b><small>{f.fullportNotional?money(f.fullportNotional)+" notional":"actual leverage n/a"}</small></div>
+          </button>)}
+        </div>
       </div>
     </section>
 
