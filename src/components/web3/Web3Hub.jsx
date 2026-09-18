@@ -1,75 +1,10 @@
 import { useMemo, useState } from "react";
 import { ArrowUpRight, ChevronRight, Circle, ExternalLink } from "lucide-react";
+import { firms, shortBalance } from "./firmCatalog";
 import "./web3-hub.css";
 
 const NQ = 29679;
 const BAR_MIN = 0.80;
-
-const firms = [
-  {
-    id:"hypernova", name:"Hypernova", mark:"HN", domain:"hypernova.xyz", logo:"https://hypernova.xyz/favicon.ico", url:"https://hypernova.xyz/",
-    status:"ON-CHAIN", venue:"Hyperliquid", price:275, plan:"Low Risk", target:10, daily:"3%", drawdown:"6% static", split:"80%",
-    payout:"~6s avg on-chain", leverage:"5x", indexLev:5, leverageNote:"assessment max",
-    plans:["Tight · $120","Low · $275","Medium · $365"],
-    edge:"Fast on-chain payouts",
-    note:"Hyperliquid liquidity, public reserve, instant on-chain settlement.",
-    orbit:{x:"49%",y:"8%",delay:"-1.5s"}
-  },
-  {
-    id:"propr", name:"Propr", mark:"PR", domain:"propr.xyz", logo:"https://www.propr.xyz/favicon.ico", url:"https://www.propr.xyz/",
-    status:"ON-CHAIN", venue:"Hyperliquid", price:275, plan:"Classic", target:10, daily:"3%", drawdown:"6% static", split:"80%",
-    payout:"On-chain USDC", leverage:"up to 10x", indexLev:10, leverageNote:"platform max",
-    plans:["Classic · $275","1-Step","2-Step"],
-    edge:"API / agent stack",
-    note:"REST API plus Python and JavaScript SDKs, Hyperliquid execution.",
-    orbit:{x:"78%",y:"20%",delay:"-4.2s"}
-  },
-  {
-    id:"doji", name:"DojiFunded", mark:"DJ", domain:"dojifunded.com", logo:"https://www.dojifunded.com/favicon.ico", url:"https://www.dojifunded.com/",
-    status:"ARBITRUM", venue:"On-chain", price:198, plan:"1-Step", target:10, daily:"3%", drawdown:"6%", split:"—",
-    payout:"Instant on-chain", leverage:"5x shown", indexLev:null, leverageNote:"market-specific",
-    plans:["1-Step · $198","Instant","2-Step"],
-    edge:"Protocol-native",
-    note:"On-chain execution, vault-native capital, SDKs and multi-asset venue.",
-    orbit:{x:"91%",y:"50%",delay:"-2.8s"}
-  },
-  {
-    id:"vanta", name:"Vanta", mark:"VA", domain:"vantatrading.io", logo:"https://www.vantatrading.io/favicon.ico", url:"https://www.vantatrading.io/",
-    status:"DECENTRALIZED", venue:"Multi-asset", price:169, plan:"Tier II", target:10, daily:"5%", drawdown:"5% static", split:"100%",
-    payout:"Weekly", leverage:"2.5x indices", indexLev:2.5, leverageNote:"base tier",
-    plans:["25K · $169","Boost I · +$100","Boost II · +$200"],
-    edge:"100% reward split",
-    note:"One-step challenge, 100% rewards by default, API trading and scaling.",
-    orbit:{x:"75%",y:"80%",delay:"-5.4s"}
-  },
-  {
-    id:"vest", name:"Vest", mark:"VE", domain:"vestmarkets.com", logo:"https://www.vestmarkets.com/favicon.ico", url:"https://www.vestmarkets.com/",
-    status:"PERPS", venue:"Vest Markets", price:198, plan:"1-Step", target:10, daily:"3%", drawdown:"6%", split:"80%",
-    payout:"Instant USDC", leverage:"50x NQ", indexLev:50, leverageNote:"market-specific",
-    plans:["25K · $198","Instant accounts","Evaluation"],
-    edge:"50x NQ buying power",
-    note:"24/7 multi-asset perps with unusually high market-specific leverage.",
-    orbit:{x:"43%",y:"91%",delay:"-3.6s"}
-  },
-  {
-    id:"hyperpnl", name:"HyperPNL", mark:"HP", domain:"hyperpnl.com", logo:"https://hyperpnl.com/favicon.ico", url:"https://hyperpnl.com/",
-    status:"ON-CHAIN", venue:"Hyperliquid + Ostium", price:215, plan:"Flex", target:10, daily:"3%", drawdown:"5% static", split:"80%",
-    payout:"Smart-contract", leverage:"market-specific", indexLev:null, leverageNote:"",
-    plans:["5K · $42","10K · $86","25K · $215"],
-    edge:"Code-enforced payouts",
-    note:"Smart-contract payouts with Hyperliquid and Ostium market access.",
-    orbit:{x:"13%",y:"70%",delay:"-6.1s"}
-  },
-  {
-    id:"breakout", name:"Breakout", mark:"BR", domain:"breakoutprop.com", logo:"https://www.breakoutprop.com/favicon.ico", url:"https://www.breakoutprop.com/",
-    status:"KRAKEN", venue:"Breakout Terminal", price:215, plan:"Classic", target:10, daily:"3%", drawdown:"6% static", split:"80–90%",
-    payout:"24/7 on-demand", leverage:"10x NQ", indexLev:10, leverageNote:"Nasdaq",
-    plans:["Classic","Pro","Turbo"],
-    edge:"Mature payout rails",
-    note:"Simple rule stack, on-demand USDC payouts and broad 24/7 market access.",
-    orbit:{x:"10%",y:"30%",delay:"-.7s"}
-  }
-];
 
 const fees = {
   crypto: {
@@ -87,27 +22,135 @@ const fees = {
 };
 
 const standouts = [
-  ["ENTRY","Vanta","$169 · 25K"],
+  ["25K ENTRY","Vest","$198 observed"],
   ["SPLIT","Vanta","100% default"],
   ["NQ LEVERAGE","Vest","50x"],
   ["AUTOMATION","Propr","REST + Python / JS"],
-  ["PAYOUT SPEED","Hypernova","~6s avg"],
-  ["ON-DEMAND","Breakout","24/7 USDC"],
+  ["PAYOUT SPEED","Hypernova","~6.1s avg"],
+  ["ON-DEMAND","Breakout","24/7"],
   ["CODE PAYOUTS","HyperPNL","smart-contract"],
-  ["PROTOCOL","DojiFunded","Arbitrum-native"]
+  ["LOWEST ENTRY","DojiFunded","$10 · 1K"]
 ];
 
-function money(n){ return new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(n); }
+function money(n){
+  return new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(n);
+}
 
 function FirmLogo({firm,className=""}) {
   return <span className={"gp-logo "+className} aria-hidden="true">
     <span className="gp-logo-fallback">{firm.mark}</span>
     <img src={firm.logo} alt="" loading="lazy" onError={(e)=>{
       const img=e.currentTarget;
-      if(!img.dataset.fallback){ img.dataset.fallback="1"; img.src=`https://www.google.com/s2/favicons?domain=${firm.domain}&sz=128`; }
-      else img.style.display="none";
+      if(!img.dataset.fallback){
+        img.dataset.fallback="1";
+        img.src=`https://www.google.com/s2/favicons?domain=${firm.domain}&sz=128`;
+      } else {
+        img.style.display="none";
+      }
     }}/>
   </span>;
+}
+
+function preferredSizeIndex(program){
+  if(!program?.sizes?.length) return 0;
+  const preferred=program.sizes.findIndex(s=>s.balance===25000 && !s.disabled);
+  if(preferred>=0) return preferred;
+  const live=program.sizes.findIndex(s=>!s.disabled);
+  return live>=0?live:0;
+}
+
+function FirmProfile({firm,isActive,onActive}){
+  const initialProgram=firms.find(x=>x.id===firm.id)?.defaultProgram || firm.programs[0].id;
+  const [programId,setProgramId]=useState(initialProgram);
+  const initial=firm.programs.find(p=>p.id===initialProgram) || firm.programs[0];
+  const [sizeIndex,setSizeIndex]=useState(()=>preferredSizeIndex(initial));
+
+  const program=firm.programs.find(p=>p.id===programId) || firm.programs[0];
+  const size=program.sizes[Math.min(sizeIndex,program.sizes.length-1)] || program.sizes[0];
+
+  function chooseProgram(id){
+    const next=firm.programs.find(p=>p.id===id) || firm.programs[0];
+    setProgramId(next.id);
+    setSizeIndex(preferredSizeIndex(next));
+    onActive(firm.id);
+  }
+
+  const price=size?.fee!=null ? money(size.fee) : (size?.feeLabel || "—");
+  const account=size?.balance!=null ? shortBalance(size.balance) : "—";
+  const hasList=size?.listFee!=null && size.listFee!==size.fee;
+
+  return <article id={"firm-"+firm.id} className={"gp-profile"+(isActive?" is-active":"")} onMouseEnter={()=>onActive(firm.id)}>
+    <div className="gp-profile-head">
+      <div className="gp-profile-id">
+        <span className="gp-profile-logo"><FirmLogo firm={firm}/></span>
+        <div>
+          <div className="gp-profile-name-line"><h3>{firm.name}</h3><span>{firm.status}</span></div>
+          <p>{firm.edge}</p>
+        </div>
+      </div>
+
+      <div className="gp-profile-actions">
+        <div className="gp-program-tabs" role="tablist" aria-label={firm.name+" programs"}>
+          {firm.programs.map(p=><button type="button" role="tab" aria-selected={program.id===p.id} key={p.id}
+            className={program.id===p.id?"is-active":""} onClick={()=>chooseProgram(p.id)}>
+            <span>{p.label}</span><small>{p.badge}</small>
+          </button>)}
+        </div>
+        <a href={firm.url} target="_blank" rel="noreferrer" aria-label={"Open "+firm.name}><ArrowUpRight size={18}/></a>
+      </div>
+    </div>
+
+    <div className="gp-size-row">
+      <span>ACCOUNT SIZE</span>
+      <div className="gp-size-tabs">
+        {program.sizes.map((s,i)=><button type="button" key={(s.balance??"na")+"-"+i}
+          className={(i===sizeIndex?"is-active ":"")+(s.disabled?"is-disabled":"")}
+          onClick={()=>{setSizeIndex(i);onActive(firm.id);}}>
+          <b>{s.balance!=null?shortBalance(s.balance):"—"}</b>
+          {s.feeLabel && <small>{s.feeLabel}</small>}
+        </button>)}
+      </div>
+    </div>
+
+    <div className="gp-profile-metrics">
+      <div className="gp-profile-price">
+        <span>ENTRY · {account}</span>
+        <strong>{price}</strong>
+        <small>{hasList?"was "+money(size.listFee):program.label}</small>
+      </div>
+      <div className="gp-profile-metric">
+        <span>TARGET</span>
+        <strong>{program.target}</strong>
+      </div>
+      <div className="gp-profile-metric">
+        <span>MAX DD</span>
+        <strong>{program.drawdown}</strong>
+      </div>
+      <div className="gp-profile-metric">
+        <span>SPLIT</span>
+        <strong>{program.split}</strong>
+      </div>
+      <div className="gp-profile-metric">
+        <span>DAILY</span>
+        <strong>{program.daily}</strong>
+      </div>
+      <div className="gp-profile-metric gp-profile-leverage">
+        <span>LEVERAGE</span>
+        <strong>{program.leverage}</strong>
+      </div>
+    </div>
+
+    <div className="gp-profile-foot gp-profile-foot-deep">
+      <div><span>PAYOUT</span><strong>{program.payout}</strong></div>
+      <div><span>MIN DAYS</span><strong>{program.minDays}</strong></div>
+      <div><span>TIME LIMIT</span><strong>{program.timeLimit}</strong></div>
+      <div><span>VENUE</span><strong>{firm.venue}</strong></div>
+    </div>
+
+    <div className="gp-rule-strip">
+      {[...(program.tags||[]),...(program.extras||[])].map(tag=><span key={tag}>{tag}</span>)}
+    </div>
+  </article>;
 }
 
 export default function Web3Hub(){
@@ -115,7 +158,6 @@ export default function Web3Hub(){
   const [degenId,setDegenId]=useState("vest");
   const [asset,setAsset]=useState("indices");
   const [feeMode,setFeeMode]=useState("taker");
-  const active=firms.find(f=>f.id===activeId)||firms[0];
 
   const feeRows=useMemo(()=>firms.map(f=>{
     const pair=fees[asset][f.id];
@@ -140,7 +182,7 @@ export default function Web3Hub(){
     <header className="gp-nav">
       <a className="gp-wordmark" href="#top">GIGAPROP<span>.</span></a>
       <nav className="gp-nav-links">
-        <a href="#field">Plans</a><a href="#degen">Fullport</a><a href="#matrix">Matrix</a>
+        <a href="#field">Programs</a><a href="#degen">Fullport</a><a href="#matrix">Matrix</a>
       </nav>
       <div className="gp-nav-meta"><span>PERPETUAL PROP INTELLIGENCE</span><i/><span>SEP 2026</span></div>
     </header>
@@ -151,8 +193,8 @@ export default function Web3Hub(){
         <h1>Perpetual props,<br/><span>mapped.</span></h1>
         <p>Prices, plans, leverage, execution and payout rails across the new Web3 prop stack.</p>
         <div className="gp-hero-actions">
-          <a className="gp-primary-link" href="#degen">Open fullport map <ChevronRight size={16}/></a>
-          <a className="gp-quiet-link" href="#field">Compare 25K plans</a>
+          <a className="gp-primary-link" href="#field">Explore programs <ChevronRight size={16}/></a>
+          <a className="gp-quiet-link" href="#degen">Open fullport map</a>
         </div>
       </div>
 
@@ -172,57 +214,11 @@ export default function Web3Hub(){
 
     <section className="gp-index-section" id="field">
       <div className="gp-section-head compact">
-        <div><span className="gp-section-no">01</span><h2>25K profiles</h2></div>
+        <div><span className="gp-section-no">01</span><h2>Programs</h2></div>
       </div>
 
       <div className="gp-profile-stack">
-        {firms.map(f=><article id={"firm-"+f.id} key={f.id} className={"gp-profile"+(f.id===activeId?" is-active":"")} onMouseEnter={()=>setActiveId(f.id)}>
-          <div className="gp-profile-head">
-            <div className="gp-profile-id">
-              <span className="gp-profile-logo"><FirmLogo firm={f}/></span>
-              <div>
-                <div className="gp-profile-name-line"><h3>{f.name}</h3><span>{f.status}</span></div>
-                <p>{f.edge}</p>
-              </div>
-            </div>
-            <a href={f.url} target="_blank" rel="noreferrer" aria-label={"Open "+f.name}><ArrowUpRight size={18}/></a>
-          </div>
-
-          <div className="gp-profile-metrics">
-            <div className="gp-profile-price">
-              <span>25K ENTRY</span>
-              <strong>{money(f.price)}</strong>
-              <small>{f.plan}</small>
-            </div>
-            <div className="gp-profile-metric">
-              <span>TARGET</span>
-              <strong>{f.target}%</strong>
-            </div>
-            <div className="gp-profile-metric">
-              <span>MAX DD</span>
-              <strong>{String(f.drawdown).replace(" static","")}</strong>
-              <small>{String(f.drawdown).includes("static")?"STATIC":""}</small>
-            </div>
-            <div className="gp-profile-metric">
-              <span>SPLIT</span>
-              <strong>{f.split}</strong>
-            </div>
-            <div className="gp-profile-metric">
-              <span>DAILY</span>
-              <strong>{f.daily}</strong>
-            </div>
-            <div className="gp-profile-metric gp-profile-leverage">
-              <span>LEVERAGE</span>
-              <strong>{f.leverage}</strong>
-            </div>
-          </div>
-
-          <div className="gp-profile-foot">
-            <div><span>PAYOUT</span><strong>{f.payout}</strong></div>
-            <div><span>VENUE</span><strong>{f.venue}</strong></div>
-            <div className="gp-profile-plans">{f.plans.map(p=><span key={p}>{p}</span>)}</div>
-          </div>
-        </article>)}
+        {firms.map(f=><FirmProfile key={f.id} firm={f} isActive={f.id===activeId} onActive={setActiveId}/>)}
       </div>
     </section>
 
@@ -280,9 +276,9 @@ export default function Web3Hub(){
     </section>
 
     <section className="gp-compare-section" id="matrix">
-      <div className="gp-section-head compact"><div><span className="gp-section-no">04</span><h2>Plan matrix</h2></div></div>
+      <div className="gp-section-head compact"><div><span className="gp-section-no">04</span><h2>25K baseline</h2></div></div>
       <div className="gp-matrix-wrap"><table className="gp-matrix"><thead><tr>
-        <th>Firm</th><th>25K</th><th>Plan</th><th>Target</th><th>Daily</th><th>Max DD</th><th>Split</th><th>Leverage</th><th>Payout</th>
+        <th>Firm</th><th>25K</th><th>Default</th><th>Target</th><th>Daily</th><th>Max DD</th><th>Split</th><th>Leverage</th><th>Payout</th>
       </tr></thead><tbody>
         {firms.map(f=><tr key={f.id}><td className="gp-matrix-name">{f.name}</td><td>{money(f.price)}</td><td>{f.plan}</td><td>{f.target}%</td><td>{f.daily}</td><td>{f.drawdown}</td><td>{f.split}</td><td>{f.leverage}</td><td>{f.payout}</td></tr>)}
       </tbody></table></div>
