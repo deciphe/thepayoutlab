@@ -1,6 +1,6 @@
 export const firms = [
   {
-    id:"hypernova", name:"Hypernova", mark:"HN", domain:"hypernova.xyz", logo:"/brands/hypernova.svg", url:"https://hypernova.xyz/",
+    id:"hypernova", name:"Hypernova", mark:"HN", domain:"hypernova.xyz", logo:"https://hypernova.xyz/favicon.ico", url:"https://hypernova.xyz/",
     status:"ON-CHAIN", venue:"Hyperliquid", price:280, plan:"Low Risk", target:10, daily:"3%", drawdown:"6% static", split:"80%",
     payout:"Instant · on-chain", leverage:"10x NQ · 5x BTC · 10x CL", indexLev:10, edge:"sub-second on-chain payouts",
     note:"On-chain risk engine, public payout reserve and Hyperliquid-sourced market data.",
@@ -30,7 +30,7 @@ export const firms = [
     ]
   },
   {
-    id:"propr", name:"Propr", mark:"PR", domain:"propr.xyz", logo:"/brands/propr.svg", url:"https://www.propr.xyz/",
+    id:"propr", name:"Propr", mark:"PR", domain:"propr.xyz", logo:"https://www.propr.xyz/favicon.ico", url:"https://www.propr.xyz/",
     status:"ON-CHAIN", venue:"Hyperliquid", price:275, plan:"Classic", target:10, daily:"3%", drawdown:"6% static", split:"80%",
     payout:"On-demand · USDC", leverage:"Up to 10x", indexLev:10, edge:"API-first prop stack",
     note:"REST API, Python and JS SDKs with on-chain USDC payouts.",
