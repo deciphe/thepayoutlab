@@ -7,9 +7,9 @@ export default function SpeedManifesto(){
   ];
 
   const proofs=[
-    {firm:"BREAKOUT",signal:"AUTO-UPGRADE",value:"0 MIN DAYS",detail:"Target hit → funded. 24/7 on-demand payout rail."},
-    {firm:"VEST",signal:"SAME-DAY LOOP",value:"IMMEDIATE",detail:"Fast evaluation flow, same-day funded path and wallet-native withdrawals."},
-    {firm:"HYPERPNL",signal:"CODE-ENFORCED",value:"NO QUEUE",detail:"Smart-contract payout logic instead of a manual approval queue."}
+    {firm:"HYPERNOVA",signal:"PAYOUT SPEED",value:"~6 SEC",detail:"Firm-published average payout time. The wait has been compressed down to seconds."},
+    {firm:"VEST CAPITAL",signal:"NQ LEVERAGE",value:"50x",detail:"The standout weapon: extreme NQ leverage inside a wallet-native funded stack."},
+    {firm:"BREAKOUT",signal:"BACKING + HISTORY",value:"$60M+",detail:"Kraken-backed with more than $60M paid to traders since launch and a public payout history."}
   ];
 
   return <section className="speed-manifesto" id="speed">
