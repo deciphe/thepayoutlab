@@ -1,56 +1,68 @@
 export default function SpeedManifesto(){
-  const steps=[
-    {n:"01",label:"PAY",value:"ONE CLICK",copy:"Buy the account. Start the clock."},
-    {n:"02",label:"PASS",value:"NO CALENDAR",copy:"On the fastest programs, the target—not a day counter—is the gate."},
-    {n:"03",label:"FUNDED",value:"SAME LOOP",copy:"Funding can happen as soon as the challenge is complete."},
-    {n:"04",label:"PAYOUT",value:"WALLET",copy:"Move profit to USDC without building your month around a payout date."}
+  const cycles=[
+    {id:"01",nodes:["PASS","PAYOUT","WITHDRAW"]},
+    {id:"02",nodes:["FAIL","RETRY","PASS"]},
+    {id:"03",nodes:["PAYOUT","WITHDRAW","RELOAD"]},
+    {id:"04",nodes:["PASS","PAYOUT","WITHDRAW"]}
   ];
 
   const proofs=[
-    {firm:"BREAKOUT",signal:"AUTO-UPGRADE",value:"0 MIN DAYS",detail:"Target hit → funded. 24/7 on-demand USDC payouts."},
-    {firm:"VEST",signal:"SAME-DAY FUNDING",value:"IMMEDIATE",detail:"Pass the evaluation, get funded the same day; withdrawals settle to wallet."},
-    {firm:"HYPERPNL",signal:"CODE-ENFORCED",value:"NO QUEUE",detail:"Smart-contract payouts with no manual approval queue."}
+    {firm:"BREAKOUT",signal:"AUTO-UPGRADE",value:"0 MIN DAYS",detail:"Target hit → funded. 24/7 on-demand payout rail."},
+    {firm:"VEST",signal:"SAME-DAY LOOP",value:"IMMEDIATE",detail:"Fast evaluation flow, same-day funded path and wallet-native withdrawals."},
+    {firm:"HYPERPNL",signal:"CODE-ENFORCED",value:"NO QUEUE",detail:"Smart-contract payout logic instead of a manual approval queue."}
   ];
 
   return <section className="speed-manifesto" id="speed">
-    <div className="speed-kicker"><span>00</span><i/> CAPITAL VELOCITY</div>
+    <div className="speed-kicker"><span>00</span><i/> THE MODEL SHIFT</div>
 
     <div className="speed-title-grid">
-      <div>
-        <h2>TIME<br/>IS A <em>FEE.</em></h2>
-      </div>
+      <div><h2>THE CLOCK<br/>IS <em>CAPITAL.</em></h2></div>
       <div className="speed-thesis-copy">
         <p>A challenge fee is obvious. Waiting is not.</p>
-        <p>Minimum trading days, payout windows, activation delays, manual reviews and slow settlement all lock capital in place. That lockup has a cost even when the sticker price looks cheap.</p>
-        <strong>The game is not only return on risk. It is return on risk <u>per unit of time.</u></strong>
+        <p>Minimum days, activation delays, funded-day requirements, payout windows, manual reviews and settlement lag all reduce how quickly the same bankroll can turn again.</p>
+        <strong>Price tells you the cost to enter. <u>Velocity tells you the cost to operate.</u></strong>
       </div>
     </div>
 
-    <div className="speed-loop" aria-label="Web3 prop capital loop">
-      {steps.map((step,index)=><div className="speed-step" key={step.label}>
-        <div className="speed-step-top"><span>{step.n}</span><b>{step.label}</b></div>
-        <strong>{step.value}</strong>
-        <p>{step.copy}</p>
-        {index<steps.length-1 && <i className="speed-arrow" aria-hidden="true">→</i>}
-      </div>)}
+    <div className="speed-race">
+      <div className="speed-race-head">
+        <span>SAME CLOCK</span>
+        <strong>DIFFERENT OUTPUT</strong>
+        <small>workflow illustration · rules vary by firm</small>
+      </div>
+
+      <div className="speed-lane speed-lane-old">
+        <div className="speed-lane-label"><span>OLD MODEL</span><strong>ONE PAYOUT</strong></div>
+        <div className="speed-old-track">
+          {["BUY","MIN DAYS","PASS","ACTIVATE","FUNDED DAYS","PAYOUT WINDOW","REVIEW","PAYOUT"].map((node,index)=><div className="speed-old-node" key={node}>
+            <i>{String(index+1).padStart(2,"0")}</i><span>{node}</span>
+          </div>)}
+          <div className="speed-old-progress"/>
+        </div>
+      </div>
+
+      <div className="speed-lane speed-lane-new">
+        <div className="speed-lane-label"><span>WEB3 FAST LANE</span><strong>MULTIPLE CAPITAL TURNS</strong></div>
+        <div className="speed-cycle-stack">
+          {cycles.map(cycle=><div className="speed-cycle" key={cycle.id}>
+            <b>{cycle.id}</b>
+            {cycle.nodes.map((node,index)=><span key={node+index} className={node==="PAYOUT"||node==="WITHDRAW"?"is-cash":node==="FAIL"?"is-fail":""}>{node}</span>)}
+            <i>→</i>
+          </div>)}
+        </div>
+      </div>
+
+      <div className="speed-race-message">
+        <span>THE SHIFT</span>
+        <strong>WAITING USED TO BE PART OF THE PRODUCT.</strong>
+        <strong className="is-green">NOW THE PRODUCT CAN BE THE LOOP ITSELF.</strong>
+      </div>
     </div>
 
-    <div className="speed-contrast">
-      <article className="speed-old">
-        <div className="speed-card-label">TRADITIONAL FRICTION STACK</div>
-        <div className="speed-path">
-          <span>BUY</span><i>→</i><span>EVAL DAYS</span><i>→</i><span>PASS</span><i>→</i><span>ACTIVATION</span><i>→</i><span>FUNDED DAYS</span><i>→</i><span>PAYOUT WINDOW</span><i>→</i><span>REVIEW</span><i>→</i><span>PAYMENT RAIL</span>
-        </div>
-        <div className="speed-cost">SAME P&amp;L. <b>MORE CALENDAR.</b></div>
-      </article>
-
-      <article className="speed-new">
-        <div className="speed-card-label">WEB3 FAST LANE</div>
-        <div className="speed-path">
-          <span>BUY</span><i>→</i><span>TRADE</span><i>→</i><span>PASS</span><i>→</i><span>FUNDED</span><i>→</i><span>PROFIT</span><i>→</i><span>WALLET</span>
-        </div>
-        <div className="speed-cost">LESS DEAD TIME. <b>MORE CAPITAL TURNS.</b></div>
-      </article>
+    <div className="speed-loop-mini" aria-label="Compressed Web3 prop loop">
+      {["PAY","TRADE","PASS","FUNDED","PAYOUT","WITHDRAW","REPEAT"].map((step,index)=><div key={step}>
+        <span>{String(index+1).padStart(2,"0")}</span><strong>{step}</strong>{index<6&&<i>→</i>}
+      </div>)}
     </div>
 
     <div className="speed-proof-grid">
@@ -64,7 +76,7 @@ export default function SpeedManifesto(){
     <div className="speed-equation">
       <span>THE REAL PRICE OF A PROP ACCOUNT</span>
       <strong>FEE <i>+</i> FRICTION <i>+</i> TIME</strong>
-      <p>Sticker price tells you what it costs to enter. Time-to-cash tells you what the entire machine costs to operate.</p>
+      <p>The faster the loop can reset, the less capital sits idle waiting for the next gate to open.</p>
     </div>
   </section>;
 }
