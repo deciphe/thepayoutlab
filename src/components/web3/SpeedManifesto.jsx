@@ -18,9 +18,9 @@ export default function SpeedManifesto(){
     <div className="speed-title-grid">
       <div><h2>SAME CLOCK.<br/><em>MORE TURNS.</em></h2></div>
       <div className="speed-thesis-copy">
-        <p>The fee is visible. The wait is not.</p>
-        <p>Minimum days, activation delays, funded-day requirements, payout windows, manual reviews and settlement lag all reduce how quickly the same bankroll can turn again.</p>
-        <strong>Price tells you the cost to enter. <u>Velocity tells you the cost to operate.</u></strong>
+        <p>Time is part of the cost.</p>
+        <p>Minimum days, activation delays, funded-day requirements, payout windows, manual reviews and settlement lag all slow the return of usable capital.</p>
+        <strong>Compare the fee, the rules and <u>time to cash.</u></strong>
       </div>
     </div>
 
@@ -53,9 +53,9 @@ export default function SpeedManifesto(){
       </div>
 
       <div className="speed-race-message">
-        <span>THE SHIFT</span>
-        <strong>WAITING USED TO BE PART OF THE PRODUCT.</strong>
-        <strong className="is-green">NOW THE PRODUCT CAN BE THE LOOP ITSELF.</strong>
+        <span>TIME COST</span>
+        <strong>TRADITIONAL: ONE LONGER PATH TO CASH.</strong>
+        <strong className="is-green">WEB3: MORE CAPITAL TURNS IN THE SAME TIME.</strong>
       </div>
     </div>
 
