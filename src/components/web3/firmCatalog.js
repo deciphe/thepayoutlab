@@ -115,7 +115,7 @@ export const firms = [
   },
   {
     id:"vest", name:"Vest", mark:"VE", domain:"vestmarkets.com", logo:"https://www.vestmarkets.com/favicon.ico", url:"https://www.vestmarkets.com/",
-    status:"PERPS", venue:"Vest Markets", price:198, plan:"1-Step 10%", target:10, daily:"3%", drawdown:"6%", split:"80%",
+    status:"PERPS", venue:"Vest Markets", price:199, plan:"1-Step 10%", target:10, daily:"3%", drawdown:"6%", split:"80%",
     payout:"Instant · USDC", leverage:"50x NQ · up to 100x", indexLev:50, edge:"Extreme market leverage",
     note:"24/7 multi-asset perps with multiple evaluation styles and instant funded accounts.",
     orbit:{x:"43%",y:"91%",delay:"-3.6s"},
@@ -123,8 +123,8 @@ export const firms = [
     programs:[
       {
         id:"eval10",label:"1-Step · 10%",badge:"LIVE",target:"10%",daily:"3%",drawdown:"6%",split:"80%",leverage:"50x NQ · up to 100x platform",payout:"Instant · USDC",minDays:"0",timeLimit:"None shown",
-        tags:["Evaluation","Cross margin","25K observed $198"],
-        sizes:[{balance:2500,fee:null,feeLabel:"Live price"},{balance:5000,fee:null,feeLabel:"Live price"},{balance:10000,fee:null,feeLabel:"Live price"},{balance:25000,fee:198}]
+        tags:["Evaluation","Cross margin","5K $38 · 10K $76 · 25K $199 observed"],
+        sizes:[{balance:2500,fee:null,feeLabel:"Live price"},{balance:5000,fee:38},{balance:10000,fee:76},{balance:25000,fee:199}]
       },
       {
         id:"eval20",label:"1-Step · 20%",badge:"LIVE",target:"20%",daily:"3%",drawdown:"6%",split:"80%",leverage:"50x NQ · up to 100x platform",payout:"Instant · USDC",minDays:"0",timeLimit:"None shown",
@@ -133,8 +133,8 @@ export const firms = [
       },
       {
         id:"nodaily",label:"No Daily Loss",badge:"LIVE",target:"10%",daily:"None",drawdown:"6%",split:"80%",leverage:"50x NQ · up to 100x platform",payout:"Instant · USDC",minDays:"0",timeLimit:"None shown",
-        tags:["No daily loss limit","Cross margin"],
-        sizes:[{balance:2500,fee:null,feeLabel:"Live price"},{balance:5000,fee:null,feeLabel:"Live price"},{balance:10000,fee:null,feeLabel:"Live price"},{balance:25000,fee:null,feeLabel:"Live price"}]
+        tags:["No daily loss limit","Cross margin","5K $71.25 observed"],
+        sizes:[{balance:2500,fee:null,feeLabel:"Live price"},{balance:5000,fee:71.25},{balance:10000,fee:null,feeLabel:"Live price"},{balance:25000,fee:null,feeLabel:"Live price"}]
       },
       {
         id:"instant",label:"Instant",badge:"LIVE",target:"None",daily:"None",drawdown:"Market/account limit",split:"80%",leverage:"Up to 100x platform",payout:"Instant · USDC",minDays:"0",timeLimit:"None",
