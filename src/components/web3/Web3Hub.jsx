@@ -1,8 +1,6 @@
 import { useMemo, useState } from "react";
 import {
   ArrowUpRight,
-  ChevronRight,
-  Circle,
   ExternalLink,
   SlidersHorizontal,
   X
@@ -324,7 +322,7 @@ export default function Web3Hub(){
     setDetailId(id);
   }
 
-  return <main className="gp-site">
+  return <main className="gp-site" id="top">
     <header className="gp-nav">
       <a className="gp-wordmark" href="#top">GIGAPROP<span>.</span></a>
       <nav className="gp-nav-links">
@@ -332,62 +330,6 @@ export default function Web3Hub(){
       </nav>
       <div className="gp-nav-meta"><span>CAPITAL VELOCITY INTELLIGENCE</span><i/><span>SEP 2026</span></div>
     </header>
-
-    <section className="gp-hero gp-hero-clock" id="top">
-      <div className="gp-hero-copy">
-        <div className="gp-eyebrow"><Circle size={7} fill="currentColor"/> CAPITAL VELOCITY · WEB3 PROP · 24/7</div>
-        <h1>THE CLOCK<br/>IS <span>CAPITAL.</span></h1>
-        <div className="gp-hero-thesis">TIME IS THE HIDDEN FEE.</div>
-        <p>Traditional prop models charge you with the calendar: minimum days, activation lag, funded-day gates, payout windows and review queues. Web3 compresses the same loop toward immediate reuse of capital.</p>
-        <div className="gp-hero-actions">
-          <a className="gp-primary-link" href="#speed">See the time gap <ChevronRight size={16}/></a>
-          <a className="gp-quiet-link" href="#field">Open firm deck</a>
-        </div>
-      </div>
-
-      <div className="gp-clock-card" aria-label="Time drag versus Web3 capital velocity">
-        <div className="gp-clock-card-head">
-          <span>SAME CLOCK</span>
-          <strong>DIFFERENT OUTPUT</strong>
-          <i>TIME → MONEY</i>
-        </div>
-
-        <div className="gp-clock-lane gp-clock-lane-slow">
-          <div className="gp-clock-label">
-            <span>OLD MODEL</span>
-            <strong>WAITING STACKS</strong>
-          </div>
-          <div className="gp-clock-slow-flow">
-            {["BUY","MIN DAYS","ACTIVATE","FUNDED DAYS","PAYOUT WINDOW","REVIEW","PAID"].map((node,index)=>
-              <div className={"gp-clock-node drag-"+(index+1)} key={node}>
-                <b>{String(index+1).padStart(2,"0")}</b>
-                <span>{node}</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="gp-clock-lane gp-clock-lane-fast">
-          <div className="gp-clock-label">
-            <span>WEB3</span>
-            <strong>BOOM. BOOM. BOOM.</strong>
-          </div>
-          <div className="gp-clock-fast-flow">
-            {["PASS","PAYOUT","WITHDRAW","RELOAD","PASS","PAYOUT","WITHDRAW"].map((node,index)=>
-              <div className={"gp-clock-hit "+((node==="PAYOUT"||node==="WITHDRAW")?"is-cash":"")} style={{"--hit-delay":(index*.28)+"s"}} key={node+"-"+index}>
-                <b>{String(index+1).padStart(2,"0")}</b>
-                <span>{node}</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="gp-clock-card-foot">
-          <span>OLD: CAPITAL SITS</span>
-          <strong>WEB3: CAPITAL TURNS → TURNS → TURNS</strong>
-        </div>
-      </div>
-    </section>
 
     <SpeedManifesto />
 
