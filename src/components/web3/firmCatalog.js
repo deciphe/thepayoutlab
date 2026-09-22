@@ -1,6 +1,6 @@
 export const firms = [
   {
-    id:"hypernova", name:"Hypernova", mark:"HN", domain:"hypernova.xyz", logo:"https://hypernova.xyz/favicon.ico", url:"https://hypernova.xyz/",
+    id:"hypernova", name:"Hypernova", mark:"HN", domain:"hypernova.xyz", logo:"/brands/hypernova.ico", url:"https://hypernova.xyz/",
     status:"ON-CHAIN", venue:"Hyperliquid", price:280, plan:"Low Risk", target:10, daily:"3%", drawdown:"6% static", split:"80%",
     payout:"Instant · on-chain", leverage:"10x NQ · 5x BTC · 10x CL", indexLev:10, edge:"sub-second on-chain payouts",
     note:"On-chain risk engine, public payout reserve and Hyperliquid-sourced market data.",
@@ -30,7 +30,7 @@ export const firms = [
     ]
   },
   {
-    id:"propr", name:"Propr", mark:"PR", domain:"propr.xyz", logo:"https://www.propr.xyz/favicon.ico", url:"https://www.propr.xyz/",
+    id:"propr", name:"Propr", mark:"PR", domain:"propr.xyz", logo:"/brands/propr-icon.svg", url:"https://www.propr.xyz/",
     status:"ON-CHAIN", venue:"Hyperliquid", price:275, plan:"Classic", target:10, daily:"3%", drawdown:"6% static", split:"80%",
     payout:"On-demand · USDC", leverage:"Up to 10x", indexLev:10, edge:"API-first prop stack",
     note:"REST API, Python and JS SDKs with on-chain USDC payouts.",
@@ -90,7 +90,7 @@ export const firms = [
     ]
   },
   {
-    id:"vanta", name:"Vanta", mark:"VA", domain:"vantatrading.io", logo:"https://www.vantatrading.io/favicon.ico", url:"https://www.vantatrading.io/",
+    id:"vanta", name:"Vanta", mark:"VA", domain:"vantatrading.io", logo:"/brands/vanta.png", url:"https://www.vantatrading.io/",
     status:"DECENTRALIZED", venue:"Multi-asset", price:199, plan:"Classic", target:10, daily:"5%", drawdown:"5% static", split:"100% default",
     payout:"Weekly · on-chain", leverage:"2.5x base indices", indexLev:2.5, edge:"100% split by default",
     note:"One-step Classic with selectable split and buying power; Pro is earned, not purchased.",
@@ -114,7 +114,7 @@ export const firms = [
     ]
   },
   {
-    id:"vest", name:"Vest", mark:"VE", domain:"vestmarkets.com", logo:"https://www.vestmarkets.com/favicon.ico", url:"https://www.vestmarkets.com/",
+    id:"vest", name:"Vest", mark:"VE", domain:"vestmarkets.com", logo:"/brands/vest.ico", url:"https://www.vestmarkets.com/",
     status:"PERPS", venue:"Vest Markets", price:199, plan:"1-Step 10%", target:10, daily:"3%", drawdown:"6%", split:"80%",
     payout:"Instant · USDC", leverage:"50x NQ · up to 100x", indexLev:50, edge:"Extreme market leverage",
     note:"24/7 multi-asset perps with multiple evaluation styles and instant funded accounts.",
@@ -164,7 +164,7 @@ export const firms = [
     ]
   },
   {
-    id:"breakout", name:"Breakout", mark:"BR", domain:"breakoutprop.com", logo:"https://www.breakoutprop.com/favicon.ico", url:"https://www.breakoutprop.com/",
+    id:"breakout", name:"Breakout", mark:"BR", domain:"breakoutprop.com", logo:"/brands/breakout.ico", url:"https://www.breakoutprop.com/",
     status:"KRAKEN", venue:"Breakout Terminal", price:215, plan:"Classic", target:10, daily:"3%", drawdown:"6% static", split:"80–90%",
     payout:"24/7 on-demand", leverage:"Up to 10x", indexLev:10, edge:"Mature payout rails",
     note:"Three current 1-step programs with static drawdown and optional 90% split.",

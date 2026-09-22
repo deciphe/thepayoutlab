@@ -1,18 +1,19 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowUpRight,
+  ChevronRight,
   ExternalLink,
   SlidersHorizontal,
   X
 } from "lucide-react";
 import { firms, shortBalance } from "./firmCatalog";
 import SpeedManifesto from "./SpeedManifesto";
+import { executionMetrics } from "./executionMetrics";
 import "./web3-hub.css";
 import "./speed-manifesto.css";
 import "./comparison-deck.css";
 
-const BAR_MIN = 0.98;
-const EQ_BASE = 100000;
+const BAR_MIN = 0;
 const CORE_FIRM_IDS = ["vest","hypernova","propr","breakout","vanta"];
 const coreFirms = CORE_FIRM_IDS.map(id=>firms.find(f=>f.id===id)).filter(Boolean);
 
@@ -53,31 +54,31 @@ const cardSignals = {
     value:"50x",
     label:"NQ LEVERAGE",
     tone:"leverage",
-    edge:"Absolute leverage monster. 50x NQ is the reason."
+    edge:"50x NQ gives materially more notional per unit of margin."
   },
   hypernova:{
     value:"~6s",
     label:"AVG PAYOUT · FIRM-PUBLISHED",
     tone:"speed",
-    edge:"Payout speed is the product. Seconds, not payout windows."
+    edge:"Firm-published average payout time is measured in seconds."
   },
   propr:{
-    value:"HUMAN",
-    label:"GREAT SUPPORT",
+    value:"SUPPORT",
+    label:"RESPONSIVE TEAM",
     tone:"infra",
-    edge:"Standout support team. Actual humans, actual help."
+    edge:"Strong hands-on support is the standout."
   },
   breakout:{
     value:"$60M+",
     label:"PAID TO TRADERS",
     tone:"price",
-    edge:"Kraken-backed with a huge public payout history."
+    edge:"Kraken-backed with a large public payout history."
   },
   vanta:{
     value:"$1M",
     label:"PRO SCALE",
     tone:"split",
-    edge:"The scale play. Pro can grow to giant account balances."
+    edge:"Pro accounts can scale to very large balances."
   }
 };
 
@@ -88,8 +89,6 @@ const filters = [
   {id:"highlev",label:"10X+ NQ"},
   {id:"wide",label:"6%+ DD"}
 ];
-
-const leaders = [];
 
 function money(n){
   if(n==null) return "—";
@@ -120,17 +119,9 @@ function primaryPayout(value){
 }
 
 function FirmLogo({firm,className=""}) {
-  return <span className={"gp-logo "+className} aria-hidden="true">
-    <span className="gp-logo-fallback">{firm.mark}</span>
-    <img src={firm.logo} alt="" loading="lazy" onError={(e)=>{
-      const img=e.currentTarget;
-      if(!img.dataset.fallback){
-        img.dataset.fallback="1";
-        img.src=`https://www.google.com/s2/favicons?domain=${firm.domain}&sz=128`;
-      } else {
-        img.style.display="none";
-      }
-    }}/>
+  const [failed,setFailed]=useState(false);
+  return <span className={"gp-logo gp-logo-"+firm.id+" "+className+(failed?" is-fallback":"")} aria-hidden="true">
+    {failed ? <span className="gp-logo-fallback">{firm.mark}</span> : <img src={firm.logo} alt="" loading="lazy" onError={()=>setFailed(true)}/>}
   </span>;
 }
 
@@ -155,6 +146,7 @@ function FirmCard({firm,onOpen,index}){
         <FirmLogo firm={firm}/>
         <div><h3>{firm.name}</h3><span>{firm.status}</span></div>
       </div>
+      {firm.id==="vest" && <span className="firm-card-pick">TOP PICK</span>}
       <a href={firm.url} target="_blank" rel="noreferrer" onClick={e=>e.stopPropagation()} aria-label={"Visit "+firm.name}>
         <ArrowUpRight size={16}/>
       </a>
@@ -183,6 +175,23 @@ function FirmCard({firm,onOpen,index}){
 }
 
 function FirmDrawer({firm,onClose}){
+  const drawerRef=useRef(null);
+  useEffect(()=>{
+    const previous=document.activeElement;
+    const overflow=document.body.style.overflow;
+    document.body.style.overflow="hidden";
+    drawerRef.current?.querySelector('button')?.focus();
+    const handleKey=(e)=>{
+      if(e.key==="Escape") onClose();
+      if(e.key!=="Tab") return;
+      const nodes=[...drawerRef.current.querySelectorAll('button:not(:disabled), a[href]')];
+      const first=nodes[0],last=nodes.at(-1);
+      if(e.shiftKey && document.activeElement===first){e.preventDefault();last?.focus();}
+      else if(!e.shiftKey && document.activeElement===last){e.preventDefault();first?.focus();}
+    };
+    document.addEventListener('keydown',handleKey);
+    return ()=>{document.body.style.overflow=overflow;document.removeEventListener('keydown',handleKey);previous?.focus();};
+  },[]);
   const initial=defaultProgram(firm);
   const [programId,setProgramId]=useState(initial.id);
   const [sizeIndex,setSizeIndex]=useState(()=>{
@@ -202,7 +211,7 @@ function FirmDrawer({firm,onClose}){
   }
 
   return <div className="firm-drawer-shell" role="dialog" aria-modal="true" aria-label={firm.name+" details"} onClick={onClose}>
-    <aside className="firm-drawer" onClick={e=>e.stopPropagation()}>
+    <aside ref={drawerRef} className="firm-drawer" onClick={e=>e.stopPropagation()}>
       <div className="firm-drawer-top">
         <div className="firm-drawer-brand"><FirmLogo firm={firm}/><div><span>{firm.status}</span><h2>{firm.name}</h2></div></div>
         <button type="button" onClick={onClose} aria-label="Close firm details"><X size={18}/></button>
@@ -210,7 +219,7 @@ function FirmDrawer({firm,onClose}){
 
       <p className="firm-drawer-note">{firm.note}</p>
 
-      <div className="firm-drawer-tabs" role="tablist">
+      <div className="firm-drawer-tabs" aria-label="Programs">
         {firm.programs.map(p=><button type="button" key={p.id} className={p.id===program.id?"is-active":""} onClick={()=>selectProgram(p.id)}>
           <span>{p.label}</span><small>{p.badge}</small>
         </button>)}
@@ -302,17 +311,15 @@ export default function Web3Hub(){
     const pair=fees[asset][f.id];
     const raw=pair?.[feeMode==="maker"?0:1];
     const fee=feeMode==="avg" ? (pair && pair[0]!=null && pair[1]!=null ? (pair[0]+pair[1])/2 : null) : raw;
-    const retained=fee==null ? null : 1-((fee/100)*2*10);
-    const barPct=retained==null ? 0 : Math.max(0,Math.min(100,((retained-BAR_MIN)/(1-BAR_MIN))*100));
     const leverage=marketLeverage[f.id]?.[asset] ?? null;
-    const fullportNotional=leverage ? EQ_BASE*leverage : null;
-    const roundTripFee=fee!=null && fullportNotional!=null ? fullportNotional*(fee/100)*2 : null;
-    return {...f,fee,retained,barPct,marketLev:leverage,fullportNotional,roundTripFee};
+    const {retained,timeFactor,velocity}=executionMetrics(fee,leverage);
+    const barPct=retained==null ? 0 : Math.max(0,Math.min(100,((retained-BAR_MIN)/(1-BAR_MIN))*100));
+    return {...f,fee,retained,barPct,marketLev:leverage,timeFactor,velocity};
   }).sort((a,b)=>{
-    if(a.retained==null && b.retained==null) return a.name.localeCompare(b.name);
-    if(a.retained==null) return 1;
-    if(b.retained==null) return -1;
-    if(b.retained!==a.retained) return b.retained-a.retained;
+    if(a.velocity==null && b.velocity==null) return a.name.localeCompare(b.name);
+    if(a.velocity==null) return 1;
+    if(b.velocity==null) return -1;
+    if(b.velocity!==a.velocity) return b.velocity-a.velocity;
     return a.name.localeCompare(b.name);
   }),[asset,feeMode]);
 
@@ -337,7 +344,7 @@ export default function Web3Hub(){
       <div className="firm-deck-header">
         <div>
           <span className="gp-section-no">01</span>
-          <div><h2>Firm deck</h2><p>Five firms. Five reasons to care. Click only when you want depth.</p></div>
+          <div><h2>Firm deck</h2><p>My five picks. What stands out, and what it costs.</p></div>
         </div>
         <div className="firm-deck-count">{String(visibleFirms.length).padStart(2,"0")} / {String(coreFirms.length).padStart(2,"0")}</div>
       </div>
@@ -365,8 +372,8 @@ export default function Web3Hub(){
     </section>
 
     <section className="gp-degen-section" id="degen">
-      <div className="gp-section-head">
-        <div><span className="gp-section-no">02</span><h2>Execution drag</h2></div>
+      <div className="gp-section-head gp-velocity-head">
+        <div><span className="gp-section-no">02</span><div><h2>True R velocity</h2><p className="gp-section-note">Compare fees and buying power together. NQ is the default; Vest is my primary pick.</p></div></div>
         <div className="gp-degen-controls">
           <div className="gp-segment">
             {["crypto","fx","indices","commodities"].map(x=><button type="button" key={x} className={asset===x?"is-active":""} onClick={()=>setAsset(x)}>{marketProfiles[x].label}</button>)}
@@ -379,13 +386,13 @@ export default function Web3Hub(){
 
       <div className="gp-fee-board gp-fee-board-clean">
         <div className="gp-fee-board-head">
-          <div><span>FEE RANK</span><strong>{marketProfiles[asset].label} · {feeMode.toUpperCase()}</strong></div>
-          <div className="gp-fee-scale"><span>0.980R</span><i/><span>0.990R</span><i/><span>1.000R</span></div>
-          <div><span>R KEPT</span><strong>AFTER FEES</strong></div>
-          <div><span>100K EQ</span><strong>ROUND TRIP</strong></div>
+          <div><span>VELOCITY RANK</span><strong>{marketProfiles[asset].label} · {feeMode.toUpperCase()}</strong></div>
+          <div className="gp-fee-scale"><span>0R</span><i/><span>0.5R</span><i/><span>1R KEPT</span></div>
+          <div><span>LEVERAGE FACTOR</span><strong>10x = 1.00</strong></div>
+          <div><span>VELOCITY INDEX</span><strong>R × FACTOR</strong></div>
         </div>
 
-        {feeRows.map((f,index)=><div className="gp-fee-row gp-fee-row-v2" key={f.id}>
+        {feeRows.map((f,index)=><div className={"gp-fee-row gp-fee-row-v2"+(index===0 && f.velocity!=null?" is-velocity-leader":"")} key={f.id}>
           <div className="gp-fee-name">
             <span className="gp-fee-rank">{String(index+1).padStart(2,"0")}</span>
             <FirmLogo firm={f}/>
@@ -400,16 +407,17 @@ export default function Web3Hub(){
           </div>
 
           <div className="gp-fee-number">
-            <b>{f.retained==null?"n/a":f.retained.toFixed(3)+"R"}</b>
-            <small>{f.fee==null?"—":f.fee.toFixed(f.fee<.01?4:3)+"% / side"}</small>
+            <b>{f.timeFactor==null?"—":f.timeFactor.toFixed(2)+"×"}</b>
+            <small>{f.marketLev?f.marketLev+"x leverage / 10x base":"leverage n/a"}</small>
           </div>
 
-          <div className="gp-fee-cash">
-            <b>{f.roundTripFee==null?"—":money(f.roundTripFee)}</b>
-            <small>{f.fullportNotional?money(f.fullportNotional)+" notional":"actual leverage n/a"}</small>
+          <div className="gp-fee-cash gp-velocity-number">
+            <b>{f.velocity==null?"—":f.velocity.toFixed(3)+"×"}</b>
+            <small>{f.retained==null?"R unavailable":f.retained.toFixed(4)+"R kept after fees"}</small>
           </div>
         </div>)}
       </div>
+      <details className="gp-model-note"><summary>How this comparison works</summary><p>Illustration: 1R = 1% of account equity, using each market’s listed maximum leverage. R kept = 1 − round-trip fee ÷ 1R. Index = R kept × leverage ÷ 10. Higher leverage increases losses as well as buying power; it does not measure actual time to payout.</p><p>Fee inputs are the existing September 2026 snapshot, per side. Spreads, slippage, funding, profit splits and payout waiting time are excluded. A zero commission is not zero total cost. Unavailable markets remain unranked. Confirm current instrument terms with the firm.</p></details>
     </section>
 
     <section className="gp-thesis">

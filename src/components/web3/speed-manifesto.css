@@ -22,12 +22,12 @@
   display:grid;grid-template-columns:minmax(0,1.08fr) minmax(340px,.92fr);
   gap:76px;align-items:end;padding:34px 0 56px;
 }
-.speed-title-grid h2{
+.speed-title-grid h1{
   margin:0;font-family:"Manrope",sans-serif;
   font-size:clamp(58px,8vw,126px);line-height:.79;
   letter-spacing:-.075em;font-weight:800;
 }
-.speed-title-grid h2 em{font-style:normal;color:#b6ff4a}
+.speed-title-grid h1 em{font-style:normal;color:#b6ff4a}
 .speed-thesis-copy{max-width:650px;padding-bottom:2px}
 .speed-thesis-copy p{margin:0 0 15px;color:rgba(255,255,255,.61);font-size:15px;line-height:1.72}
 .speed-thesis-copy p:first-child{color:#fff;font-size:21px;line-height:1.35;font-weight:700}
@@ -146,7 +146,7 @@
 @media (max-width:900px){
   .speed-manifesto{width:min(100% - 28px,1380px);padding-top:52px;margin-bottom:68px}
   .speed-title-grid{grid-template-columns:1fr;gap:32px;padding-bottom:40px}
-  .speed-title-grid h2{font-size:clamp(58px,17vw,92px)}
+  .speed-title-grid h1{font-size:clamp(58px,17vw,92px)}
   .speed-race-head{grid-template-columns:1fr auto}.speed-race-head strong{display:none}
   .speed-lane{grid-template-columns:1fr}.speed-lane-label{min-height:auto;display:grid;grid-template-columns:1fr 1fr;border-right:0;border-bottom:1px solid rgba(255,255,255,.08)}
   .speed-lane-label strong{text-align:right}

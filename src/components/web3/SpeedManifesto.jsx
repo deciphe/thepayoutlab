@@ -8,7 +8,7 @@ export default function SpeedManifesto(){
 
   const proofs=[
     {firm:"HYPERNOVA",signal:"PAYOUT SPEED",value:"~6 SEC",detail:"Firm-published average payout time. The wait has been compressed down to seconds."},
-    {firm:"VEST CAPITAL",signal:"NQ LEVERAGE",value:"50x",detail:"The standout weapon: extreme NQ leverage inside a wallet-native funded stack."},
+    {firm:"VEST CAPITAL",signal:"NQ LEVERAGE",value:"50x",detail:"50x NQ leverage is my standout reason for choosing Vest."},
     {firm:"BREAKOUT",signal:"BACKING + HISTORY",value:"$60M+",detail:"Kraken-backed with more than $60M paid to traders since launch and a public payout history."}
   ];
 
@@ -16,7 +16,7 @@ export default function SpeedManifesto(){
     <div className="speed-kicker"><span>00</span><i/> THE MODEL SHIFT</div>
 
     <div className="speed-title-grid">
-      <div><h2>SAME CLOCK.<br/><em>MORE TURNS.</em></h2></div>
+      <div><h1>SAME CLOCK.<br/><em>MORE TURNS.</em></h1></div>
       <div className="speed-thesis-copy">
         <p>Time is part of the cost.</p>
         <p>Minimum days, activation delays, funded-day requirements, payout windows, manual reviews and settlement lag all slow the return of usable capital.</p>
@@ -57,12 +57,6 @@ export default function SpeedManifesto(){
         <strong>TRADITIONAL: ONE LONGER PATH TO CASH.</strong>
         <strong className="is-green">WEB3: MORE CAPITAL TURNS IN THE SAME TIME.</strong>
       </div>
-    </div>
-
-    <div className="speed-loop-mini" aria-label="Compressed Web3 prop loop">
-      {["PAY","TRADE","PASS","FUNDED","PAYOUT","WITHDRAW","REPEAT"].map((step,index)=><div key={step}>
-        <span>{String(index+1).padStart(2,"0")}</span><strong>{step}</strong>{index<6&&<i>→</i>}
-      </div>)}
     </div>
 
     <div className="speed-proof-grid">

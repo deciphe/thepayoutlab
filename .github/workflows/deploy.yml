@@ -36,6 +36,9 @@ jobs:
       - name: Build gigaprop
         run: npm run build
 
+      - name: Check page render and execution calculations
+        run: node scripts/test-web3.mjs
+
       - name: Build Maven Edition
         run: npm run build --prefix maven-site
 
