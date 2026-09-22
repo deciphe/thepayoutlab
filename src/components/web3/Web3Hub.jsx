@@ -276,7 +276,6 @@ function CompactMatrix(){
 }
 
 export default function Web3Hub(){
-  const [activeId,setActiveId]=useState("vest");
   const [detailId,setDetailId]=useState(null);
   const [filter,setFilter]=useState("all");
   const [sort,setSort]=useState("signal");
@@ -322,7 +321,6 @@ export default function Web3Hub(){
   const detailFirm=coreFirms.find(f=>f.id===detailId);
 
   function openFirm(id){
-    setActiveId(id);
     setDetailId(id);
   }
 
@@ -335,28 +333,59 @@ export default function Web3Hub(){
       <div className="gp-nav-meta"><span>CAPITAL VELOCITY INTELLIGENCE</span><i/><span>SEP 2026</span></div>
     </header>
 
-    <section className="gp-hero" id="top">
+    <section className="gp-hero gp-hero-clock" id="top">
       <div className="gp-hero-copy">
         <div className="gp-eyebrow"><Circle size={7} fill="currentColor"/> CAPITAL VELOCITY · WEB3 PROP · 24/7</div>
-        <h1>Time is the<br/><span>hidden fee.</span></h1>
-        <p>The fastest Web3 prop firms compress pay → pass → funded → payout into one continuous loop. The model is shifting from calendar-gated capital to capital that can turn again immediately.</p>
+        <h1>THE CLOCK<br/>IS <span>CAPITAL.</span></h1>
+        <div className="gp-hero-thesis">TIME IS THE HIDDEN FEE.</div>
+        <p>Traditional prop models charge you with the calendar: minimum days, activation lag, funded-day gates, payout windows and review queues. Web3 compresses the same loop toward immediate reuse of capital.</p>
         <div className="gp-hero-actions">
-          <a className="gp-primary-link" href="#speed">See the model shift <ChevronRight size={16}/></a>
+          <a className="gp-primary-link" href="#speed">See the time gap <ChevronRight size={16}/></a>
           <a className="gp-quiet-link" href="#field">Open firm deck</a>
         </div>
       </div>
 
-      <div className="gp-orbit" aria-label="Web3 prop firm orbit">
-        <div className="gp-orbit-ring gp-ring-a"/><div className="gp-orbit-ring gp-ring-b"/><div className="gp-orbit-ring gp-ring-c"/>
-        <div className="gp-wisp-core" aria-hidden="true">
-          <div className="gp-core-glow"/><div className="gp-core-pulse-ring"/><img src="./wisp.webp" alt=""/>
+      <div className="gp-clock-card" aria-label="Time drag versus Web3 capital velocity">
+        <div className="gp-clock-card-head">
+          <span>SAME CLOCK</span>
+          <strong>DIFFERENT OUTPUT</strong>
+          <i>TIME → MONEY</i>
         </div>
-        {coreFirms.map(f=><button type="button" key={f.id}
-          className={"gp-orbit-firm"+(f.id===activeId?" is-active":"")}
-          style={{"--node-x":f.orbit.x,"--node-y":f.orbit.y,"--node-delay":f.orbit.delay}}
-          data-name={f.name} onClick={()=>openFirm(f.id)} aria-label={`Inspect ${f.name}`}>
-          <FirmLogo firm={f} className="gp-orbit-logo"/>
-        </button>)}
+
+        <div className="gp-clock-lane gp-clock-lane-slow">
+          <div className="gp-clock-label">
+            <span>OLD MODEL</span>
+            <strong>WAITING STACKS</strong>
+          </div>
+          <div className="gp-clock-slow-flow">
+            {["BUY","MIN DAYS","ACTIVATE","FUNDED DAYS","PAYOUT WINDOW","REVIEW","PAID"].map((node,index)=>
+              <div className={"gp-clock-node drag-"+(index+1)} key={node}>
+                <b>{String(index+1).padStart(2,"0")}</b>
+                <span>{node}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="gp-clock-lane gp-clock-lane-fast">
+          <div className="gp-clock-label">
+            <span>WEB3</span>
+            <strong>BOOM. BOOM. BOOM.</strong>
+          </div>
+          <div className="gp-clock-fast-flow">
+            {["PASS","PAYOUT","WITHDRAW","RELOAD","PASS","PAYOUT","WITHDRAW"].map((node,index)=>
+              <div className={"gp-clock-hit "+((node==="PAYOUT"||node==="WITHDRAW")?"is-cash":"")} style={{"--hit-delay":(index*.28)+"s"}} key={node+"-"+index}>
+                <b>{String(index+1).padStart(2,"0")}</b>
+                <span>{node}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="gp-clock-card-foot">
+          <span>OLD: CAPITAL SITS</span>
+          <strong>WEB3: CAPITAL TURNS → TURNS → TURNS</strong>
+        </div>
       </div>
     </section>
 
