@@ -15,6 +15,8 @@ import "./comparison-deck.css";
 
 const BAR_MIN = 0.98;
 const EQ_BASE = 100000;
+const CORE_FIRM_IDS = ["vest","hypernova","propr","breakout","vanta"];
+const coreFirms = CORE_FIRM_IDS.map(id=>firms.find(f=>f.id===id)).filter(Boolean);
 
 const marketProfiles = {
   indices:{label:"NQ",name:"Nasdaq 100"},
@@ -49,13 +51,36 @@ const fees = {
 };
 
 const cardSignals = {
-  hypernova:{value:"7%",label:"STATIC DD",tone:"buffer"},
-  propr:{value:"API",label:"FIRST STACK",tone:"infra"},
-  doji:{value:"25x",label:"FX LEVERAGE",tone:"leverage"},
-  vanta:{value:"100%",label:"DEFAULT SPLIT",tone:"split"},
-  vest:{value:"50x",label:"NQ LEVERAGE",tone:"leverage"},
-  hyperpnl:{value:"CODE",label:"PAYOUT RAIL",tone:"infra"},
-  breakout:{value:"$95",label:"25K TURBO",tone:"price"}
+  vest:{
+    value:"50x",
+    label:"NQ LEVERAGE",
+    tone:"leverage",
+    edge:"Absolute leverage monster. 50x NQ is the reason."
+  },
+  hypernova:{
+    value:"~6s",
+    label:"AVG PAYOUT · FIRM-PUBLISHED",
+    tone:"speed",
+    edge:"Payout speed is the product. Seconds, not payout windows."
+  },
+  propr:{
+    value:"HUMAN",
+    label:"GREAT SUPPORT",
+    tone:"infra",
+    edge:"Standout support team. Actual humans, actual help."
+  },
+  breakout:{
+    value:"$60M+",
+    label:"PAID TO TRADERS",
+    tone:"price",
+    edge:"Kraken-backed with a huge public payout history."
+  },
+  vanta:{
+    value:"$1M",
+    label:"PRO SCALE",
+    tone:"split",
+    edge:"The scale play. Pro can grow to giant account balances."
+  }
 };
 
 const filters = [
@@ -66,12 +91,7 @@ const filters = [
   {id:"wide",label:"6%+ DD"}
 ];
 
-const leaders = [
-  {label:"LOWEST 25K",value:"$95",firm:"Breakout · Turbo"},
-  {label:"NQ LEVERAGE",value:"50x",firm:"Vest"},
-  {label:"DEFAULT SPLIT",value:"100%",firm:"Vanta"},
-  {label:"STATIC DD",value:"7%",firm:"Hypernova · Medium"}
-];
+const leaders = [];
 
 function money(n){
   if(n==null) return "—";
@@ -158,7 +178,7 @@ function FirmCard({firm,onOpen,index}){
 
     <div className="firm-card-foot">
       <div><span>PAYOUT</span><strong>{payout}</strong></div>
-      <div className="firm-card-edge">{firm.edge}</div>
+      <div className="firm-card-edge">{signal.edge || firm.edge}</div>
       <ChevronRight size={16}/>
     </div>
   </article>;
@@ -247,7 +267,7 @@ function CompactMatrix(){
     <div className="gp-matrix-wrap"><table className="gp-matrix"><thead><tr>
       <th>Firm</th><th>25K</th><th>Default</th><th>Target</th><th>Daily</th><th>Max DD</th><th>Split</th><th>NQ</th><th>Payout</th>
     </tr></thead><tbody>
-      {firms.map(f=>{
+      {coreFirms.map(f=>{
         const p=defaultProgram(f);
         return <tr key={f.id}><td className="gp-matrix-name">{f.name}</td><td>{money(f.price)}</td><td>{f.plan}</td><td>{p.target}</td><td>{p.daily}</td><td>{p.drawdown}</td><td>{p.split}</td><td>{f.indexLev?f.indexLev+"x":"—"}</td><td>{p.payout}</td></tr>;
       })}
@@ -264,7 +284,7 @@ export default function Web3Hub(){
   const [feeMode,setFeeMode]=useState("taker");
 
   const visibleFirms=useMemo(()=>{
-    let list=[...firms];
+    let list=[...coreFirms];
     list=list.filter(f=>{
       const p=defaultProgram(f);
       if(filter==="all") return true;
@@ -281,7 +301,7 @@ export default function Web3Hub(){
     return list;
   },[filter,sort]);
 
-  const feeRows=useMemo(()=>firms.map(f=>{
+  const feeRows=useMemo(()=>coreFirms.map(f=>{
     const pair=fees[asset][f.id];
     const raw=pair?.[feeMode==="maker"?0:1];
     const fee=feeMode==="avg" ? (pair && pair[0]!=null && pair[1]!=null ? (pair[0]+pair[1])/2 : null) : raw;
@@ -299,7 +319,7 @@ export default function Web3Hub(){
     return a.name.localeCompare(b.name);
   }),[asset,feeMode]);
 
-  const detailFirm=firms.find(f=>f.id===detailId);
+  const detailFirm=coreFirms.find(f=>f.id===detailId);
 
   function openFirm(id){
     setActiveId(id);
@@ -331,7 +351,7 @@ export default function Web3Hub(){
         <div className="gp-wisp-core" aria-hidden="true">
           <div className="gp-core-glow"/><div className="gp-core-pulse-ring"/><img src="./wisp.webp" alt=""/>
         </div>
-        {firms.map(f=><button type="button" key={f.id}
+        {coreFirms.map(f=><button type="button" key={f.id}
           className={"gp-orbit-firm"+(f.id===activeId?" is-active":"")}
           style={{"--node-x":f.orbit.x,"--node-y":f.orbit.y,"--node-delay":f.orbit.delay}}
           data-name={f.name} onClick={()=>openFirm(f.id)} aria-label={`Inspect ${f.name}`}>
@@ -346,13 +366,9 @@ export default function Web3Hub(){
       <div className="firm-deck-header">
         <div>
           <span className="gp-section-no">01</span>
-          <div><h2>Firm deck</h2><p>Seven firms. Six numbers. Click only when you want depth.</p></div>
+          <div><h2>Firm deck</h2><p>Five firms. Five reasons to care. Click only when you want depth.</p></div>
         </div>
-        <div className="firm-deck-count">{String(visibleFirms.length).padStart(2,"0")} / {String(firms.length).padStart(2,"0")}</div>
-      </div>
-
-      <div className="firm-leader-strip">
-        {leaders.map(item=><div key={item.label}><span>{item.label}</span><strong>{item.value}</strong><small>{item.firm}</small></div>)}
+        <div className="firm-deck-count">{String(visibleFirms.length).padStart(2,"0")} / {String(coreFirms.length).padStart(2,"0")}</div>
       </div>
 
       <div className="firm-deck-tools">
