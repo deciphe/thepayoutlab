@@ -1,7 +1,9 @@
 import { useMemo, useState } from "react";
 import { ArrowUpRight, ChevronRight, Circle, ExternalLink } from "lucide-react";
 import { firms, shortBalance } from "./firmCatalog";
+import SpeedManifesto from "./SpeedManifesto";
 import "./web3-hub.css";
+import "./speed-manifesto.css";
 
 const NQ = 29679;
 const BAR_MIN = 0.98;
@@ -72,11 +74,12 @@ const leaders = [
   {metric:"WIDEST 1-STEP DD",firm:"Hypernova",firmId:"hypernova",value:"7%",detail:"Medium · static"},
   {metric:"HIGHEST DEFAULT SPLIT",firm:"Vanta",firmId:"vanta",value:"100%",detail:"Classic"},
   {metric:"NQ LEVERAGE",firm:"Vest",firmId:"vest",value:"50x",detail:"NQ"},
-  {metric:"PAYOUT SPEED",firm:"Hypernova",firmId:"hypernova",value:"~6.1s",detail:"average"}
+  {metric:"TIME TO CASH",firm:"Vest + Breakout",firmId:null,value:"24/7",detail:"instant / on-demand"}
 ];
 
 function money(n){
-  return new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(n);
+  const decimals=Number.isInteger(Number(n))?0:2;
+  return new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",minimumFractionDigits:decimals,maximumFractionDigits:2}).format(n);
 }
 
 function FirmLogo({firm,className=""}) {
@@ -156,6 +159,13 @@ function FirmProfile({firm,isActive,onActive}){
         </div>
         <a href={firm.url} target="_blank" rel="noreferrer" aria-label={"Open "+firm.name}><ArrowUpRight size={18}/></a>
       </div>
+    </div>
+
+    <div className="gp-speed-rail" aria-label={firm.name+" speed profile"}>
+      <div className="gp-speed-rail-label"><i/><span>CAPITAL VELOCITY</span></div>
+      <div><small>PASS GATE</small><strong>{program.minDays==="0"?"NO MIN DAYS":program.minDays}</strong></div>
+      <div><small>PAYOUT RAIL</small><strong>{program.payout}</strong></div>
+      <div><small>TIME LIMIT</small><strong>{program.timeLimit}</strong></div>
     </div>
 
     <div className="gp-size-row">
@@ -254,19 +264,19 @@ export default function Web3Hub(){
     <header className="gp-nav">
       <a className="gp-wordmark" href="#top">GIGAPROP<span>.</span></a>
       <nav className="gp-nav-links">
-        <a href="#field">Programs</a><a href="#degen">Fullport</a><a href="#matrix">Matrix</a>
+        <a href="#speed">Speed</a><a href="#field">Programs</a><a href="#degen">Fullport</a><a href="#matrix">Matrix</a>
       </nav>
-      <div className="gp-nav-meta"><span>PERPETUAL PROP INTELLIGENCE</span><i/><span>SEP 2026</span></div>
+      <div className="gp-nav-meta"><span>TIME-TO-CASH INTELLIGENCE</span><i/><span>SEP 2026</span></div>
     </header>
 
     <section className="gp-hero" id="top">
       <div className="gp-hero-copy">
-        <div className="gp-eyebrow"><Circle size={7} fill="currentColor"/> PROP FIRMS · PERPETUALS · ON-CHAIN</div>
-        <h1>Perpetual props,<br/><span>mapped.</span></h1>
-        <p>Prices, plans, leverage, execution and payout rails across the new Web3 prop stack.</p>
+        <div className="gp-eyebrow"><Circle size={7} fill="currentColor"/> CAPITAL VELOCITY · WEB3 PROP · 24/7</div>
+        <h1>Time is the<br/><span>hidden fee.</span></h1>
+        <p>The fastest Web3 prop firms compress pay → pass → funded → payout into one continuous loop. No calendar games. No payout-window mindset. Capital moves when the trade is done.</p>
         <div className="gp-hero-actions">
-          <a className="gp-primary-link" href="#field">Explore programs <ChevronRight size={16}/></a>
-          <a className="gp-quiet-link" href="#degen">Open fullport map</a>
+          <a className="gp-primary-link" href="#speed">See the speed gap <ChevronRight size={16}/></a>
+          <a className="gp-quiet-link" href="#field">Compare programs</a>
         </div>
       </div>
 
@@ -283,6 +293,8 @@ export default function Web3Hub(){
         </button>)}
       </div>
     </section>
+
+    <SpeedManifesto />
 
     <section className="gp-index-section" id="field">
       <div className="gp-section-head compact">
@@ -377,17 +389,17 @@ export default function Web3Hub(){
     <section className="gp-compare-section" id="matrix">
       <div className="gp-section-head compact"><div><span className="gp-section-no">04</span><h2>25K baseline</h2></div></div>
       <div className="gp-matrix-wrap"><table className="gp-matrix"><thead><tr>
-        <th>Firm</th><th>25K</th><th>Default</th><th>Target</th><th>Daily</th><th>Max DD</th><th>Split</th><th>Leverage</th><th>Payout</th>
+        <th>Firm</th><th>25K</th><th>Default</th><th>Target</th><th>Daily</th><th>Max DD</th><th>Split</th><th>Min days</th><th>Leverage</th><th>Payout</th>
       </tr></thead><tbody>
-        {firms.map(f=><tr key={f.id}><td className="gp-matrix-name">{f.name}</td><td>{money(f.price)}</td><td>{f.plan}</td><td>{f.target}%</td><td>{f.daily}</td><td>{f.drawdown}</td><td>{f.split}</td><td>{f.leverage}</td><td>{f.payout}</td></tr>)}
+        {firms.map(f=><tr key={f.id}><td className="gp-matrix-name">{f.name}</td><td>{money(f.price)}</td><td>{f.plan}</td><td>{f.target}%</td><td>{f.daily}</td><td>{f.drawdown}</td><td>{f.split}</td><td>{defaultProgram(f).minDays}</td><td>{f.leverage}</td><td>{f.payout}</td></tr>)}
       </tbody></table></div>
     </section>
 
     <section className="gp-thesis">
-      <div className="gp-thesis-line"/><p>Price is the ticket. <span>Leverage and execution decide how much edge survives.</span></p>
-      <a href="#degen">Fullport map <ExternalLink size={14}/></a>
+      <div className="gp-thesis-line"/><p>The fee is visible. <span>The wait is not. Measure both.</span></p>
+      <a href="#speed">Capital velocity <ExternalLink size={14}/></a>
     </section>
 
-    <footer className="gp-footer"><a className="gp-wordmark" href="#top">GIGAPROP<span>.</span></a><p>Perpetual prop intelligence.</p><span>SEP 2026</span></footer>
+    <footer className="gp-footer"><a className="gp-wordmark" href="#top">GIGAPROP<span>.</span></a><p>Capital velocity intelligence.</p><span>SEP 2026</span></footer>
   </main>;
 }
