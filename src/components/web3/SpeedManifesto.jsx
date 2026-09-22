@@ -16,9 +16,9 @@ export default function SpeedManifesto(){
     <div className="speed-kicker"><span>00</span><i/> THE MODEL SHIFT</div>
 
     <div className="speed-title-grid">
-      <div><h2>THE CLOCK<br/>IS <em>CAPITAL.</em></h2></div>
+      <div><h2>SAME CLOCK.<br/><em>MORE TURNS.</em></h2></div>
       <div className="speed-thesis-copy">
-        <p>A challenge fee is obvious. Waiting is not.</p>
+        <p>The fee is visible. The wait is not.</p>
         <p>Minimum days, activation delays, funded-day requirements, payout windows, manual reviews and settlement lag all reduce how quickly the same bankroll can turn again.</p>
         <strong>Price tells you the cost to enter. <u>Velocity tells you the cost to operate.</u></strong>
       </div>
