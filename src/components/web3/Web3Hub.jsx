@@ -53,31 +53,31 @@ const cardSignals = {
     value:"50x",
     label:"NQ LEVERAGE",
     tone:"leverage",
-    edge:"Absolute leverage monster. 50x NQ is the reason."
+    edge:"50x NQ gives materially more notional per unit of margin."
   },
   hypernova:{
     value:"~6s",
     label:"AVG PAYOUT · FIRM-PUBLISHED",
     tone:"speed",
-    edge:"Payout speed is the product. Seconds, not payout windows."
+    edge:"Firm-published average payout time is measured in seconds."
   },
   propr:{
-    value:"HUMAN",
-    label:"GREAT SUPPORT",
+    value:"SUPPORT",
+    label:"RESPONSIVE TEAM",
     tone:"infra",
-    edge:"Standout support team. Actual humans, actual help."
+    edge:"Strong hands-on support is the standout."
   },
   breakout:{
     value:"$60M+",
     label:"PAID TO TRADERS",
     tone:"price",
-    edge:"Kraken-backed with a huge public payout history."
+    edge:"Kraken-backed with a large public payout history."
   },
   vanta:{
     value:"$1M",
     label:"PRO SCALE",
     tone:"split",
-    edge:"The scale play. Pro can grow to giant account balances."
+    edge:"Pro accounts can scale to very large balances."
   }
 };
 
@@ -88,8 +88,6 @@ const filters = [
   {id:"highlev",label:"10X+ NQ"},
   {id:"wide",label:"6%+ DD"}
 ];
-
-const leaders = [];
 
 function money(n){
   if(n==null) return "—";
@@ -120,17 +118,18 @@ function primaryPayout(value){
 }
 
 function FirmLogo({firm,className=""}) {
-  return <span className={"gp-logo "+className} aria-hidden="true">
+  const [failed,setFailed]=useState(false);
+  return <span className={"gp-logo gp-logo-"+firm.id+" "+className+(failed?" is-fallback":"")} aria-hidden="true">
     <span className="gp-logo-fallback">{firm.mark}</span>
-    <img src={firm.logo} alt="" loading="lazy" onError={(e)=>{
+    {!failed && <img src={firm.logo} alt="" loading="lazy" onError={(e)=>{
       const img=e.currentTarget;
       if(!img.dataset.fallback){
         img.dataset.fallback="1";
         img.src=`https://www.google.com/s2/favicons?domain=${firm.domain}&sz=128`;
       } else {
-        img.style.display="none";
+        setFailed(true);
       }
-    }}/>
+    }}/>}
   </span>;
 }
 
@@ -155,6 +154,7 @@ function FirmCard({firm,onOpen,index}){
         <FirmLogo firm={firm}/>
         <div><h3>{firm.name}</h3><span>{firm.status}</span></div>
       </div>
+      {firm.id==="vest" && <span className="firm-card-pick">TOP PICK</span>}
       <a href={firm.url} target="_blank" rel="noreferrer" onClick={e=>e.stopPropagation()} aria-label={"Visit "+firm.name}>
         <ArrowUpRight size={16}/>
       </a>
@@ -302,17 +302,17 @@ export default function Web3Hub(){
     const pair=fees[asset][f.id];
     const raw=pair?.[feeMode==="maker"?0:1];
     const fee=feeMode==="avg" ? (pair && pair[0]!=null && pair[1]!=null ? (pair[0]+pair[1])/2 : null) : raw;
-    const retained=fee==null ? null : 1-((fee/100)*2*10);
-    const barPct=retained==null ? 0 : Math.max(0,Math.min(100,((retained-BAR_MIN)/(1-BAR_MIN))*100));
     const leverage=marketLeverage[f.id]?.[asset] ?? null;
-    const fullportNotional=leverage ? EQ_BASE*leverage : null;
-    const roundTripFee=fee!=null && fullportNotional!=null ? fullportNotional*(fee/100)*2 : null;
-    return {...f,fee,retained,barPct,marketLev:leverage,fullportNotional,roundTripFee};
+    const retained=fee==null || leverage==null ? null : 1-((fee/100)*2*leverage);
+    const barPct=retained==null ? 0 : Math.max(0,Math.min(100,((retained-BAR_MIN)/(1-BAR_MIN))*100));
+    const timeFactor=leverage==null ? null : leverage/10;
+    const velocity=retained==null || timeFactor==null ? null : retained*timeFactor;
+    return {...f,fee,retained,barPct,marketLev:leverage,timeFactor,velocity};
   }).sort((a,b)=>{
-    if(a.retained==null && b.retained==null) return a.name.localeCompare(b.name);
-    if(a.retained==null) return 1;
-    if(b.retained==null) return -1;
-    if(b.retained!==a.retained) return b.retained-a.retained;
+    if(a.velocity==null && b.velocity==null) return a.name.localeCompare(b.name);
+    if(a.velocity==null) return 1;
+    if(b.velocity==null) return -1;
+    if(b.velocity!==a.velocity) return b.velocity-a.velocity;
     return a.name.localeCompare(b.name);
   }),[asset,feeMode]);
 
@@ -365,8 +365,8 @@ export default function Web3Hub(){
     </section>
 
     <section className="gp-degen-section" id="degen">
-      <div className="gp-section-head">
-        <div><span className="gp-section-no">02</span><h2>Execution drag</h2></div>
+      <div className="gp-section-head gp-velocity-head">
+        <div><span className="gp-section-no">02</span><div><h2>True R velocity</h2><p className="gp-section-note">Fees reduce R. Leverage changes how quickly the same margin can express the trade. 10x = 1.00 time factor.</p></div></div>
         <div className="gp-degen-controls">
           <div className="gp-segment">
             {["crypto","fx","indices","commodities"].map(x=><button type="button" key={x} className={asset===x?"is-active":""} onClick={()=>setAsset(x)}>{marketProfiles[x].label}</button>)}
@@ -379,13 +379,13 @@ export default function Web3Hub(){
 
       <div className="gp-fee-board gp-fee-board-clean">
         <div className="gp-fee-board-head">
-          <div><span>FEE RANK</span><strong>{marketProfiles[asset].label} · {feeMode.toUpperCase()}</strong></div>
+          <div><span>VELOCITY RANK</span><strong>{marketProfiles[asset].label} · {feeMode.toUpperCase()}</strong></div>
           <div className="gp-fee-scale"><span>0.980R</span><i/><span>0.990R</span><i/><span>1.000R</span></div>
-          <div><span>R KEPT</span><strong>AFTER FEES</strong></div>
-          <div><span>100K EQ</span><strong>ROUND TRIP</strong></div>
+          <div><span>TIME FACTOR</span><strong>10x = 1.00</strong></div>
+          <div><span>VELOCITY INDEX</span><strong>R × TIME</strong></div>
         </div>
 
-        {feeRows.map((f,index)=><div className="gp-fee-row gp-fee-row-v2" key={f.id}>
+        {feeRows.map((f,index)=><div className={"gp-fee-row gp-fee-row-v2"+(f.id==="vest"?" is-velocity-leader":"")} key={f.id}>
           <div className="gp-fee-name">
             <span className="gp-fee-rank">{String(index+1).padStart(2,"0")}</span>
             <FirmLogo firm={f}/>
@@ -400,13 +400,13 @@ export default function Web3Hub(){
           </div>
 
           <div className="gp-fee-number">
-            <b>{f.retained==null?"n/a":f.retained.toFixed(3)+"R"}</b>
-            <small>{f.fee==null?"—":f.fee.toFixed(f.fee<.01?4:3)+"% / side"}</small>
+            <b>{f.timeFactor==null?"—":f.timeFactor.toFixed(2)+"×"}</b>
+            <small>{f.marketLev?f.marketLev+"x leverage / 10x base":"leverage n/a"}</small>
           </div>
 
-          <div className="gp-fee-cash">
-            <b>{f.roundTripFee==null?"—":money(f.roundTripFee)}</b>
-            <small>{f.fullportNotional?money(f.fullportNotional)+" notional":"actual leverage n/a"}</small>
+          <div className="gp-fee-cash gp-velocity-number">
+            <b>{f.velocity==null?"—":f.velocity.toFixed(3)+"×"}</b>
+            <small>{f.retained==null?"R unavailable":f.retained.toFixed(4)+"R kept after fees"}</small>
           </div>
         </div>)}
       </div>
