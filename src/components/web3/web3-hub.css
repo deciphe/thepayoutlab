@@ -24,3 +24,13 @@
 @media(prefers-reduced-motion:reduce){.gp-site *,.gp-site *::before,.gp-site *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
 @media(max-width:370px){.gp-fee-row-v2{grid-template-columns:minmax(0,1fr) 64px 74px;gap:8px}.gp-fee-name{grid-template-columns:26px minmax(0,1fr);gap:6px}.gp-fee-name .gp-logo{width:26px;height:26px}.gp-fee-rank{display:none}.gp-fee-name small{white-space:nowrap}.gp-fee-number small{font-size:8px}.gp-fee-cash b{font-size:17px}}
+
+/* Outcome comparison: one target, explicit fees, no invented time multiplier. */
+.gp-outcome-story{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:25px 28px;margin-bottom:28px;border:1px solid #b6ff4a35;border-radius:8px;background:linear-gradient(110deg,#172211,#0c110d)}
+.gp-outcome-story h3{margin:12px 0 0;font-size:30px;font-weight:750;line-height:1.25;letter-spacing:-1px}.gp-outcome-story h3 em{font-style:normal;color:var(--gp-accent)}
+.gp-outcome-ratio{text-align:right;display:flex;flex-direction:column;gap:5px}.gp-outcome-ratio strong{font-size:54px;font-weight:800;line-height:1;letter-spacing:-3px;color:var(--gp-accent)}.gp-outcome-ratio span{font-size:13px}.gp-outcome-ratio small{font-size:10px;color:#95a18f;margin-top:5px}
+.gp-outcome-reach .gp-rbar{height:7px}.gp-outcome-reach>small{display:block;color:#92a18f;font-size:10px;margin-top:8px}.gp-outcome-caption{margin:18px 0 0;font-size:12px;color:#b1bdb2;line-height:1.7}
+@media(max-width:760px){.gp-outcome-story{padding:20px;align-items:start;flex-direction:column;gap:20px}.gp-outcome-story h3{font-size:27px}.gp-outcome-ratio{text-align:left}.gp-outcome-ratio strong{font-size:43px}.gp-outcome-board .gp-fee-row-v2{grid-template-columns:minmax(0,1fr) 65px 105px;gap:10px}.gp-outcome-reach{grid-column:1/-1;grid-row:2}.gp-outcome-board .gp-fee-cash b{font-size:21px}.gp-outcome-board .gp-fee-cash small{font-size:8px}.gp-outcome-board .gp-fee-number b{font-size:12px}.gp-outcome-board .gp-fee-rank{display:none}.gp-outcome-board .gp-fee-name{grid-template-columns:30px minmax(0,1fr);gap:7px}.gp-outcome-board .gp-fee-name b{font-size:12px}}
+@media(max-width:370px){.gp-outcome-board .gp-fee-row-v2{grid-template-columns:minmax(0,1fr) 52px 82px;gap:8px}.gp-outcome-board .gp-fee-name{grid-template-columns:24px minmax(0,1fr);gap:5px}.gp-outcome-board .gp-logo{width:24px;height:24px}.gp-outcome-board .gp-fee-cash b{font-size:18px}.gp-outcome-board .gp-fee-number small{font-size:8px}.gp-outcome-story{padding:16px}.gp-outcome-story h3{font-size:24px}}
+
+.gp-degen-controls{flex-direction:row;align-items:center;gap:12px}.gp-taker-label{font-size:11px;color:#a9b69f}.gp-outcome-story .gp-eyebrow{font-size:11px;letter-spacing:.03em}

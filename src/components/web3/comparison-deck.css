@@ -7,28 +7,28 @@
 .firm-sort-select{display:flex;align-items:center;gap:10px;font-size:11px;color:#939d96;white-space:nowrap}
 .firm-sort-select select{max-width:140px;padding:9px 27px 9px 10px;border:1px solid #303a32;border-radius:5px;background:#111612;color:#f4f6f2;font:inherit;cursor:pointer}
 .firm-card-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
-.firm-card{position:relative;display:flex;flex-direction:column;min-width:0;padding:18px 15px 15px;overflow:clip;border:1px solid #273029;border-radius:9px;background:linear-gradient(150deg,#111713,#0b0f0c);cursor:pointer;transition:border-color .2s,transform .2s;outline:none}
-.firm-card:hover{transform:translateY(-3px);border-color:#667958}
-.firm-card-vest{border-color:#637b3c;background:linear-gradient(150deg,#192014,#0c110d)}
-.firm-card-glow{position:absolute;inset:40% -60% -60% 10%;background:radial-gradient(ellipse,rgba(182,255,74,.035),transparent 65%);pointer-events:none}
-.firm-card-head{position:relative;display:flex;align-items:center;gap:6px}
-.firm-card-brand{display:flex;align-items:center;gap:8px;min-width:0}
-.firm-card-brand .gp-logo{width:30px;height:30px;flex:0 0 30px}
-.firm-card-brand h3{margin:0;font-size:15px;letter-spacing:-.035em}
-.firm-card-brand span:not(.gp-logo){display:block;margin-top:3px;font:8px "DM Mono",monospace;color:#929d95;letter-spacing:.06em}
-.firm-card-head>a{margin-left:auto;display:grid;place-items:center;width:28px;height:32px;flex-shrink:0;color:#8f9b91;text-decoration:none}
+.firm-card{--foil:#b6ff4a;position:relative;display:flex;flex-direction:column;min-width:0;padding:19px 17px 15px;overflow:clip;border:1px solid #354135;border-radius:13px;background:linear-gradient(145deg,#172016 0%,#0e140f 42%,#0b100c 100%);cursor:pointer;transition:border-color .2s,transform .2s;outline:none;box-shadow:inset 0 1px 0 #ffffff08,0 8px 20px #00000018}
+.firm-card:hover{transform:translateY(-4px);border-color:#809969}
+.firm-card-vest{--foil:#cfbaff;border-color:#859e4f;background:radial-gradient(ellipse at 100% 0,#33432655,transparent 65%),linear-gradient(145deg,#1b2517,#0d130e)}
+.firm-card-glow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 100% 55%,#b6ff4a07,transparent 65%)}
+.firm-card-head{position:relative;display:flex;align-items:center;gap:8px;padding-bottom:17px;border-bottom:1px solid #ffffff0d}
+.firm-card-brand{display:flex;align-items:center;gap:10px;min-width:0}
+.firm-card-brand .gp-logo{width:32px;height:32px;flex:0 0 32px;border-radius:8px;background:#ffffff05}
+.firm-card-brand h3{margin:0;font-size:16px;font-weight:750;letter-spacing:-.035em}
+.firm-card-head>a{margin-left:auto;display:grid;place-items:center;width:24px;height:28px;flex-shrink:0;color:#a5b09f;text-decoration:none}
 .firm-card-head>a:hover{color:#b6ff4a}
-.firm-card-pick{position:absolute;top:48px;left:0;font:8px "DM Mono",monospace;letter-spacing:.08em;color:#b6ff4a}
-.firm-card-signal{position:relative;margin:43px 0 24px;min-height:64px;display:flex;flex-direction:column;justify-content:flex-end}
-.firm-card-signal small{font:8px/1.5 "DM Mono",monospace;letter-spacing:.055em;color:#a2aca5}
-.firm-card-signal strong{display:block;margin-top:6px;font-size:43px;line-height:1;letter-spacing:-.06em;color:#f4f6f2}
-.firm-card[data-tone="infra"] .firm-card-signal strong{font-size:29px;letter-spacing:-.055em}
-.firm-card[data-tone="speed"] .firm-card-signal strong,.firm-card[data-tone="price"] .firm-card-signal strong,.firm-card[data-tone="split"] .firm-card-signal strong{color:#b6ff4a}
-.firm-card[data-tone="leverage"] .firm-card-signal strong{color:#d0c3ff}
-.firm-card-stats{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;border-top:1px solid #28322a;padding-top:15px}
-.firm-card-stats span{display:block;font:8px "DM Mono",monospace;color:#909e94;white-space:nowrap}
-.firm-card-stats b{display:block;font-size:14px;letter-spacing:-.025em;margin-top:6px}
-.firm-card-foot{position:static;background:none;border:0;width:100%;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-top:21px;padding-top:12px;border-top:1px solid #253027;color:#a8b4ab;font-size:11px}
+.firm-card-signal{position:relative;margin:22px 0 24px;min-height:113px;display:flex;flex-direction:column;justify-content:flex-start}
+.firm-card-caption{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:19px}
+.firm-card-caption>span{font-size:12px;line-height:1.4;font-weight:550;letter-spacing:-.015em;color:#becab9}
+.firm-card-caption>small{font:8px/1 "DM Mono",monospace;padding:4px 5px;border:1px solid #b6ff4a35;border-radius:3px;color:#c8f990;white-space:nowrap}
+.firm-card-signal strong{display:block;margin-top:7px;font-size:58px;font-weight:750;line-height:1.08;letter-spacing:-.065em;color:var(--foil)}
+.firm-card[data-tone="infra"] .firm-card-signal strong{font-size:30px;line-height:1.08;letter-spacing:-.06em;margin-top:17px;margin-bottom:20px;color:#edf2e7}
+.firm-card-trace{display:flex;align-items:center;gap:4px;margin-top:15px;height:4px;width:100%;opacity:.48}
+.firm-card-trace i{height:1px;flex:1;background:var(--foil)}.firm-card-trace i:nth-child(n+4){opacity:.5}.firm-card-trace i:last-child{opacity:.2}
+.firm-card-stats{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;border-top:1px solid #33402e;padding-top:16px;margin-top:auto}
+.firm-card-stats span{display:block;font-size:10px;font-weight:550;color:#a8b69f;white-space:nowrap}
+.firm-card-stats b{display:block;white-space:nowrap;font-size:15px;font-weight:750;letter-spacing:-.035em;margin-top:5px}
+.firm-card-foot{position:static;background:none;border:0;width:100%;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:5px;margin-top:22px;padding:12px 0 0;border-top:1px solid #ffffff0e;color:#b3bfae;font-size:11px}
 .raw-matrix{margin-top:14px;border-bottom:1px solid #273029}
 .raw-matrix summary{padding:13px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;cursor:pointer;list-style:none;color:#a8b4ab}
 .raw-matrix summary::-webkit-details-marker{display:none}
@@ -83,8 +83,10 @@
 
 
 .firm-card:focus-visible,.gp-site button:focus-visible,.gp-site a:focus-visible,.gp-site summary:focus-visible,.gp-site select:focus-visible{outline:2px solid #b6ff4a;outline-offset:4px}
-@media(max-width:1150px) and (min-width:761px){.firm-card-grid{grid-template-columns:repeat(6,minmax(0,1fr))}.firm-card{grid-column:span 2}.firm-card:nth-child(n+4){grid-column:span 3}.firm-card-signal{margin-top:34px}}
-@media(max-width:760px){.firm-deck-section{width:calc(100% - 36px);margin-bottom:28px}.firm-deck-header{gap:10px;padding:22px 0 18px}.firm-deck-header h2{font-size:29px}.firm-deck-header p{max-width:190px;line-height:1.5}.firm-sort-select{font-size:10px;gap:5px}.firm-sort-select select{max-width:107px;padding-left:7px}.firm-card-grid{grid-template-columns:1fr;gap:10px}.firm-card{padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.firm-card-head{grid-column:1/-1}.firm-card-brand h3{font-size:17px}.firm-card-brand span:not(.gp-logo){font-size:9px}.firm-card-pick{position:static;margin-left:auto}.firm-card-head>a{margin-left:auto}.firm-card-pick+a{margin-left:3px}.firm-card-signal{margin:24px 0 0;min-height:65px}.firm-card-signal strong{font-size:42px}.firm-card-stats{align-self:end;gap:9px;padding-top:0;border:0;padding-bottom:3px}.firm-card-stats span{font-size:9px}.firm-card-stats b{font-size:13px}.firm-card-foot{grid-column:1/-1;margin-top:18px;padding-top:11px}.firm-drawer{padding:20px}.firm-drawer-grid{grid-template-columns:1fr 1fr}.firm-drawer-meta{gap:14px;grid-template-columns:1fr 1fr}.firm-drawer-grid strong{font-size:13px}.firm-drawer-note{font-size:14px}}
-@media(max-width:370px){.firm-card{padding:14px;gap:0 9px}.firm-card-signal strong{font-size:37px}.firm-card[data-tone="infra"] .firm-card-signal strong{font-size:25px}.firm-card-stats b{font-size:12px}.firm-sort-select{font-size:0}.firm-sort-select select{font-size:10px}}
-
+@media(max-width:1150px) and (min-width:761px){.firm-card-grid{grid-template-columns:repeat(6,minmax(0,1fr))}.firm-card{grid-column:span 2}.firm-card:nth-child(n+4){grid-column:span 3}}
+@media(max-width:760px){.firm-deck-section{width:calc(100% - 36px);margin-bottom:28px}.firm-deck-header{gap:10px;padding:22px 0 18px}.firm-deck-header h2{font-size:29px}.firm-deck-header p{max-width:190px;line-height:1.5}.firm-sort-select{font-size:10px;gap:5px}.firm-sort-select select{max-width:107px;padding-left:7px}.firm-card-grid{grid-template-columns:1fr;gap:12px}.firm-card{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:0 20px}.firm-card-head{grid-column:1/-1;padding-bottom:13px}.firm-card-brand h3{font-size:19px}.firm-card-signal{margin:20px 0 0;min-height:112px}.firm-card-signal strong{font-size:56px}.firm-card-stats{align-self:center;gap:8px;padding-top:0;border:0;margin:20px 0 0;grid-template-columns:1fr 1fr}.firm-card-stats>div:first-child{grid-column:1/-1}.firm-card-stats span{font-size:10px}.firm-card-stats b{font-size:16px}.firm-card-caption{display:block}.firm-card-caption>small{display:none}.firm-card-trace{margin-top:12px}.firm-card[data-tone="infra"] .firm-card-signal strong{font-size:29px;margin-top:16px;margin-bottom:15px}.firm-card-foot{grid-column:1/-1;margin-top:18px}.firm-drawer{padding:20px}.firm-drawer-grid{grid-template-columns:1fr 1fr}.firm-drawer-meta{gap:14px;grid-template-columns:1fr 1fr}.firm-drawer-grid strong{font-size:13px}.firm-drawer-note{font-size:14px}}
+@media(max-width:370px){.firm-card{padding:17px;gap:0 14px}.firm-card-signal strong{font-size:50px}.firm-card[data-tone="infra"] .firm-card-signal strong{font-size:25px}.firm-sort-select{font-size:0}.firm-sort-select select{font-size:10px}}
 .firm-card-foot::after{content:"";position:absolute;inset:0}.firm-card-head>a{position:relative;z-index:2}.firm-card:has(.firm-card-foot:focus-visible){outline:2px solid #b6ff4a;outline-offset:3px}
+
+@media(max-width:760px){.firm-card[data-tone="price"] .firm-card-signal strong{font-size:43px;line-height:1.4}}
+@media(max-width:370px){.firm-card[data-tone="price"] .firm-card-signal strong{font-size:35px}}

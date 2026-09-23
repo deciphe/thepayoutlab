@@ -1,9 +1,10 @@
-// A comparison scenario, not a forecast: 1R is 1% of account equity.
-export function executionMetrics(feePercent, leverage, riskPercent = 1) {
-  if (feePercent == null || leverage == null || !Number.isFinite(feePercent) || !Number.isFinite(leverage) || feePercent < 0 || leverage <= 0 || !Number.isFinite(riskPercent) || riskPercent <= 0) {
-    return { retained: null, timeFactor: null, velocity: null };
+// Constant-notional illustration: percentages use percentage points, not decimals.
+// Compare price travel to the same net equity target, not a time forecast.
+export function executionMetrics(feePercent, leverage, targetPercent = 10) {
+  if (feePercent == null || leverage == null || !Number.isFinite(feePercent) || !Number.isFinite(leverage) || feePercent < 0 || leverage <= 0 || !Number.isFinite(targetPercent) || targetPercent <= 0) {
+    return { feeDrag: null, requiredMove: null, reach: null };
   }
-  const retained = 1 - (2 * feePercent * leverage) / riskPercent;
-  const timeFactor = leverage / 10;
-  return { retained, timeFactor, velocity: retained * timeFactor };
+  const feeDrag = 2 * feePercent * leverage;
+  const requiredMove = (targetPercent + feeDrag) / leverage;
+  return { feeDrag, requiredMove, reach: 1 / requiredMove };
 }
