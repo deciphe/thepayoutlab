@@ -1,76 +1,24 @@
 export default function SpeedManifesto(){
-  const cycles=[
-    {id:"01",nodes:["PASS","PAYOUT","WITHDRAW"]},
-    {id:"02",nodes:["FAIL","RETRY","PASS"]},
-    {id:"03",nodes:["PAYOUT","WITHDRAW","RELOAD"]},
-    {id:"04",nodes:["PASS","PAYOUT","WITHDRAW"]}
-  ];
-
-  const proofs=[
-    {firm:"HYPERNOVA",signal:"PAYOUT SPEED",value:"~6 SEC",detail:"Firm-published average payout time. The wait has been compressed down to seconds."},
-    {firm:"VEST CAPITAL",signal:"NQ LEVERAGE",value:"50x",detail:"50x NQ leverage is my standout reason for choosing Vest."},
-    {firm:"BREAKOUT",signal:"BACKING + HISTORY",value:"$60M+",detail:"Kraken-backed with more than $60M paid to traders since launch and a public payout history."}
-  ];
-
   return <section className="speed-manifesto" id="speed">
-    <div className="speed-kicker"><span>00</span><i/> THE MODEL SHIFT</div>
-
-    <div className="speed-title-grid">
-      <div><h1>SAME CLOCK.<br/><em>MORE TURNS.</em></h1></div>
-      <div className="speed-thesis-copy">
-        <p>Time is part of the cost.</p>
-        <p>Minimum days, activation delays, funded-day requirements, payout windows, manual reviews and settlement lag all slow the return of usable capital.</p>
-        <strong>Compare the fee, the rules and <u>time to cash.</u></strong>
-      </div>
+    <div className="speed-copy">
+      <span className="gp-eyebrow">WEB3 PROP TRADING</span>
+      <h1>SAME CLOCK.<br/><em>MORE TURNS.</em></h1>
+      <p>Less time waiting. More time trading.<br/>Compare the firms that get capital moving.</p>
+      <a className="gp-primary-link" href="#field">Explore the firms <span aria-hidden="true">↗</span></a>
     </div>
-
-    <div className="speed-race">
-      <div className="speed-race-head">
-        <span>SAME CLOCK</span>
-        <strong>DIFFERENT OUTPUT</strong>
-        <small>workflow illustration · rules vary by firm</small>
+    <figure className="speed-visual" aria-label="Illustration comparing payout waiting periods with shorter payout cycles">
+      <div className="speed-visual-head"><span>TIME TO CASH</span><span>THE DIFFERENCE</span></div>
+      <div className="speed-track slow">
+        <div className="speed-track-title"><b>Traditional</b><span>The waiting adds up</span></div>
+        <div className="speed-delays">{['Minimum days','Activation','Payout window','Review'].map((step,i)=><span key={step} style={{'--step':i}}>{step}</span>)}</div>
+        <div className="speed-rail"><i/></div>
+        <div className="speed-end"><span>Trade</span><span>Payout</span></div>
       </div>
-
-      <div className="speed-lane speed-lane-old">
-        <div className="speed-lane-label"><span>OLD MODEL</span><strong>ONE PAYOUT</strong></div>
-        <div className="speed-old-track">
-          {["BUY","MIN DAYS","PASS","ACTIVATE","FUNDED DAYS","PAYOUT WINDOW","REVIEW","PAYOUT"].map((node,index)=><div className="speed-old-node" key={node}>
-            <i>{String(index+1).padStart(2,"0")}</i><span>{node}</span>
-          </div>)}
-          <div className="speed-old-progress"/>
-        </div>
+      <div className="speed-track fast">
+        <div className="speed-track-title"><b>Web3</b><span>A shorter path back to cash</span></div>
+        <div className="speed-rounds">{[0,1,2].map(i=><div key={i} style={{'--cycle':i}}><span>Trade</span><i aria-hidden="true">→</i><strong>Payout</strong><i aria-hidden="true">↻</i></div>)}</div>
       </div>
-
-      <div className="speed-lane speed-lane-new">
-        <div className="speed-lane-label"><span>WEB3 FAST LANE</span><strong>MULTIPLE CAPITAL TURNS</strong></div>
-        <div className="speed-cycle-stack">
-          {cycles.map(cycle=><div className="speed-cycle" key={cycle.id}>
-            <b>{cycle.id}</b>
-            {cycle.nodes.map((node,index)=><span key={node+index} className={node==="PAYOUT"||node==="WITHDRAW"?"is-cash":node==="FAIL"?"is-fail":""}>{node}</span>)}
-            <i>→</i>
-          </div>)}
-        </div>
-      </div>
-
-      <div className="speed-race-message">
-        <span>TIME COST</span>
-        <strong>TRADITIONAL: ONE LONGER PATH TO CASH.</strong>
-        <strong className="is-green">WEB3: MORE CAPITAL TURNS IN THE SAME TIME.</strong>
-      </div>
-    </div>
-
-    <div className="speed-proof-grid">
-      {proofs.map(proof=><article key={proof.firm}>
-        <div><span>{proof.firm}</span><small>{proof.signal}</small></div>
-        <strong>{proof.value}</strong>
-        <p>{proof.detail}</p>
-      </article>)}
-    </div>
-
-    <div className="speed-equation">
-      <span>THE REAL PRICE OF A PROP ACCOUNT</span>
-      <strong>FEE <i>+</i> FRICTION <i>+</i> TIME</strong>
-      <p>The faster the loop can reset, the less capital sits idle waiting for the next gate to open.</p>
-    </div>
+      <figcaption>Illustrative flow. Passing, profit and each firm’s payout rules still apply.</figcaption>
+    </figure>
   </section>;
 }
