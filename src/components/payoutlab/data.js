@@ -827,7 +827,6 @@ export const tickerItems = [
   "LUCID TRADING · PAYOUT VERIFIED · $1,428",
 ];
 export const unscoredFirms = [
-  { name: "Propr", logo: assetUrl("brands/propr.svg"), url: "https://propr.xyz" },
-  { name: "Hypernova", logo: assetUrl("brands/hypernova.svg"), url: "https://hypernova.xyz" },
+  { name: "Propr", logo: assetUrl("brands/propr.svg"), url: "https://app.propr.xyz/r/7gJmpEjv" },
+  { name: "Hypernova", logo: assetUrl("brands/hypernova.svg"), url: "https://hn.xyz/r/4sjg1b" },
 ];
-
