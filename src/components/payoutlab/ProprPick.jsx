@@ -58,7 +58,8 @@ const firms = [
     maker: 0.0025,
     taker: 0.0025,
     exact: true,
-    url: "https://next.vestmarkets.com/",
+    url: "https://next.vestmarkets.com/r/isgigaprop",
+    offer: "5% off with this link",
   },
   {
     name: "HyperPNL",
@@ -104,7 +105,7 @@ function FirmCard({ firm }) {
     <a
       href={firm.url}
       target="_blank"
-      rel={firm.name === "Hypernova" || firm.name === "Propr" ? "sponsored noopener noreferrer" : "noopener noreferrer"}
+      rel={firm.name === "Hypernova" || firm.name === "Propr" || firm.name === "Vest" ? "sponsored noopener noreferrer" : "noopener noreferrer"}
       onClick={outbound}
       className={`group relative block overflow-hidden rounded-2xl border p-5 transition-colors ${firm.gold ? "border-lucid/30 bg-lucid/[0.04] md:col-span-2" : "border-white/[0.065] bg-white/[0.015] hover:border-white/[0.12]"}`}
     >
@@ -117,6 +118,7 @@ function FirmCard({ firm }) {
               {firm.gold && <span className="inline-flex items-center gap-1 rounded-full border border-lucid/25 bg-lucid/[0.07] px-2 py-1 font-mono-lab text-[7px] font-semibold uppercase tracking-[0.13em] text-lucid"><Star className="h-2.5 w-2.5" /> Gold standard</span>}
             </div>
             <div className="mt-1 font-mono-lab text-[8px] uppercase tracking-[0.13em] text-white/28">{firm.plan}</div>
+            {firm.offer && <div className="mt-1 font-mono-lab text-[10px] font-semibold text-lucid">{firm.offer}</div>}
           </div>
           <ArrowUpRight className="mt-1 h-4 w-4 text-white/18 transition-colors group-hover:text-lucid" />
         </div>
@@ -179,6 +181,7 @@ export default function ProprPick() {
           <span>Limit = maker · Market = taker · round trip</span>
           <span>Fee schedule · 15 Sep 2026 · prices checked 16 Sep</span>
         </div>
+        <p className="mt-2 font-mono-lab text-[10px] text-white/45">Vest, Hypernova and Propr links are referrals. I may earn a commission.</p>
       </div>
     </section>
   );
