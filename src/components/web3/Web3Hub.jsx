@@ -110,7 +110,7 @@ function FirmCard({firm,onOpen,index}){
         <div><h3>{firm.name}</h3></div>
       </div>
 
-      <a href={firm.url} target="_blank" rel="noreferrer" onClick={e=>e.stopPropagation()} aria-label={"Visit "+firm.name}>
+      <a href={firm.url} target="_blank" rel={firm.referral?"sponsored noopener noreferrer":"noopener noreferrer"} onClick={e=>e.stopPropagation()} aria-label={"Visit "+firm.name}>
         <ArrowUpRight size={16}/>
       </a>
     </div>
@@ -221,9 +221,10 @@ function FirmDrawer({firm,onClose}){
         {[...(program.tags||[]),...(program.extras||[])].map(tag=><span key={tag}>{tag}</span>)}
       </div>
 
-      <a className="firm-drawer-cta" href={firm.url} target="_blank" rel="noreferrer">
-        Open {firm.name} <ArrowUpRight size={16}/>
+      <a className="firm-drawer-cta" href={firm.url} target="_blank" rel={firm.referral?"sponsored noopener noreferrer":"noopener noreferrer"}>
+        {firm.id==="vest"?"Open Vest · 5% off":"Open "+firm.name} <ArrowUpRight size={16}/>
       </a>
+      {firm.referral && <p className="firm-drawer-note">Referral link. I may earn a commission.{firm.id==="vest"?" 5% off through this link.":""}</p>}
     </aside>
   </div>;
 }
