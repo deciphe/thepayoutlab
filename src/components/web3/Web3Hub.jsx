@@ -13,6 +13,9 @@ import "./speed-manifesto.css";
 import "./comparison-deck.css";
 
 const OUTCOME_TARGET = 10;
+const RISK_BUDGET = 3;
+const NQ_REFERENCE = 27000;
+const points = n => n == null ? "—" : new Intl.NumberFormat("en-US",{maximumFractionDigits:1}).format(n);
 const percent = n => n == null ? "Unavailable" : Number(n.toFixed(3)) + "%";
 const CORE_FIRM_IDS = ["vest","hypernova","propr","breakout","vanta"];
 const coreFirms = CORE_FIRM_IDS.map(id=>firms.find(f=>f.id===id)).filter(Boolean);
@@ -247,8 +250,8 @@ export default function Web3Hub(){
   const [detailId,setDetailId]=useState(null);
 
   const [sort,setSort]=useState("signal");
-  const [asset,setAsset]=useState("indices");
-  const feeMode="taker";
+  const [nqPrice,setNqPrice]=useState(NQ_REFERENCE);
+  const asset="indices";
 
   const visibleFirms=useMemo(()=>{
     let list=[...coreFirms];
@@ -306,26 +309,24 @@ export default function Web3Hub(){
 
     <section className="gp-degen-section" id="degen">
       <div className="gp-section-head gp-velocity-head">
-        <div><span className="gp-section-no">02</span><div><h2>True R velocity</h2><p className="gp-section-note">Buying power is speed. Fees add distance.</p></div></div>
+        <div><span className="gp-section-no">02</span><div><h2>True R velocity</h2><p className="gp-section-note">A full-size NQ trade: 3% net risk, 10% net winner.</p></div></div>
         <div className="gp-degen-controls">
-          <div className="gp-segment">
-            {["indices","crypto"].map(x=><button type="button" key={x} aria-pressed={asset===x} className={asset===x?"is-active":""} onClick={()=>setAsset(x)}>{marketProfiles[x].label}</button>)}
-          </div>
-          <span className="gp-taker-label">Taker fees</span>
+          <label className="gp-nq-input">NQ reference <input type="number" inputMode="decimal" min="1" step="100" value={nqPrice} onChange={e=>setNqPrice(e.target.value)} aria-label="NQ reference price" /></label>
+          <span className="gp-taker-label">Taker fees · entry + exit</span>
 
         </div>
       </div>
 
       {leader && <div className="gp-outcome-story">
-        <div><span className="gp-eyebrow">SAME +{OUTCOME_TARGET}% NET ACCOUNT TARGET</span><h3>{leader.name} needs <em>{percent(leader.requiredMove)}</em>.<br/>{slowest.name} needs {percent(slowest.requiredMove)}.</h3></div>
-        <div className="gp-outcome-ratio"><strong>{travelRatio.toFixed(1)}×</strong><span>more market movement at {slowest.name}</span><small>Less distance to the result. Not a prediction of minutes.</small></div>
+        <div><span className="gp-eyebrow">NQ AT {Number(nqPrice)>0?Number(nqPrice).toLocaleString("en-US"):"—"} · +{OUTCOME_TARGET}% NET WINNER</span><h3>{leader.name}: <em>{Number(nqPrice)>0?points(nqPrice*leader.requiredMove/100):"—"} points</em>.<br/>{slowest.name}: {Number(nqPrice)>0?points(nqPrice*slowest.requiredMove/100):"—"} points.</h3></div>
+        <div className="gp-outcome-ratio"><strong>{travelRatio.toFixed(1)}×</strong><span>the NQ point distance at {slowest.name}</span><small>Same 10% net account gain. This is price distance, not elapsed time.</small></div>
       </div>}
       <div className="gp-fee-board gp-outcome-board">
         <div className="gp-fee-board-head">
-          <div><span>FIRM / BUYING POWER</span><strong>{marketProfiles[asset].label} · {feeMode.toUpperCase()}</strong></div>
-          <div><span>OUTCOME REACH</span><strong>Less movement = stronger bar</strong></div>
-          <div><span>ROUND-TRIP FEES</span><strong>% of account equity</strong></div>
-          <div><span>MOVE TO +{OUTCOME_TARGET}% NET</span><strong>Smaller is better</strong></div>
+          <div><span>FIRM / LEVERAGE</span><strong>NQ · full equity position</strong></div>
+          <div><span>REACH</span><strong>Less distance = longer bar</strong></div>
+          <div><span>FEES / 3% STOP</span><strong>Equity cost / NQ points</strong></div>
+          <div><span>+{OUTCOME_TARGET}% NET WIN</span><strong>NQ points</strong></div>
         </div>
         {feeRows.map((f,index)=><div className={"gp-fee-row gp-fee-row-v2"+(index===0 && f.reach!=null?" is-velocity-leader":"")} key={f.id}>
           <div className="gp-fee-name">
@@ -335,14 +336,14 @@ export default function Web3Hub(){
           </div>
           <div className="gp-outcome-reach">
             <div className="gp-rbar" aria-label={f.requiredMove==null?"Market unavailable":percent(f.requiredMove)+" market move needed for a net "+OUTCOME_TARGET+"% account gain"}><div className="gp-rbar-fill" style={{width:f.reach==null?"0%":(f.reach/leader.reach*100)+"%"}}/></div>
-            <small>{f.payout}</small>
+            <small>{percent(f.requiredMove)} market move · {f.payout}</small>
           </div>
-          <div className="gp-fee-number"><b>{percent(f.feeDrag)}</b><small>account cost</small></div>
-          <div className="gp-fee-cash"><b>{f.requiredMove==null?"—":percent(f.requiredMove)}</b><small>market move needed</small></div>
+          <div className="gp-fee-number"><b>{percent(f.feeDrag)}</b><small>{f.stopMove==null?"Fee exceeds 3% risk":Number(nqPrice)>0?points(nqPrice*f.stopMove/100)+" pt stop":"— pt stop"}</small></div>
+          <div className="gp-fee-cash"><b>{f.requiredMove==null||Number(nqPrice)<=0?"—":points(nqPrice*f.requiredMove/100)}</b><small>pt win · 10% net</small></div>
         </div>)}
       </div>
-      <p className="gp-outcome-caption">Resolve the account. Release the cash. Leverage changes the first; payout rules change the second.</p>
-      <details className="gp-model-note"><summary>Model & inputs</summary><p>A common +10% net equity target, using each market’s listed maximum leverage. Required price move = 10% ÷ leverage + two per-side fees. Taker fees on entry and exit, assuming constant entry notional on both legs. Bars use inverse required movement, scaled to the strongest available firm. </p><p>These are the site’s September 2026 scenario inputs, not live quotes. This compares market distance, not elapsed time, win probability or risk-adjusted R. Greater leverage brings losses and account limits closer too. It does not create an edge. Spreads, slippage, funding, profit splits and payout windows are not included in the number; payout schedules are shown separately.</p><p>Vanta uses base leverage, without paid boosts or Pro. Notional caps and account rules can reduce usable buying power. Actual program targets vary. Check current instrument terms before purchasing.</p></details>
+      <p className="gp-outcome-caption">At 27,000 NQ, Vest needs 55.4 points up for +10% net; its 3% net risk stop is 14.9 points down. Vanta needs 1,080 points up and a 324-point stop. Change the reference price to scale the points.</p>
+      <details className="gp-model-note"><summary>Model & inputs</summary><p>Illustrative full-equity position at each firm’s listed NQ leverage. Round-trip fee drag (% of equity) = 2 × taker fee (% of notional) × leverage. Win distance (% of NQ) = (10% net target + fee drag) ÷ leverage. Stop distance (% of NQ) = (3% net risk − fee drag) ÷ leverage. Multiply either distance by the NQ reference price for points. For Vest: 0.0025% taker per side × 2 × 50 = 0.25% equity in fees; (10 + 0.25) ÷ 50 = 0.205% of NQ. Vanta: 10 ÷ 2.5 = 4%. Their win-distance ratio is 4 ÷ 0.205 = 19.5×.</p><p>These are the site’s September 2026 scenario inputs, not live quotes. The fee drag is weighted by position size through leverage; the 19.5× compares NQ point distance, not time, win probability, or trading edge. It assumes constant notional and the same fee on entry and exit. Spreads, slippage, funding, profit split, and payout rules are excluded. If costs exceed the 3% risk budget, no valid stop remains.</p><p>Vanta uses base leverage without boosts or Pro. Account limits and notional caps may restrict full-equity positions. Check current contract prices and firm rules before purchasing.</p></details>
     </section>
 
     <footer className="gp-footer"><a className="gp-wordmark" href="#top">GIGAPROP<span>.</span></a><p>Firm terms and fees can change. Check before purchasing.</p><a href="#top">Back to top ↑</a></footer>
