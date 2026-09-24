@@ -17,6 +17,8 @@ assert.equal(metrics(.005,10).requiredMove,1.01);
 assert.ok(metrics(.05,10).requiredMove>metrics(.005,10).requiredMove);
 assert.ok(metrics(.005,50).requiredMove<metrics(.005,10).requiredMove);
 for(const args of [[null,10],[.01,null],[.01,0],[-1,10],[.0025,50,0]]) assert.equal(metrics(...args).reach,null);
+assert.equal(metrics(.1,50).stopMove,null);
+assert.equal(metrics(.0025,50,10,NaN).reach,null);
 // Rendering the actual app catches undefined JSX components that Vite compilation misses.
 const result=await build({configFile:false,esbuild:{jsx:"automatic"},ssr:{noExternal:['lucide-react']},logLevel:'error',build:{ssr:'src/App.jsx',write:false,minify:false,rollupOptions:{output:{format:'cjs'}}}});
 const require=createRequire(import.meta.url);
@@ -27,10 +29,12 @@ new Function('require','module','exports',chunk.code)(require,mod,mod.exports);
 const React=require('react');
 const {renderToString}=require('react-dom/server');
 const html=renderToString(React.createElement(mod.exports.default || mod.exports));
-for(const text of ['Firm deck','True R velocity','Vest','Hypernova','Breakout','Vanta','Propr']) assert.ok(html.includes(text),text);
+for(const text of ['The shortlist','True R velocity','Vest','Hypernova','Breakout','Vanta','Propr']) assert.ok(html.includes(text),text);
 assert.ok(!html.includes('Open Doji'));
 assert.ok(!html.includes('Open HyperPNL'));
 assert.ok(html.includes('0.205%'));
 assert.ok(html.includes('Taker fees'));
 for (const extra of ['>EURUSD<','>CL<','>maker<','>avg<']) assert.ok(!html.includes(extra));
 console.log('Web3 render and fee/leverage checks passed.');
+
+for(const text of ["The trade-off","couldbeluck","referral links","isgigaprop","4sjg1b","7gJmpEjv"]) assert.ok(html.includes(text),text);
