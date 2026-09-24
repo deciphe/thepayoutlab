@@ -5,7 +5,11 @@ import {executionMetrics as metrics} from '../src/components/web3/executionMetri
 const vest=metrics(.0025,50), vanta=metrics(0,2.5);
 assert.equal(vest.feeDrag,.25);
 assert.ok(Math.abs(vest.requiredMove-.205)<1e-12);
+assert.ok(Math.abs(vest.stopMove-.055)<1e-12);
+assert.ok(Math.abs(vest.requiredMove*27000/100-55.35)<1e-10);
+assert.ok(Math.abs(vest.stopMove*27000/100-14.85)<1e-10);
 assert.equal(vanta.requiredMove,4);
+assert.equal(vanta.stopMove,1.2);
 assert.ok(vest.reach>vanta.reach);
 assert.ok(Math.abs(vanta.requiredMove/vest.requiredMove-19.51219512195122)<1e-10);
 assert.equal(metrics(0,50).requiredMove,.2);
