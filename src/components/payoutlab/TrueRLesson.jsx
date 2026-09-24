@@ -128,7 +128,7 @@ export default function TrueRLesson() {
         <div className="mt-5 border-t border-border pt-5">
           <div className="mb-4 font-mono-lab text-[9px] uppercase tracking-[0.2em] text-muted-foreground">Web3 watch / the next payout test</div>
           <div className="grid gap-5 sm:grid-cols-2">
-            {unscoredFirms.map(f => <a key={f.name} href={f.url} target="_blank" rel="noopener noreferrer" className="group flex items-start gap-5 rounded-lg border border-border bg-prism/10 p-5 transition-colors hover:border-lucid/30">
+            {unscoredFirms.map(f => <a key={f.name} href={f.url} target="_blank" rel="sponsored noopener noreferrer" className="group flex items-start gap-5 rounded-lg border border-border bg-prism/10 p-5 transition-colors hover:border-lucid/30">
               <img src={f.logo} alt={f.name} className="mt-1 h-5 w-24 shrink-0 object-contain object-left" />
               <div><p className="font-display text-sm text-spectral">{f.name === "Hypernova" ? "Fast rails. A lower-fee possibility." : "Fewer gates. Onchain payouts."}</p>
               <p className="mt-2 font-mono-lab text-[10px] leading-relaxed text-muted-foreground">{f.name === "Hypernova" ? "My next True R test: can low fees and fast access deliver together? First personal payout still to come. Access currently invite-only." : "No minimum trading days advertised; qualification and verification still apply. Personal payout review to come."}</p>
