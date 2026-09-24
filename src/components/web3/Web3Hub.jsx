@@ -113,9 +113,6 @@ function FirmCard({firm,onOpen,index}){
         <div><h3>{firm.name}</h3></div>
       </div>
 
-      <a href={firm.url} target="_blank" rel={firm.referral?"sponsored noopener noreferrer":"noopener noreferrer"} onClick={e=>e.stopPropagation()} aria-label={"Visit "+firm.name}>
-        <ArrowUpRight size={16}/>
-      </a>
     </div>
 
     <div className="firm-card-signal">
@@ -130,10 +127,12 @@ function FirmCard({firm,onOpen,index}){
       <div><span>SPLIT</span><b>{firstToken(firm.id==="vanta"?firm.split:program.split)}</b></div>
     </div>
 
-    <button type="button" className="firm-card-foot" onClick={()=>onOpen(firm.id)} aria-label={"Open "+firm.name+" program details"}>
-      <span>{firm.id==="hypernova"?"*Firm-published · Details":"Explore programs"}</span>
-      <ChevronRight size={16}/>
-    </button>
+    <div className="firm-card-actions">
+      <a className="firm-card-link" href={firm.url} target="_blank" rel={firm.referral?"sponsored noopener noreferrer":"noopener noreferrer"} aria-label={firm.id==="vest"?"Vest referral link · 5% off":"Visit "+firm.name+(firm.referral?" through referral link":"")}>
+        <span>{firm.id==="vest"?"5% OFF · VEST":firm.name.toUpperCase()}</span><ArrowUpRight size={16}/>
+      </a>
+      <button type="button" className="firm-card-details" onClick={()=>onOpen(firm.id)} aria-label={"Explore "+firm.name+" programs"} title="Explore programs"><ChevronRight size={17}/></button>
+    </div>
   </article>;
 }
 
