@@ -164,7 +164,7 @@ export const firms = [
     ]
   },
   {
-    id:"breakout", name:"Breakout", mark:"BR", domain:"breakoutprop.com", logo:"/brands/breakout.ico", url:"https://www.breakoutprop.com/",
+    id:"breakout", name:"Breakout", mark:"BR", domain:"breakoutprop.com", logo:"/brands/breakout.ico", url:"https://portal.breakoutprop.com/buy-evaluation?ref=C406739", referral:true,
     status:"KRAKEN", venue:"Breakout Terminal", price:215, plan:"Classic", target:10, daily:"3%", drawdown:"6% static", split:"80–90%",
     payout:"24/7 on-demand", leverage:"Up to 10x", indexLev:10, edge:"Mature payout rails",
     note:"Three current 1-step programs with static drawdown and optional 90% split.",
