@@ -37,7 +37,9 @@ jobs:
         run: npm run build
 
       - name: Check page render and execution calculations
-        run: node scripts/test-web3.mjs
+        run: |
+          node scripts/test-web3.mjs
+          node scripts/test-flows.mjs
 
       - name: Build Maven Edition
         run: npm run build --prefix maven-site

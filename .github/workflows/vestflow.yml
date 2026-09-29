@@ -1,4 +1,4 @@
-name: Refresh Vestflows
+name: Refresh flow trackers
 on:
   schedule:
     - cron: '7,22,37,52 * * * *'
@@ -7,6 +7,9 @@ on:
     branches: [main]
     paths:
       - scripts/update-vestflow.mjs
+      - scripts/update-flows.mjs
+      - src/lib/flow-data.js
+      - src/lib/flow-config.js
       - src/lib/vestflow-data.js
       - .github/workflows/vestflow.yml
 permissions:
@@ -24,7 +27,7 @@ jobs:
         with:
           node-version: 24
       - name: Read verified USDC transfers
-        run: node scripts/update-vestflow.mjs /tmp/vestflow/vestflow.json
+        run: node scripts/update-flows.mjs /tmp/flow-snapshots
       - name: Publish data snapshot
         run: |
           git config user.name 'github-actions[bot]'
@@ -36,7 +39,7 @@ jobs:
             git checkout --orphan vestflow-data
             git rm -rf .
           fi
-          cp /tmp/vestflow/vestflow.json vestflow.json
-          git add vestflow.json
-          git commit -m 'Refresh Vestflows USDC snapshot' || exit 0
+          cp /tmp/flow-snapshots/*.json .
+          git add -- *.json
+          git commit -m 'Refresh flow trackers USDC snapshot' || exit 0
           git push origin HEAD:vestflow-data
