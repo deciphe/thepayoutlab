@@ -38,6 +38,6 @@ for (const extra of ['>EURUSD<','>CL<','>maker<','>avg<']) assert.ok(!html.inclu
 console.log('Web3 render and fee/leverage checks passed.');
 
 for(const text of ["The trade-off","couldbeluck","referrals","isgigaprop","4sjg1b","7gJmpEjv","THE FIRST","$100K.","FundedNext Futures","GIGA","BONUS PICK / FUTURES","LOW RISK","CLASSIC 1-STEP"]) assert.ok(html.includes(text),text);
-assert.equal((html.match(/payout certificate,/g)||[]).length,3);
+assert.equal((html.match(/payout certificate,/g)||[]).length,6);
 assert.ok(!html.includes('href="/maven/"'));
 assert.ok(!html.includes('$239.56</b>'));
