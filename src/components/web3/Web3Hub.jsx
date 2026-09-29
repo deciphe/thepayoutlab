@@ -14,6 +14,7 @@ import { executionMetrics } from "./executionMetrics";
 import "./web3-hub.css";
 import "./speed-manifesto.css";
 import "./comparison-deck.css";
+import "./obsidian.css";
 
 const OUTCOME_TARGET = 10;
 const RISK_BUDGET = 3;
@@ -82,9 +83,19 @@ function FundedNextBonus(){
   return <article className="fn-bonus"><div><span className="pick-label">BONUS PICK / FUTURES</span><h3>FundedNext Futures</h3><p>A separate futures option alongside my Web3 shortlist.</p></div><div className="fn-code"><span>USE MY CODE</span><button onClick={copy} aria-label="Copy FundedNext code GIGA">{copied?'GIGA · COPIED':'GIGA · COPY'}</button></div><a href="https://fundednext.com/futures/legacy" target="_blank" rel="sponsored noopener noreferrer">Explore Futures</a></article>;
 }
 
-function Reviewer(){
-  const proof=['Maven','Topstep','Tradeify','Lucid Trading','FundedNext','Breakout'].map(firm=>({firm,records:certificates.filter(c=>c.firm===firm&&!['fundednext-004','fundednext-005'].includes(c.id)).sort((a,b)=>b.amountNum-a.amountNum)}));
-  return <section className="reviewer-section receipt-teaser" id="reviewer"><div className="reviewer-copy"><span className="gp-eyebrow">A FEW OF THE RECEIPTS</span><h2>Real trades.<br/><em>Real payouts.</em></h2><p>I'm <strong>couldbeluck</strong>. A glimpse of my first $100K in payouts.</p></div><div className="receipt-stacks">{proof.map(({firm,records})=><article className="receipt-firm" key={firm}><div className="receipt-firm-label"><h3>{firm}</h3><span>{certificates.filter(c=>c.firm===firm).length} receipts</span></div><a className="receipt-stack" href={records[0].image} target="_blank" rel="noopener noreferrer" aria-label={`Inspect ${firm} payout certificate`}><div className="receipt-depth">{records.slice(0,5).map((c,i)=><img key={c.id} style={{'--layer':i,zIndex:6-i}} src={c.image} alt={i===0?c.firm+' payout certificate, '+c.amount:''} aria-hidden={i>0?true:undefined} loading="lazy"/>)}</div></a></article>)}<p className="receipt-note">Selected personal payout records. Payouts are not net profit.</p></div></section>;
+function AboutPopover(){
+  const [open,setOpen]=useState(false);
+  const dialog=useRef(null),trigger=useRef(null);
+  useEffect(()=>{
+    if(!open)return;
+    dialog.current.showModal();
+    const overflow=document.body.style.overflow;
+    document.body.style.overflow='hidden';
+    return()=>{document.body.style.overflow=overflow;trigger.current?.focus();};
+  },[open]);
+  const close=()=>setOpen(false);
+  const proof=['Maven','Topstep','Tradeify','Lucid Trading','FundedNext','Breakout'].map(firm=>certificates.filter(c=>c.firm===firm&&!['fundednext-004','fundednext-005'].includes(c.id)).sort((a,b)=>b.amountNum-a.amountNum)[0]).filter(Boolean);
+  return <><button ref={trigger} className="gp-about-trigger" onClick={()=>setOpen(true)} aria-haspopup="dialog">Oh, me?</button>{open&&<dialog className="gp-about-dialog" ref={dialog} aria-labelledby="gp-about-title" onCancel={close} onClose={close} onClick={e=>{if(e.target===e.currentTarget)close();}}><div className="gp-about-content"><header><span>A LITTLE BACKGROUND</span><button onClick={close} aria-label="Close about"><X size={18}/></button></header><h2 id="gp-about-title">I'm couldbeluck.</h2><p>A trader behind GIGAPROP. These comparisons come from spending time with the firms, their rules, and their costs.</p><details className="gp-about-receipts"><summary>A few personal receipts <span>+</span></summary><div className="gp-about-grid">{proof.map(c=><a key={c.id} href={c.image} target="_blank" rel="noopener noreferrer" aria-label={`Inspect ${c.firm} payout certificate`}><img src={c.image} alt={c.firm+' payout certificate, '+c.amount} loading="lazy"/><span>{c.firm}</span></a>)}</div><p>Selected personal payout records. Payouts are not net profit.</p></details></div></dialog>}</>;
 }
 
 function FirmDrawer({firm,onClose}){
@@ -236,7 +247,7 @@ export default function Web3Hub(){
     <header className="gp-nav">
       <a className="gp-wordmark" href="#top">GIGAPROP<span>.</span></a>
       <nav className="gp-nav-links">
-        <a href="#field">Reviews</a><a href="#degen" aria-label="NQ comparison">NQ costs</a><a href="#reviewer">About</a>
+        <a href="#field">Reviews</a><a href="#degen" aria-label="NQ comparison">NQ costs</a><a href="#drops">Free drops</a>
       </nav>
     </header>
 
@@ -298,9 +309,8 @@ export default function Web3Hub(){
       <details className="gp-model-note"><summary>Calculation & assumptions</summary><p>Illustrative full-equity position at each firm’s listed NQ leverage. Round-trip fee drag (% of equity) = 2 × taker fee (% of notional) × leverage. Win distance (% of NQ) = (10% net target + fee drag) ÷ leverage. Stop distance (% of NQ) = (3% net risk − fee drag) ÷ leverage. Multiply either distance by the NQ reference price for points. For Vest: 0.0025% taker per side × 2 × 50 = 0.25% equity in fees; (10 + 0.25) ÷ 50 = 0.205% of NQ. Vanta: 10 ÷ 2.5 = 4%. Their win-distance ratio is 4 ÷ 0.205 = 19.5×.</p><p>These are the site’s September 2026 scenario inputs, not live quotes. The fee drag is weighted by position size through leverage; the 19.5× compares NQ point distance, not time, win probability, or trading edge. It assumes constant notional and the same fee on entry and exit. Spreads, slippage, funding, profit split, and payout rules are excluded. If costs exceed the 3% risk budget, no valid stop remains.</p><p>Vanta uses base leverage without boosts or Pro. Account limits and notional caps may restrict full-equity positions. Check current contract prices and firm rules before purchasing.</p></details>
     </section>
 
-    <Reviewer />
     <FreeDrops />
-    <footer className="gp-footer"><a className="gp-wordmark" href="#top">GIGAPROP<span>.</span></a><p>Trader-led comparisons. September 2026 data snapshot.</p><a href="#top">Back to top ↑</a></footer>
+    <footer className="gp-footer"><a className="gp-wordmark" href="#top">GIGAPROP<span>.</span></a><p>Trader-led comparisons. September 2026 data snapshot.</p><AboutPopover /><a href="#top">Back to top ↑</a></footer>
 
     {detailFirm && <FirmDrawer key={detailFirm.id} firm={detailFirm} onClose={()=>setDetailId(null)}/>}
   </main>;

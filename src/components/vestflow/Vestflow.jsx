@@ -1,4 +1,5 @@
-import {useEffect,useMemo,useState} from 'react';
+import {fetchVestflow} from '../../lib/vestflow-data.js';
+import {useEffect,useMemo,useState,useRef} from 'react';
 import {ArrowDownLeft,ArrowUpRight,RefreshCw,ExternalLink,Copy,Check,Pause,Play,Activity} from 'lucide-react';
 import './vestflow.css';
 const WALLET='0xb2f86eae1197032fa85389cc6c0f3b06b58dd1ea';
@@ -61,19 +62,24 @@ function TransferGallery({rows,limit,direction}){
 }
 export default function Vestflow(){
  const [data,setData]=useState(null),[busy,setBusy]=useState(true),[error,setError]=useState(''),[days,setDays]=useState(7),[direction,setDirection]=useState('all'),[query,setQuery]=useState(''),[limit,setLimit]=useState(12),[copied,setCopied]=useState(false),[clock,setClock]=useState(Date.now()),[paused,setPaused]=useState(false),[inspected,setInspected]=useState(null),[bucket,setBucket]=useState(null),[excluded,setExcluded]=useState([]);
+ const refreshLock=useRef(false),controller=useRef(null);
  async function refresh(){
-  setBusy(true);setError('');
-  try{
-   let snapshot;
+  if(refreshLock.current)return;
+  refreshLock.current=true;setBusy(true);setError('');
+  controller.current=new AbortController();
+  const signal=controller.current.signal;
+  const adopt=snapshot=>setData(old=>!old||Date.parse(snapshot.updatedAt)>=Date.parse(old.updatedAt)?snapshot:old);
+  // Paint the saved data immediately while the explorer returns a fresh snapshot.
+  const cached=(async()=>{
    for(const url of [SOURCE,'/data/vestflow.json']){
-    try{const r=await fetch(url+'?t='+Date.now(),{cache:'no-store',signal:AbortSignal.timeout(15000)});if(!r.ok)throw Error();const d=await r.json();if(d.wallet!==WALLET||!d.complete||!Array.isArray(d.transfers))throw Error();snapshot=d;break;}catch{}
+    try{const r=await fetch(url+'?t='+Date.now(),{cache:'no-store',signal:AbortSignal.any([signal,AbortSignal.timeout(12000)])});if(!r.ok)throw Error();const d=await r.json();if(d.wallet!==WALLET||!d.complete||!Array.isArray(d.transfers))throw Error();if(!signal.aborted)adopt(d);break;}catch{if(signal.aborted)break;}
    }
-   if(!snapshot)throw Error();
-   setData(old=>!old||Date.parse(snapshot.updatedAt)>=Date.parse(old.updatedAt)?snapshot:old);
-  }catch{setError('Refresh unavailable. Last successful snapshot is kept below.');}
-  finally{setBusy(false);setClock(Date.now());}
+  })();
+  try{const fresh=await fetchVestflow({signal});if(!signal.aborted)adopt(fresh);}
+  catch{if(!signal.aborted){await cached;setError('Live refresh unavailable. Showing the last saved snapshot. Try Refresh again.');}}
+  finally{if(!signal.aborted){setBusy(false);setClock(Date.now());}if(controller.current?.signal===signal)refreshLock.current=false;}
  }
- useEffect(()=>{refresh();const timer=setInterval(refresh,15*60*1000),tick=setInterval(()=>setClock(Date.now()),30000);const visible=()=>{if(document.visibilityState==='visible')refresh();};document.addEventListener('visibilitychange',visible);const title=document.title;document.title='Vestflows · GIGAPROP';return()=>{clearInterval(timer);clearInterval(tick);document.removeEventListener('visibilitychange',visible);document.title=title;};},[]);
+ useEffect(()=>{refresh();const timer=setInterval(refresh,15*60*1000),tick=setInterval(()=>setClock(Date.now()),30000);const visible=()=>{if(document.visibilityState==='visible')refresh();};document.addEventListener('visibilitychange',visible);const title=document.title;document.title='Vestflows · GIGAPROP';return()=>{controller.current?.abort();refreshLock.current=false;clearInterval(timer);clearInterval(tick);document.removeEventListener('visibilitychange',visible);document.title=title;};},[]);
  useEffect(()=>{setLimit(12);setInspected(null);},[days,direction,query,excluded]);
  useEffect(()=>{setBucket(null);setExcluded([]);},[days]);
  const summary=useMemo(()=>{
@@ -93,7 +99,7 @@ export default function Vestflow(){
  async function copy(){try{await navigator.clipboard.writeText(WALLET);setCopied(true);setTimeout(()=>setCopied(false),2000);}catch{setError('Copy unavailable. The full wallet address is shown below.');}}
  return <main className="vf">
   <header className="vf-top"><a href="#" className="vf-brand">GP.</a><span>GIGAPROP <i>/</i> ONCHAIN</span><a className="vf-back" href="#">Back to GIGAPROP <ArrowUpRight size={16}/></a></header>
-  <section className="vf-heading"><div><div className="vf-eyebrow">VEST EXCHANGE</div><h1>vest<span>flows</span><i>.</i></h1><p>Every transfer. One clear view.</p></div><div className="vf-status"><span className={stale||error?'vf-warning':''}>{busy?'Updating snapshot…':data?(stale?'Snapshot delayed · ':'Updated · ')+age+'m ago':'Waiting for data'}</span><button onClick={refresh} disabled={busy}><RefreshCw size={14} className={busy?'vf-spin':''}/> Refresh</button><small>Scheduled every 15 minutes</small></div></section>
+  <section className="vf-heading"><div><div className="vf-eyebrow">VEST EXCHANGE</div><h1>vest<span>flows</span><i>.</i></h1><p>Every transfer. One clear view.</p></div><div className="vf-status"><span className={stale||error?'vf-warning':''}>{busy?'Syncing with Arbitrum…':data?(stale?'Snapshot delayed · ':'Updated · ')+age+'m ago':'Waiting for data'}</span><button onClick={refresh} disabled={busy}><RefreshCw size={14} className={busy?'vf-spin':''}/> Refresh</button><small>Refreshes every 15 minutes while open</small></div></section>
   {error&&<p className="vf-alert" role="status">{error}</p>}
   {stale&&<p className="vf-alert">The latest snapshot is over 30 minutes old. Values below are as of {new Date(data.updatedAt).toLocaleString()}.</p>}
   <div className="vf-period"><div className="vf-view-label"><span className="vf-status-dot"/> SNAPSHOT FLOW <button className="vf-pause" onClick={()=>setPaused(v=>!v)} aria-label={paused?"Play flow animation":"Pause flow animation"}>{paused?<Play size={12}/>:<Pause size={12}/>}</button></div><div role="group" aria-label="Time range">{[1,7,30].map(n=><button key={n} onClick={()=>setDays(n)} aria-pressed={days===n}>{n===1?'24H':n+'D'}</button>)}</div></div>

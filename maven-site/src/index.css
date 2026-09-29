@@ -4,13 +4,13 @@
 
 @layer base {
   :root {
-    --background: 0 0% 2%;
+    --background: 150 10% 3%;
     --foreground: 0 0% 97%;
     --card: 0 0% 10%;
     --card-foreground: 0 0% 97%;
     --popover: 0 0% 10%;
     --popover-foreground: 0 0% 97%;
-    --primary: 35 100% 50%;
+    --primary: 88 32% 65%;
     --primary-foreground: 0 0% 4%;
     --secondary: 0 0% 10%;
     --secondary-foreground: 0 0% 97%;
@@ -22,7 +22,7 @@
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 16%;
     --input: 0 0% 16%;
-    --ring: 35 100% 50%;
+    --ring: 88 32% 65%;
     --radius: 0.5rem;
     --font-heading: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
     --font-body: 'IBM Plex Mono', ui-monospace, monospace;
@@ -51,9 +51,9 @@
   .font-display { font-family: var(--font-display); }
   .font-mono-lab { font-family: var(--font-mono); }
 
-  .text-lucid { color: #ff9400; }
-  .bg-lucid { background-color: #ff9400; }
-  .border-lucid { border-color: #ff9400; }
+  .text-lucid { color: #a8c38a; }
+  .bg-lucid { background-color: #a8c38a; }
+  .border-lucid { border-color: #a8c38a; }
 
   .text-violet-glow { color: #777777; }
 
@@ -111,4 +111,4 @@
   html { scroll-behavior: auto; }
 }
 body:has(dialog[open]) { overflow: hidden; }
-a:focus-visible, button:focus-visible { outline: 2px solid #ff9400; outline-offset: 4px; }
+a:focus-visible, button:focus-visible { outline: 2px solid #a8c38a; outline-offset: 4px; }
