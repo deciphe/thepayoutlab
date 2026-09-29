@@ -1,13 +1,16 @@
 import assert from 'node:assert/strict';
-import {rankRecipients} from '../src/lib/flow-metrics.js';
+import {sortTransfers} from '../src/lib/flow-metrics.js';
 import {fetchFlow} from '../src/lib/flow-data.js';
 import {FLOW_CONFIGS} from '../src/lib/flow-config.js';
 const c=FLOW_CONFIGS.breakout,other='0x1111111111111111111111111111111111111111',second='0x2222222222222222222222222222222222222222';
 const now=Date.now(),at=ms=>new Date(now-ms).toISOString();
 const row=(to,raw,direction='out')=>({from:c.wallet,to,raw,direction,timestamp:at(1000)});
-const ranking=rankRecipients([row(other,'2000000'),row(other.toUpperCase(),'3000001'),row(second,'4000000'),row(c.wallet,'99000000','self'),row(other,'99000000','in')]);
-assert.equal(ranking.rows[0].address,other);assert.equal(ranking.rows[0].raw,'5000001');assert.equal(ranking.rows[0].count,2);assert.equal(ranking.total,9.000001);assert.equal(ranking.count,2);
-assert.equal(rankRecipients(Array.from({length:12},(_,i)=>row('0x'+String(i+1).padStart(40,'0'),String((i+1)*1000000)))).rows.length,10);
+const sortRows=[{raw:'9007199254740993',block:2,logIndex:1},{raw:'9007199254740992',block:3,logIndex:0},{raw:'100',block:1,logIndex:0}];
+assert.equal(sortTransfers(sortRows,'largest')[0].raw,'9007199254740993');
+assert.equal(sortTransfers(sortRows,'smallest')[0].raw,'100');
+assert.equal(sortTransfers(sortRows,'newest')[0].block,3);
+assert.equal(sortTransfers(sortRows,'oldest')[0].block,1);
+assert.equal(sortRows[0].block,2);
 const transfer=(id,to,raw,age,token=c.token)=>({transaction_hash:'0x'+String(id).padStart(64,'0'),log_index:id,block_number:100-id,timestamp:at(age),token:{address_hash:token},from:{hash:c.wallet},to:{hash:to},total:{value:raw,decimals:'6'}});
 const first=transfer(1,other,'2000000',1000),old=transfer(2,second,'3000000',86400000),outside=transfer(3,other,'9000000',31*86400000);
 const realFetch=globalThis.fetch;let calls=[];
@@ -16,9 +19,9 @@ try{
  const d=await fetchFlow(c);assert.equal(d.chain,'Ethereum');assert.equal(d.balance,777);assert.equal(d.transfers.length,2);assert.ok(calls.some(u=>u.includes('index=1')));assert.ok(calls.every(u=>u.startsWith(c.api)));assert.equal(d.complete,true);
  // Incremental refresh must retain older recipients and replace the overlap without double counting.
  calls=[];const previous={...d,updatedAt:at(1800000),periodStart:at(31*86400000)};
- const refreshed=await fetchFlow(c,{previous});assert.equal(refreshed.transfers.length,2);assert.equal(rankRecipients(refreshed.transfers).total,5);
+ const refreshed=await fetchFlow(c,{previous});assert.equal(refreshed.transfers.length,2);assert.equal(refreshed.transfers.reduce((n,t)=>n+BigInt(t.raw),0n),5000000n);
 }finally{globalThis.fetch=realFetch;}
-console.log('Flow chain, pagination, token filtering, deduplication, incremental refresh, and recipient ranking checks passed.');
+console.log('Flow chain, pagination, token filtering, deduplication, incremental refresh, and transaction sorting checks passed.');
 
 // Render the actual shared UI for each chain to catch wrong explorer/referral wiring.
 const {build}=await import('vite');
@@ -30,15 +33,14 @@ const chunk=output.output.find(x=>x.type==='chunk'&&x.isEntry),mod={exports:{}};
 new Function('require','module','exports',chunk.code)(require,mod,mod.exports);
 const React=require('react'),{renderToString}=require('react-dom/server');
 for(const config of Object.values(FLOW_CONFIGS)){
- const html=renderToString(React.createElement(mod.exports.default,{firm:config.id}));
+ const html=renderToString(React.createElement(mod.exports.default||mod.exports,{firm:config.id}));
  assert.ok(html.includes(config.referral.replaceAll('&','&amp;')));
  assert.ok(html.includes(config.explorer+'/address/'+config.wallet));
  assert.ok(html.includes(config.eyebrow));
- assert.ok(html.includes('Top recipients'));
+ assert.ok(!html.includes('Top recipients'));
+ assert.ok(html.includes('Sort transfers'));
+ for(const label of ['Newest first','Oldest first','Largest amount','Smallest amount'])assert.ok(html.includes(label));
  assert.ok(html.includes('#novaflow'));
- const rows=Array.from({length:12},(_,i)=>row('0x'+String(i+1).padStart(40,'0'),String((i+1)*1000000)));
- const rankingHtml=renderToString(React.createElement(mod.exports.TopRecipients,{rows,ready:true,days:30,config,onSelect:()=>{}}));
- assert.equal((rankingHtml.match(/class="vf-recipient-row"/g)||[]).length,10);
- assert.ok(rankingHtml.includes(config.explorer+'/address/'));
+
 }
-console.log('All three tracker views and top-10 lists render with the correct referral and explorer links.');
+console.log('All three tracker views render with sorting controls and the correct referral and explorer links.');
