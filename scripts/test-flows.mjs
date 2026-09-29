@@ -44,3 +44,11 @@ for(const config of Object.values(FLOW_CONFIGS)){
 
 }
 console.log('All tracker views render with sorting controls and the correct referral and explorer links.');
+const {combineFlows}=await import('../src/lib/flow-metrics.js');
+const {VEST_CHAINS}=await import('../src/lib/flow-config.js');
+const snapshots=VEST_CHAINS.map((c,i)=>({wallet:c.wallet,chain:c.chain,complete:true,balance:i+0.1,updatedAt:at(1000),periodStart:at(30*86400000),transfers:[{id:'same-log',raw:'1000000',block:100-i,logIndex:0,timestamp:at((3-i)*10000)}]}));
+const combined=combineFlows(snapshots,VEST_CHAINS);
+assert.equal(combined.balance,3.3);assert.equal(new Set(combined.transfers.map(t=>t.id)).size,3);
+assert.equal(combined.transfers[0].chain,'Ethereum');assert.equal(combined.transfers[0].explorer,'https://etherscan.io');
+assert.throws(()=>combineFlows(snapshots.slice(1),VEST_CHAINS));
+console.log('Combined balances, chain-qualified transfer IDs, chronological sorting, and completeness checks passed.');
