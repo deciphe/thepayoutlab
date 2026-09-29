@@ -95,7 +95,7 @@ function AboutPopover(){
   },[open]);
   const close=()=>setOpen(false);
   const proof=['Maven','Topstep','Tradeify','Lucid Trading','FundedNext','Breakout'].map(firm=>certificates.filter(c=>c.firm===firm&&!['fundednext-004','fundednext-005'].includes(c.id)).sort((a,b)=>b.amountNum-a.amountNum)[0]).filter(Boolean);
-  return <><button ref={trigger} className="gp-about-trigger" onClick={()=>setOpen(true)} aria-haspopup="dialog">Oh, me?</button>{open&&<dialog className="gp-about-dialog" ref={dialog} aria-labelledby="gp-about-title" onCancel={close} onClose={close} onClick={e=>{if(e.target===e.currentTarget)close();}}><div className="gp-about-content"><header><span>A LITTLE BACKGROUND</span><button onClick={close} aria-label="Close about"><X size={18}/></button></header><h2 id="gp-about-title">I'm couldbeluck.</h2><p>A trader behind GIGAPROP. These comparisons come from spending time with the firms, their rules, and their costs.</p><details className="gp-about-receipts"><summary>A few personal receipts <span>+</span></summary><div className="gp-about-grid">{proof.map(c=><a key={c.id} href={c.image} target="_blank" rel="noopener noreferrer" aria-label={`Inspect ${c.firm} payout certificate`}><img src={c.image} alt={c.firm+' payout certificate, '+c.amount} loading="lazy"/><span>{c.firm}</span></a>)}</div><p>Selected personal payout records. Payouts are not net profit.</p></details></div></dialog>}</>;
+  return <><button ref={trigger} className="gp-about-trigger gp-wisp-trigger" onClick={()=>setOpen(true)} aria-haspopup="dialog"><span className="gp-wisp-avatar"><img src="/wisp.webp" alt="Wisp"/></span><span className="gp-wisp-copy">Oh, me?<small>A little background</small></span><span className="gp-wisp-plus" aria-hidden="true">+</span></button>{open&&<dialog className="gp-about-dialog" ref={dialog} aria-labelledby="gp-about-title" onCancel={close} onClose={close} onClick={e=>{if(e.target===e.currentTarget)close();}}><div className="gp-about-content"><header><span>A LITTLE BACKGROUND</span><button onClick={close} aria-label="Close about"><X size={18}/></button></header><h2 id="gp-about-title">I'm couldbeluck.</h2><p>A trader behind GIGAPROP. These comparisons come from spending time with the firms, their rules, and their costs.</p><details className="gp-about-receipts"><summary>A few personal receipts <span>+</span></summary><div className="gp-about-grid">{proof.map(c=><a key={c.id} href={c.image} target="_blank" rel="noopener noreferrer" aria-label={`Inspect ${c.firm} payout certificate`}><img src={c.image} alt={c.firm+' payout certificate, '+c.amount} loading="lazy"/><span>{c.firm}</span></a>)}</div><p>Selected personal payout records. Payouts are not net profit.</p></details></div></dialog>}</>;
 }
 
 function FirmDrawer({firm,onClose}){
@@ -251,7 +251,7 @@ export default function Web3Hub(){
       </nav>
     </header>
 
-    <SpeedManifesto />
+    <SpeedManifesto about={<AboutPopover />} firms={coreFirms} onOpen={openFirm}/>
 
     <section className="firm-deck-section" id="field">
       <div className="firm-deck-header">
@@ -310,7 +310,7 @@ export default function Web3Hub(){
     </section>
 
     <FreeDrops />
-    <footer className="gp-footer"><a className="gp-wordmark" href="#top">GIGAPROP<span>.</span></a><p>Trader-led comparisons. September 2026 data snapshot.</p><AboutPopover /><a href="#top">Back to top ↑</a></footer>
+    <footer className="gp-footer"><a className="gp-wordmark" href="#top">GIGAPROP<span>.</span></a><p>Trader-led comparisons. September 2026 data snapshot.</p><a href="#top">Back to top ↑</a></footer>
 
     {detailFirm && <FirmDrawer key={detailFirm.id} firm={detailFirm} onClose={()=>setDetailId(null)}/>}
   </main>;
