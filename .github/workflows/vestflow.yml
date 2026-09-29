@@ -1,0 +1,41 @@
+name: Refresh Vestflows
+on:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/update-vestflow.mjs
+      - .github/workflows/vestflow.yml
+permissions:
+  contents: write
+concurrency:
+  group: vestflow-refresh
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Read verified USDC transfers
+        run: node scripts/update-vestflow.mjs /tmp/vestflow/vestflow.json
+      - name: Publish data snapshot
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if git ls-remote --exit-code --heads origin vestflow-data; then
+            git fetch origin vestflow-data
+            git checkout -B vestflow-data origin/vestflow-data
+          else
+            git checkout --orphan vestflow-data
+            git rm -rf .
+          fi
+          cp /tmp/vestflow/vestflow.json vestflow.json
+          git add vestflow.json
+          git commit -m 'Refresh Vestflows USDC snapshot' || exit 0
+          git push origin HEAD:vestflow-data

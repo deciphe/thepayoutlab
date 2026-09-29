@@ -1,7 +1,15 @@
+import { lazy, Suspense, useEffect, useState } from "react";
 import Web3Hub from "./components/web3/Web3Hub";
 
+const Vestflow = lazy(() => import("./components/vestflow/Vestflow"));
 export default function App() {
-  return <Web3Hub />;
+  const [hash, setHash] = useState(() => typeof window === "undefined" ? "" : window.location.hash);
+  useEffect(() => {
+    const change = () => { setHash(window.location.hash); window.scrollTo(0, 0); };
+    window.addEventListener("hashchange", change);
+    return () => window.removeEventListener("hashchange", change);
+  }, []);
+  return hash === "#vestflow" ? <Suspense fallback={<div style={{background:'#090b0a',color:'#b6ff4a',minHeight:'100vh',padding:40}}>Loading Vestflows…</div>}><Vestflow /></Suspense> : <Web3Hub />;
 }
 
 /*
