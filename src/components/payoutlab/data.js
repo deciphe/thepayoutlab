@@ -755,7 +755,7 @@ export const certificates = [
   const nativeDarkIds = new Set(["maven-001", "maven-002", "maven-003", "maven-004", "maven-005"]);
   const image = c.firm === "Maven" && !nativeDarkIds.has(c.id)
     ? `payouts/maven-dark/${c.id}-dark.png`
-    : c.image;
+    : c.firm === "Topstep" ? `payouts/topstep-obsidian/${c.id}.svg` : c.image;
   return { ...c, image: assetUrl(image), url: assetUrl(image) };
 });
 export const payouts = certificates;
