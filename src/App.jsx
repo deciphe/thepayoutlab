@@ -9,7 +9,7 @@ export default function App() {
     window.addEventListener("hashchange", change);
     return () => window.removeEventListener("hashchange", change);
   }, []);
-  return hash === "#vestflow" ? <Suspense fallback={<div style={{background:'#090b0a',color:'#b6ff4a',minHeight:'100vh',padding:40}}>Loading Vestflows…</div>}><Vestflow /></Suspense> : <Web3Hub />;
+  return hash === "#vestflow" ? <Suspense fallback={<div style={{background:'#090b0a',color:'#b6ff4a',minHeight:'100vh',padding:40}}>Loading Vestflow…</div>}><Vestflow /></Suspense> : <Web3Hub />;
 }
 
 /*
