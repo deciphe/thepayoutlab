@@ -16,5 +16,11 @@ export const FLOW_CONFIGS = {
   wallet:'0x920973eebffd3bf7da14dd9fb52bd3bea1664c67',token:'0xaf88d065e77c8cc2239327c5edb3a432268e5831',
   chain:'Arbitrum One',api:'https://arbitrum.blockscout.com/api/v2',explorer:'https://arbiscan.io',explorerName:'Arbiscan',
   referral:'https://hn.xyz/r/4sjg1b',cta:'Explore Hypernova'
+ },
+ propr: {
+  id:'propr',slug:'proprflow',title:'Proprflow',firm:'Propr',eyebrow:'PROPR · ETHEREUM',mark:'P',
+  wallet:'0x0353f53bd55b8011bad3de1d939ff4d8335cbb1d',token:'0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+  chain:'Ethereum',api:'https://eth.blockscout.com/api/v2',explorer:'https://etherscan.io',explorerName:'Etherscan',
+  referral:'https://app.propr.xyz/r/7gJmpEjv',cta:'Explore Propr'
  }
 };

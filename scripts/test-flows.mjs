@@ -40,7 +40,7 @@ for(const config of Object.values(FLOW_CONFIGS)){
  assert.ok(!html.includes('Top recipients'));
  assert.ok(html.includes('Sort transfers'));
  for(const label of ['Newest first','Oldest first','Largest amount','Smallest amount'])assert.ok(html.includes(label));
- assert.ok(html.includes('#novaflow'));
+ for(const tracker of Object.values(FLOW_CONFIGS))assert.ok(html.includes('#'+tracker.slug));
 
 }
-console.log('All three tracker views render with sorting controls and the correct referral and explorer links.');
+console.log('All tracker views render with sorting controls and the correct referral and explorer links.');

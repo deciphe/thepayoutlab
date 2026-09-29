@@ -9,7 +9,7 @@ export default function App() {
     window.addEventListener("hashchange", change);
     return () => window.removeEventListener("hashchange", change);
   }, []);
-  const flow=hash === "#vestflow" ? "vest" : hash === "#breakoutflow" ? "breakout" : hash === "#novaflow" ? "nova" : null;
+  const flow=hash === "#vestflow" ? "vest" : hash === "#breakoutflow" ? "breakout" : hash === "#novaflow" ? "nova" : hash === "#proprflow" ? "propr" : null;
   return flow ? <Suspense fallback={<div style={{background:'#090b0a',color:'#b6ff4a',minHeight:'100vh',padding:40}}>Loading flow…</div>}><Vestflow key={flow} firm={flow}/></Suspense> : <Web3Hub />;
 }
 
