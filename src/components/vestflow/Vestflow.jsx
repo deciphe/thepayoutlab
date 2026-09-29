@@ -100,6 +100,10 @@ export default function Vestflow(){
  return <main className="vf">
   <header className="vf-top"><a href="#" className="vf-brand">GP.</a><span>GIGAPROP <i>/</i> ONCHAIN</span><a className="vf-back" href="#">Back to GIGAPROP <ArrowUpRight size={16}/></a></header>
   <section className="vf-heading"><div><div className="vf-eyebrow">VEST EXCHANGE</div><h1>vest<span>flow</span><i>.</i></h1></div><div className="vf-status"><span className={stale||error?'vf-warning':''}>{busy?'Syncing…':data?(stale?'Delayed · ':age===0?'Updated just now':'Updated ')+(age===0&&!stale?'':age+'m ago'):'Connecting…'}</span><button onClick={refresh} disabled={busy} aria-label="Refresh transfers" title="Refresh transfers · Auto-refresh every 15 minutes while open"><RefreshCw size={15} className={busy?'vf-spin':''}/></button></div></section>
+  <a className="vf-referral" href="https://next.vestmarkets.com/r/isgigaprop" target="_blank" rel="noopener noreferrer sponsored" aria-label="Get 5% off Vest with the GIGAPROP referral link (opens in a new tab)">
+   <span className="vf-referral-offer"><strong>5% <span>OFF</span></strong><span className="vf-referral-copy"><b>Your next Vest account.</b><small>GIGAPROP referral offer</small></span></span>
+   <span className="vf-referral-cta">Get 5% off Vest</span>
+  </a>
   {error&&<p className="vf-alert" role="status">{error}</p>}
   {stale&&<p className="vf-alert">The latest snapshot is over 30 minutes old. Values below are as of {new Date(data.updatedAt).toLocaleString()}.</p>}
   <div className="vf-period"><div className="vf-view-label"><span className="vf-status-dot"/> TRANSFER FLOW <button className="vf-pause" onClick={()=>setPaused(v=>!v)} aria-label={paused?"Play flow animation":"Pause flow animation"}>{paused?<Play size={12}/>:<Pause size={12}/>}</button></div><div role="group" aria-label="Time range">{[1,7,30].map(n=><button key={n} onClick={()=>setDays(n)} aria-pressed={days===n}>{n===1?'24H':n+'D'}</button>)}</div></div>
