@@ -1,5 +1,5 @@
 import {fetchFlow} from '../../lib/flow-data.js';
-import {FLOW_CONFIGS} from '../../lib/flow-config.js';
+import {FLOW_CONFIGS,VEST_CHAINS} from '../../lib/flow-config.js';
 import {sortTransfers} from '../../lib/flow-metrics.js';
 import {useEffect,useMemo,useState,useRef} from 'react';
 import {ArrowDownLeft,ArrowUpRight,RefreshCw,ExternalLink,Copy,Check,Pause,Play,Activity} from 'lucide-react';
@@ -62,7 +62,12 @@ function TransferGallery({rows,limit,direction,config}){
  </div>;
 }
 export default function Vestflow({firm="vest"}){
- const config=FLOW_CONFIGS[firm],{wallet:WALLET,explorer:EXPLORER}=config;
+ const [chain,setChain]=useState('arbitrum');
+ const config=firm==='vest'?VEST_CHAINS.find(c=>c.chainKey===chain):FLOW_CONFIGS[firm];
+ return <WalletFlow key={config.slug} firm={firm} config={config} onChain={setChain}/>;
+}
+function WalletFlow({firm,config,onChain}){
+ const {wallet:WALLET,explorer:EXPLORER}=config;
  const SOURCE=`https://raw.githubusercontent.com/deciphe/thepayoutlab/vestflow-data/${config.slug}.json`;
  const [data,setData]=useState(null),[busy,setBusy]=useState(true),[error,setError]=useState(''),[days,setDays]=useState(7),[direction,setDirection]=useState('all'),[query,setQuery]=useState(''),[limit,setLimit]=useState(12),[copied,setCopied]=useState(false),[clock,setClock]=useState(Date.now()),[paused,setPaused]=useState(false),[inspected,setInspected]=useState(null),[bucket,setBucket]=useState(null),[excluded,setExcluded]=useState([]);
  const [sort,setSort]=useState('newest');
@@ -106,13 +111,14 @@ export default function Vestflow({firm="vest"}){
  async function copy(){try{await navigator.clipboard.writeText(WALLET);setCopied(true);setTimeout(()=>setCopied(false),2000);}catch{setError('Copy unavailable. The full wallet address is shown below.');}}
  return <main className={"vf vf-"+firm}>
   <header className="vf-top"><a href="#" className="vf-brand">GP.</a><span>GIGAPROP <i>/</i> ONCHAIN</span><a className="vf-back" href="#">Back to GIGAPROP <ArrowUpRight size={16}/></a></header>
-  <nav className="vf-flow-nav" aria-label="Flow trackers">{Object.values(FLOW_CONFIGS).map(c=><a key={c.id} href={"#"+c.slug} aria-current={firm===c.id?"page":undefined}>{c.title}<small>{c.chain}</small></a>)}</nav>
+  <nav className="vf-flow-nav" aria-label="Flow trackers">{Object.values(FLOW_CONFIGS).map(c=><a key={c.id} href={"#"+c.slug} aria-current={firm===c.id?"page":undefined}>{c.title}<small>{c.id==='vest'?'3 chains':c.chain}</small></a>)}</nav>
   <section className="vf-heading"><div><div className="vf-eyebrow">{config.eyebrow}</div><h1>{config.id}<span>flow</span><i>.</i></h1></div><div className="vf-status"><span className={stale||error?'vf-warning':''}>{busy?'Syncing…':data?(stale?'Delayed · ':age===0?'Updated just now':'Updated ')+(age===0&&!stale?'':age+'m ago'):'Connecting…'}</span><button onClick={refresh} disabled={busy} aria-label="Refresh transfers" title="Refresh transfers · Auto-refresh every 15 minutes while open"><RefreshCw size={15} className={busy?'vf-spin':''}/></button></div></section>
   <p className="vf-scope" style={{margin:'-12px 0 22px',maxWidth:720,fontSize:13,lineHeight:1.7,color:'#929d8b'}}><strong style={{color:'#b9c3b2',fontWeight:500}}>Payout hot wallet flow.</strong> USDC activity for this address only—not card sales, total reserves, or the firm’s overall financial standing.</p>
   <a className="vf-referral" href={config.referral} target="_blank" rel="noopener noreferrer sponsored" aria-label={config.cta+" with the GIGAPROP referral link (opens in a new tab)"}>
    <span className="vf-referral-offer"><strong>{firm==='vest'?<>5% <span>OFF</span></>:<>{config.firm}</>}</strong><span className="vf-referral-copy"><b>Your next {config.firm} account.</b><small>GIGAPROP referral</small></span></span>
    <span className="vf-referral-cta">{config.cta}</span>
   </a>
+  {firm==='vest'&&<div className="vf-tabs" role="group" aria-label="Vest wallet network" style={{display:'flex',gap:8,flexWrap:'wrap',margin:'0 0 18px'}}>{VEST_CHAINS.map(c=><button key={c.chainKey} type="button" aria-pressed={config.chainKey===c.chainKey} onClick={()=>onChain(c.chainKey)} style={{fontSize:14,padding:'9px 14px'}}>{c.chain==='Arbitrum One'?'Arbitrum':c.chain}</button>)}</div>}
   {error&&<p className="vf-alert" role="status">{error}</p>}
   {stale&&<p className="vf-alert">The latest snapshot is over 30 minutes old. Values below are as of {new Date(data.updatedAt).toLocaleString()}.</p>}
   <div className="vf-period"><div className="vf-view-label"><span className="vf-status-dot"/> TRANSFER FLOW <button className="vf-pause" onClick={()=>setPaused(v=>!v)} aria-label={paused?"Play flow animation":"Pause flow animation"}>{paused?<Play size={12}/>:<Pause size={12}/>}</button></div><div role="group" aria-label="Time range">{[1,7,30].map(n=><button key={n} onClick={()=>setDays(n)} aria-pressed={days===n}>{n===1?'24H':n+'D'}</button>)}</div></div>

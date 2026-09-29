@@ -24,3 +24,14 @@ export const FLOW_CONFIGS = {
   referral:'https://app.propr.xyz/r/7gJmpEjv',cta:'Explore Propr'
  }
 };
+
+export const VEST_CHAINS = [
+ {...FLOW_CONFIGS.vest,chainKey:'arbitrum'},
+ {...FLOW_CONFIGS.vest,chainKey:'base',slug:'vestflow-base',chain:'Base',
+ wallet:'0x55133c825603e6a5b9e911abab23e75dc3bb07af',token:'0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
+ api:'https://base.blockscout.com/api/v2',explorer:'https://basescan.org',explorerName:'Basescan'},
+ {...FLOW_CONFIGS.vest,chainKey:'ethereum',slug:'vestflow-ethereum',chain:'Ethereum',
+ wallet:'0xe80f92077131b9890599e418ae323de71ce1c35a',token:'0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+ api:'https://eth.blockscout.com/api/v2',explorer:'https://etherscan.io',explorerName:'Etherscan'}
+];
+export const FLOW_SOURCES=[...VEST_CHAINS,...Object.values(FLOW_CONFIGS).filter(c=>c.id!=='vest')];

@@ -1,9 +1,9 @@
 import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import {fetchFlow} from '../src/lib/flow-data.js';
-import {FLOW_CONFIGS} from '../src/lib/flow-config.js';
+import {FLOW_SOURCES} from '../src/lib/flow-config.js';
 const dest=process.argv[2]||'public/data';
 await mkdir(dest,{recursive:true});
-const results=await Promise.allSettled(Object.values(FLOW_CONFIGS).map(async config=>{
+const results=await Promise.allSettled(FLOW_SOURCES.map(async config=>{
  let previous;
  try{
   const response=await fetch(`https://raw.githubusercontent.com/deciphe/thepayoutlab/vestflow-data/${config.slug}.json`,{signal:AbortSignal.timeout(15000)});
@@ -14,5 +14,5 @@ const results=await Promise.allSettled(Object.values(FLOW_CONFIGS).map(async con
  await writeFile(`${dest}/${config.slug}.json`,JSON.stringify(snapshot));
  console.log(`${config.title}: ${snapshot.transfers.length} transfers; balance ${snapshot.balance} USDC`);
 }));
-for(const [i,result] of results.entries())if(result.status==='rejected')console.error(`${Object.values(FLOW_CONFIGS)[i].title}:`,result.reason);
+for(const [i,result] of results.entries())if(result.status==='rejected')console.error(`${FLOW_SOURCES[i].title}:`,result.reason);
 if(results.every(result=>result.status==='rejected'))process.exitCode=1;
