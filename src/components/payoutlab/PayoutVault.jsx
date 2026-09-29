@@ -23,7 +23,18 @@ const grouped = [...new Set(certificates.map(c => c.firm))]
       .filter(c => c.firm === firm)
       .sort((a, b) => b.amountNum - a.amountNum || a.id.localeCompare(b.id)),
   }))
+  .map(group => ({
+    ...group,
+    total: group.all.reduce((sum, certificate) => sum + certificate.amountNum, 0),
+  }))
   .sort((a, b) => b.all.length - a.all.length || a.firm.localeCompare(b.firm));
+
+const formatMoney = value => value.toLocaleString("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: value % 1 ? 2 : 0,
+  maximumFractionDigits: 2,
+});
 
 function ProofImage({ certificate, preview = false }) {
   const privateName = privateNameIds.has(certificate.id);
@@ -60,7 +71,7 @@ export default function PayoutVault() {
         </div>
 
         <div className="space-y-2">
-          {grouped.map(({ firm, all }) => {
+          {grouped.map(({ firm, all, total }) => {
             const shown = all.slice(0, 5);
             const isOpen = openFirm === firm;
             const opacity = [1, .72, .5, .32, .18];
@@ -73,7 +84,7 @@ export default function PayoutVault() {
                   aria-expanded={isOpen}
                   className="group flex w-full items-center gap-4 px-4 py-3 text-left transition-colors hover:bg-white/[0.02] md:px-5"
                 >
-                  <div className="w-[112px] shrink-0 md:w-[150px]">
+                  <div className="w-[104px] shrink-0 md:w-[142px]">
                     <div className="font-display text-lg font-semibold tracking-[-0.035em] text-spectral md:text-xl">{firm}</div>
                   </div>
 
@@ -88,13 +99,12 @@ export default function PayoutVault() {
                     <div className="pointer-events-none absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#070707] via-[#070707]/85 to-transparent" />
                   </div>
 
-                  <div className="flex shrink-0 items-center gap-3">
-                    <span className="font-mono-lab text-[8px] font-semibold tracking-[0.14em] text-white/32 sm:hidden">
-                      {proofCountShort(firm, all.length)}
-                    </span>
-                    <span className="hidden font-mono-lab text-[8px] font-semibold uppercase tracking-[0.14em] text-white/32 sm:inline">
-                      {proofCountLabel(firm, all.length)}
-                    </span>
+                  <div className="flex min-w-[92px] shrink-0 items-center justify-end gap-3 sm:min-w-[168px] md:min-w-[210px]">
+                    <div className="text-right">
+                      <div className="font-display text-lg font-semibold tracking-[-0.04em] text-lucid sm:text-2xl md:text-3xl">{formatMoney(total)}</div>
+                      <div className="mt-0.5 font-mono-lab text-[7px] font-semibold uppercase tracking-[0.13em] text-white/32 sm:hidden">{proofCountShort(firm, all.length)} payouts</div>
+                      <div className="mt-1 hidden font-mono-lab text-[8px] font-semibold uppercase tracking-[0.14em] text-white/32 sm:block">{proofCountLabel(firm, all.length)} on file</div>
+                    </div>
                     <ChevronDown className={`h-4 w-4 text-white/28 transition-transform duration-200 group-hover:text-lucid ${isOpen ? "rotate-180 text-lucid" : ""}`} />
                   </div>
                 </button>

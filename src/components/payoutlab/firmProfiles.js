@@ -20,11 +20,18 @@ export const firmProfiles = {
     },
   },
   "FundedNext": {
-    market: "Futures",
-    url: "https://fundednext.com/futures/legacy",
+    market: "CFDs",
+    url: "https://fundednext.com/",
     icon: "https://fundednext.com/favicon.ico",
     pick: {
+      name: "Stellar Lite 100K",
+      why: "The strongest all-around CFD value: static drawdown, a clean two-step path, and on-demand payouts with the add-ons.",
+      stats: [["Target", "8% / 4%"], ["Max loss", "8%"], ["Min days", "None*"], ["Split", "95%*"]],
+    },
+    bonusPick: {
       name: "Legacy 25K",
+      label: "FUTURES BONUS PICK",
+      url: "https://fundednext.com/futures/legacy",
       why: "Low target, no daily loss limit, and no consistency rule once funded.",
       stats: [["Target", "$1,250"], ["Max loss", "$1,000"], ["Reward days", "5"], ["Share", "80%"]],
     },
@@ -74,5 +81,10 @@ export const firmProfiles = {
     market: "Perps",
     url: "https://hn.xyz/r/4sjg1b",
     referral: true,
+    pick: {
+      name: "Low Risk 25K",
+      why: "My Hypernova pick: the 10/6/3 structure with instant on-chain payout access and a lower-fee lane than most perps alternatives.",
+      stats: [["Target", "10%"], ["Max DD", "6%"], ["Daily", "3%"], ["Leverage", "5×"]],
+    },
   },
 };
