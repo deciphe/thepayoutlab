@@ -9,6 +9,7 @@ import { firms, shortBalance } from "./firmCatalog";
 import { reviewNotes } from "./reviewNotes";
 import { certificates } from "../payoutlab/data";
 import SpeedManifesto from "./SpeedManifesto";
+import FreeDrops from "./FreeDrops";
 import { executionMetrics } from "./executionMetrics";
 import "./web3-hub.css";
 import "./speed-manifesto.css";
@@ -298,6 +299,7 @@ export default function Web3Hub(){
     </section>
 
     <Reviewer />
+    <FreeDrops />
     <footer className="gp-footer"><a className="gp-wordmark" href="#top">GIGAPROP<span>.</span></a><p>Trader-led comparisons. September 2026 data snapshot.</p><a href="#top">Back to top ↑</a></footer>
 
     {detailFirm && <FirmDrawer key={detailFirm.id} firm={detailFirm} onClose={()=>setDetailId(null)}/>}
