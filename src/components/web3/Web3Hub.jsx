@@ -69,14 +69,20 @@ function FirmCard({firm,onOpen,index}){
   const program=defaultProgram(firm), review=reviewNotes[firm.id];
   return <article className={"review-row"+(firm.id==="vest"?" is-top-pick":"")}>
     <div className="review-identity"><span className="review-rank">{String(index+1).padStart(2,"0")}</span><FirmLogo firm={firm}/><div><h3>{firm.name}</h3><span>{review.tag}</span></div></div>
-    <div className="review-verdict"><h4>{review.title}</h4><p className="review-caution"><b>The trade-off</b> {review.caution}</p></div>
+    <div className="review-verdict">{['hypernova','propr'].includes(firm.id)&&<span className="pick-label">MY PICK · {firm.id==='hypernova'?'LOW RISK':'CLASSIC 1-STEP'}</span>}<h4>{review.title}</h4><p className="review-caution"><b>The trade-off</b> {review.caution}</p></div>
     <dl className="review-facts"><div><dt>25K entry</dt><dd>{money(firm.price)}</dd></div><div><dt>Max drawdown</dt><dd>{firstToken(program.drawdown)}</dd></div><div><dt>Payout access</dt><dd>{firm.payout}</dd></div></dl>
     <div className="review-actions"><a href={firm.url} target="_blank" rel={firm.referral?"sponsored noopener noreferrer":"noopener noreferrer"}>Visit {firm.name}<ArrowUpRight size={15}/></a>{firm.id==="vest" && <span className="review-offer">5% off via this link</span>}<button type="button" onClick={()=>onOpen(firm.id)} aria-label={"Explore "+firm.name+" programs"}>Full review & rules <ChevronRight size={14}/></button></div>
   </article>;
 }
 
+function FundedNextBonus(){
+  const [copied,setCopied]=useState(false);
+  const copy=async()=>{try{await navigator.clipboard.writeText('GIGA');setCopied(true);}catch{setCopied(false);}};
+  return <article className="fn-bonus"><div><span className="pick-label">BONUS PICK / FUTURES</span><h3>FundedNext Futures</h3><p>A separate futures option alongside my Web3 shortlist.</p></div><div className="fn-code"><span>USE MY CODE</span><button onClick={copy} aria-label="Copy FundedNext code GIGA">{copied?'GIGA · COPIED':'GIGA · COPY'}</button></div><a href="https://fundednext.com/futures/legacy" target="_blank" rel="sponsored noopener noreferrer">Explore Futures</a></article>;
+}
+
 function Reviewer(){
-  const proof=['Maven','Lucid Trading','Breakout'].map(name=>certificates.filter(c=>c.firm===name).sort((a,b)=>b.amountNum-a.amountNum)[0]).filter(Boolean);
+  const proof=['Maven','Topstep','Tradeify','Lucid Trading','FundedNext','Breakout'].flatMap(name=>certificates.filter(c=>c.firm===name&&!['fundednext-004','fundednext-005'].includes(c.id)).sort((a,b)=>b.amountNum-a.amountNum).slice(0,3));
   return <section className="reviewer-section" id="reviewer"><div className="reviewer-copy"><span className="gp-eyebrow">THE TRADER BEHIND GIGAPROP</span><h2>My money.<br/>My experience.<br/><em>My receipts.</em></h2><p>I trade as <strong>couldbeluck</strong>. My payout archive is the foundation of Gigaprop: actual certificates from my own prop trading history.</p><p className="reviewer-boundary">The shortlist combines my views with published firm terms. A listing is not a claim that I’ve received a payout from every firm.</p><a href="/maven/">Explore my Maven payout archive <ArrowUpRight size={16}/></a></div><div className="reviewer-proofs">{proof.map(c=><a key={c.id} href={c.image.startsWith('/')?c.image:'/'+c.image} target="_blank" rel="noopener noreferrer"><img src={c.image.startsWith('/')?c.image:'/'+c.image} alt={c.firm+" payout certificate, "+c.amount} loading="lazy"/><span><b>{c.firm}</b><span>{c.amount} <ArrowUpRight size={14}/></span></span></a>)}<p>Personal payout certificates. Historical results, not a promise of future payouts.</p></div></section>;
 }
 
@@ -248,7 +254,8 @@ export default function Web3Hub(){
         {visibleFirms.map((firm,index)=><FirmCard key={firm.id} firm={firm} index={index} onOpen={openFirm}/>)}
       </div>
 
-      <p className="review-disclosure">Some links are referral links. Gigaprop may earn a commission if you sign up. Prices shown are for the default 25K program; offers and terms can change.</p>
+      <FundedNextBonus />
+      <p className="review-disclosure">Some links and codes are referrals. Gigaprop may earn a commission if you sign up. Prices shown are for the default 25K program; offers and terms can change.</p>
       <CompactMatrix />
     </section>
 

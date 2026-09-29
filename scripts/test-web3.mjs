@@ -37,4 +37,6 @@ assert.ok(html.includes('Taker fees'));
 for (const extra of ['>EURUSD<','>CL<','>maker<','>avg<']) assert.ok(!html.includes(extra));
 console.log('Web3 render and fee/leverage checks passed.');
 
-for(const text of ["The trade-off","couldbeluck","referral links","isgigaprop","4sjg1b","7gJmpEjv"]) assert.ok(html.includes(text),text);
+for(const text of ["The trade-off","couldbeluck","referrals","isgigaprop","4sjg1b","7gJmpEjv","105,569","56,133","28,285","10,507","FundedNext Futures","GIGA","BONUS PICK / FUTURES","LOW RISK","CLASSIC 1-STEP"]) assert.ok(html.includes(text),text);
+assert.equal((html.match(/payout certificate,/g)||[]).length,18);
+assert.ok(!html.includes('$239.56</b>'));
