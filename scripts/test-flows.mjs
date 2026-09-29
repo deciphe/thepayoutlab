@@ -14,7 +14,7 @@ assert.equal(sortRows[0].block,2);
 const transfer=(id,to,raw,age,token=c.token)=>({transaction_hash:'0x'+String(id).padStart(64,'0'),log_index:id,block_number:100-id,timestamp:at(age),token:{address_hash:token},from:{hash:c.wallet},to:{hash:to},total:{value:raw,decimals:'6'}});
 const first=transfer(1,other,'2000000',1000),old=transfer(2,second,'3000000',86400000),outside=transfer(3,other,'9000000',31*86400000);
 const realFetch=globalThis.fetch;let calls=[];
-globalThis.fetch=async url=>{calls.push(url);return {ok:true,json:async()=>url.includes('token-balances')?[{token:{address_hash:c.token,decimals:'6'},value:'777000000'}]:url.includes('index=1')?{items:[old,outside],next_page_params:{index:2}}:{items:[first,first,transfer(4,other,'1000000',1000,FLOW_CONFIGS.vest.token)],next_page_params:{index:1}}}};
+globalThis.fetch=async url=>{calls.push(url);return {ok:true,json:async()=>url.includes('token-balances')?[{token:{address_hash:c.token,decimals:'6'},value:'777000000'}]:url.includes('index=1')?{items:[old,outside],next_page_params:{index:2}}:{items:[first,first,transfer(5,other,'0',1000),transfer(6,other,'1',1000),transfer(4,other,'1000000',1000,FLOW_CONFIGS.vest.token)],next_page_params:{index:1}}}};
 try{
  const d=await fetchFlow(c);assert.equal(d.chain,'Ethereum');assert.equal(d.balance,777);assert.equal(d.transfers.length,2);assert.ok(calls.some(u=>u.includes('index=1')));assert.ok(calls.every(u=>u.startsWith(c.api)));assert.equal(d.complete,true);
  // Incremental refresh must retain older recipients and replace the overlap without double counting.

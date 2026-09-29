@@ -89,7 +89,7 @@ export default function Vestflow({firm="vest"}){
  const summary=useMemo(()=>{
   if(!data)return null;
   const end=Date.parse(data.updatedAt),start=Math.max(end-days*86400000,Date.parse(data.periodStart));
-  const rows=data.transfers.filter(t=>Date.parse(t.timestamp)>=start&&t.direction!=='self');
+  const rows=data.transfers.filter(t=>Date.parse(t.timestamp)>=start&&t.direction!=='self'&&BigInt(t.raw)>=10000n);
   const incoming=rows.filter(t=>t.direction==='in'),outgoing=rows.filter(t=>t.direction==='out');
   const sum=rs=>Number(rs.reduce((a,t)=>a+BigInt(t.raw),0n))/1e6;
   const count=days===1?24:days;

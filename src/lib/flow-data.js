@@ -10,7 +10,7 @@ const cutoff=Date.now()-30*86400000, transfers=new Map();
 const reusable=previous?.complete&&previous.wallet===WALLET&&previous.token===TOKEN&&previous.chain===config.chain&&Array.isArray(previous.transfers)&&Date.parse(previous.periodStart)<=cutoff&&Date.parse(previous.updatedAt)>cutoff&&Date.parse(previous.updatedAt)<=Date.now();
 // Re-read a recent overlap, then merge the already complete older history.
 const overlap=reusable?Math.max(cutoff,Date.parse(previous.updatedAt)-3600000):cutoff;
-if(reusable)for(const t of previous.transfers)if(Date.parse(t.timestamp)>=cutoff&&Date.parse(t.timestamp)<overlap)transfers.set(t.id,t);
+if(reusable)for(const t of previous.transfers)if(BigInt(t.raw)>=10000n&&Date.parse(t.timestamp)>=cutoff&&Date.parse(t.timestamp)<overlap)transfers.set(t.id,t);
 let params={type:'ERC-20',token:TOKEN}, complete=false;
 for(let page=0;page<300;page++){
   onProgress?.(page+1);
@@ -23,6 +23,8 @@ for(let page=0;page<300;page++){
     const timestamp=Date.parse(t.timestamp);if(!Number.isFinite(timestamp))throw Error('Invalid timestamp');
     if(timestamp<cutoff)continue;
     if(!/^\d+$/.test(t.total?.value)||Number(t.total.decimals)!==6)throw Error('Invalid USDC amount');
+    // Ignore zero-value and sub-cent dust transfers.
+    if(BigInt(t.total.value)<10000n)continue;
     const row={id:`${t.transaction_hash}:${t.log_index}`,hash:t.transaction_hash,logIndex:t.log_index,block:t.block_number,timestamp:t.timestamp,from,to,raw:t.total.value,amount:Number(t.total.value)/1e6,direction:from===WALLET?(to===WALLET?'self':'out'):'in'};
     transfers.set(row.id,row);
   }
