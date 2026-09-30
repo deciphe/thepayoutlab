@@ -10,10 +10,19 @@ export function sortTransfers(rows,sort='newest'){
 
 export function combineFlows(snapshots,sources){
  if(snapshots.length!==sources.length||snapshots.some((s,i)=>!s?.complete||s.wallet!==sources[i].wallet||s.chain!==sources[i].chain))throw Error('Incomplete combined snapshot');
- return {complete:true,balance:snapshots.reduce((sum,s)=>sum+Math.round(s.balance*1e6),0)/1e6,
+ const transfers=new Map();
+ for(const [i,snapshot] of snapshots.entries()){
+  const source=sources[i],wallets=new Set(sources.filter(c=>c.chain===source.chain).map(c=>c.wallet.toLowerCase()));
+  for(const t of snapshot.transfers){
+   const id=source.chain+':'+t.id;
+   const internal=wallets.has(t.from?.toLowerCase())&&wallets.has(t.to?.toLowerCase());
+   transfers.set(id,{...t,id,direction:internal?'self':t.direction,chain:source.chain,explorer:source.explorer,explorerName:source.explorerName});
+  }
+ }
+ return {complete:true,walletBalances:snapshots.map((s,i)=>({key:sources[i].chainKey,balance:s.balance,updatedAt:s.updatedAt})),balance:snapshots.reduce((sum,s)=>sum+Math.round(s.balance*1e6),0)/1e6,
  updatedAt:new Date(Math.min(...snapshots.map(s=>Date.parse(s.updatedAt)))).toISOString(),
  windowEnd:new Date(Math.max(...snapshots.map(s=>Date.parse(s.updatedAt)))).toISOString(),
  periodStart:new Date(Math.max(...snapshots.map(s=>Date.parse(s.periodStart)))).toISOString(),
- transfers:sortTransfers(snapshots.flatMap((s,i)=>s.transfers.map(t=>({...t,id:sources[i].chainKey+':'+t.id,chain:sources[i].chain,explorer:sources[i].explorer,explorerName:sources[i].explorerName}))))
+ transfers:sortTransfers([...transfers.values()])
  };
 }

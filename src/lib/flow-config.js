@@ -34,4 +34,8 @@ export const VEST_CHAINS = [
  wallet:'0xe80f92077131b9890599e418ae323de71ce1c35a',token:'0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
  api:'https://eth.blockscout.com/api/v2',explorer:'https://etherscan.io',explorerName:'Etherscan'}
 ];
-export const FLOW_SOURCES=[...VEST_CHAINS,...Object.values(FLOW_CONFIGS).filter(c=>c.id!=='vest')];
+export const NOVA_WALLETS=[
+ {...FLOW_CONFIGS.nova,chainKey:'settlement',walletRole:'Payout settlement'},
+ {...FLOW_CONFIGS.nova,chainKey:'reserve',slug:'novaflow-reserve',walletRole:'Reserve',wallet:'0x43c5f0a81d538a527dbf35d27faa583ac7fada07'}
+];
+export const FLOW_SOURCES=[...VEST_CHAINS,...NOVA_WALLETS,...Object.values(FLOW_CONFIGS).filter(c=>!['vest','nova'].includes(c.id))];
