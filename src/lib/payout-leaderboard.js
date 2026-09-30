@@ -1,8 +1,9 @@
+import {transferInfrastructure,firmWallets} from './flow-classification.js';
 export function payoutLeaderboard(rows,sources){
- const tracked=new Set(sources.map(s=>s.wallet.toLowerCase()));
+ const tracked=new Set(firmWallets(sources).map(s=>s.wallet.toLowerCase()));
  const wallets=new Map();
  for(const t of rows){
-  if(t.direction!=='out'||BigInt(t.raw)<10000n||tracked.has(t.to.toLowerCase()))continue;
+  if(transferInfrastructure(t,sources.find(s=>s.chain===t.chain)||sources[0])||t.direction!=='out'||BigInt(t.raw)<10000n||tracked.has(t.to.toLowerCase()))continue;
   const address=t.to.toLowerCase();
   const item=wallets.get(address)||{address,raw:0n,count:0,explorers:new Map()};
   item.raw+=BigInt(t.raw);item.count++;
