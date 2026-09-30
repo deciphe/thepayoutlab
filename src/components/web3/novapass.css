@@ -4,3 +4,5 @@
 
 .vf .nova-pass{margin:0 0 22px}.vf .np-toggle{border:0;border-radius:0;padding:18px 22px;background:transparent;color:inherit}.vf .np-toggle:hover{background:#b59ac305}.vf .np-program{padding:16px;background:#ffffff02;border:1px solid #ffffff12;border-radius:8px;color:#a6a5a8}.vf .np-program.is-selected{background:#b59ac30c;border-color:#b59ac36b;color:#dfd2e7}.vf .np-program:hover{border-color:#b59ac350}.vf .nova-pass button:focus-visible,.vf .nova-pass a:focus-visible{outline-color:#cbb5dc}.vf .np-bottom p a{text-decoration:underline}
 @media(max-width:760px){.vf .np-toggle{padding:16px}.vf .np-program{padding:12px 9px}}
+
+.vf .np-compare-options{margin-bottom:18px}.vf .np-compare-options .np-program{padding:8px 10px;font-size:10px;text-align:center}.np-compare small a{text-decoration:underline}
