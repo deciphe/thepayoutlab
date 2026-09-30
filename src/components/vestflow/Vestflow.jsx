@@ -1,3 +1,5 @@
+import ProprPulse from '../web3/ProprPulse';
+import {isListedProprPayout} from '../../lib/propr-payouts.js';
 import NovaPass from '../web3/NovaPass';
 import {fetchFlow} from '../../lib/flow-data.js';
 import {FLOW_CONFIGS,VEST_CHAINS,NOVA_WALLETS} from '../../lib/flow-config.js';
@@ -52,6 +54,7 @@ function TransferGallery({rows,limit,direction,config}){
    return <article className={'vf-transfer-card '+t.direction+(open?' is-open':'')} key={t.id}>
     <button className="vf-transfer-face" aria-expanded={open} aria-label={`Inspect ${isIn?'incoming':'outgoing'} ${money(t.amount)} USDC transfer ${short(t.hash)}`} onClick={()=>setExpanded(open?null:t.id)}>
      <div className="vf-transfer-top"><span className="vf-transfer-badge">{isIn?<ArrowDownLeft size={13}/>:<ArrowUpRight size={13}/>} {isIn?'INCOMING':'OUTGOING'}</span><time dateTime={t.timestamp}>{new Date(t.timestamp).toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</time></div>
+     {isListedProprPayout(t,config)&&<span className="pp-listed" title="Transaction and amount match Propr’s published payout ledger sample, Sep 29, 2026.">Listed payout · Propr</span>}
      <div className="vf-transfer-value"><span>{isIn?'+':'−'}</span>{money(t.amount)}<small>USDC</small></div>
      <div className="vf-transfer-route"><div className="vf-route-end">{isIn?<WalletGlyph address={peer}/>:<span className="vf-wallet-mark">{config.mark}</span>}<span>{isIn?short(peer):config.firm+' wallet'}<small>FROM</small></span></div><div className="vf-route-wire"><i/><b>›</b></div><div className="vf-route-end">{isIn?<span className="vf-wallet-mark">{config.mark}</span>:<WalletGlyph address={peer}/>}<span>{isIn?config.firm+' wallet':short(peer)}<small>TO</small></span></div></div>
      <div className="vf-transfer-bottom"><span>{t.chain?`${t.chain} · `:''}{short(t.hash)}</span><span>{open?'Close details':'Inspect transfer'} <b>{open?'−':'+'}</b></span></div>
@@ -122,6 +125,7 @@ function WalletFlow({firm,config,onChain}){
   <section className="vf-heading"><div><div className="vf-eyebrow">{config.eyebrow}</div><h1>{config.id}<span>flow</span><i>.</i></h1></div><div className="vf-status"><span className={stale||error?'vf-warning':''}>{busy?'Syncing…':data?(stale?'Delayed · ':age===0?'Updated just now':'Updated ')+(age===0&&!stale?'':age+'m ago'):'Connecting…'}</span><button onClick={refresh} disabled={busy} aria-label="Refresh transfers" title="Refresh transfers · Auto-refresh every 15 minutes while open"><RefreshCw size={15} className={busy?'vf-spin':''}/></button></div></section>
   <p className="vf-scope" style={{margin:'-12px 0 22px',maxWidth:720,fontSize:13,lineHeight:1.7,color:'#929d8b'}}><strong style={{color:'#b9c3b2',fontWeight:500}}>{firm==='nova'?'Reserve & payout settlement flow.':'Payout hot wallet flow.'}</strong> USDC activity for {config.sources?'these tracked wallets':'this address'} only—not eval sales, total reserves, or the firm’s overall financial standing.</p>
   {firm==='nova'&&<NovaPass/>}
+  {firm==='propr'&&<ProprPulse/>}
   <a className="vf-referral" href={config.referral} target="_blank" rel="noopener noreferrer sponsored" aria-label={config.cta+" with the GIGAPROP referral link (opens in a new tab)"}>
    <span className="vf-referral-offer"><strong>{firm==='vest'?<>5% <span>OFF</span></>:<>{config.firm}</>}</strong><span className="vf-referral-copy"><b>Your next {config.firm} account.</b><small>GIGAPROP referral</small></span></span>
    <span className="vf-referral-cta">{config.cta}</span>
