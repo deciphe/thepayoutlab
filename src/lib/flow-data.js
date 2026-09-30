@@ -6,7 +6,7 @@ async function get(path){
     catch(e){if(signal?.aborted||attempt===3)throw e;await new Promise(r=>setTimeout(r,1500*(attempt+1)));}
   }
 }
-const startedAt=Date.now(),cutoff=startedAt-30*86400000, transfers=new Map();
+const startedAt=Date.now(),cutoff=startedAt-32*86400000, transfers=new Map();
 const reusable=previous?.complete&&previous.wallet===WALLET&&previous.token===TOKEN&&previous.chain===config.chain&&Array.isArray(previous.transfers)&&Date.parse(previous.periodStart)<=cutoff&&Date.parse(previous.updatedAt)>cutoff&&Date.parse(previous.updatedAt)<=Date.now();
 // Re-read a recent overlap, then merge the already complete older history.
 const overlap=reusable?Math.max(cutoff,Date.parse(previous.updatedAt)-3600000):cutoff;
@@ -31,7 +31,7 @@ for(let page=0;page<300;page++){
   if(!data.next_page_params||data.items.some(t=>Date.parse(t.timestamp)<overlap)){complete=true;break;}
   params={type:'ERC-20',token:TOKEN,...data.next_page_params};
 }
-if(!complete)throw Error('30-day history exceeded page limit; preserving prior snapshot');
+if(!complete)throw Error('32-day history exceeded page limit; preserving prior snapshot');
 const balances=await get(`/addresses/${WALLET}/token-balances`);
 if(!Array.isArray(balances))throw Error('Invalid balances');
 const balance=balances.find(b=>b.token.address_hash.toLowerCase()===TOKEN);
