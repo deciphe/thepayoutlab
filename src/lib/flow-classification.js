@@ -17,3 +17,9 @@ export const bridgeRoutes={
   address:'0x80c526d1c2fddadb3cd39810cd7a79e07b0eda00',chain:'Arbitrum',amount:600,explorer:'https://arbiscan.io',role:'Bridge contract; ownership unconfirmed'
  }
 };
+
+export function isPayoutRecipientTransfer(t,sources){
+ if(t.direction!=='out')return false;
+ const source=sources.find(s=>s.chain===t.chain)||sources[0];
+ return BigInt(t.raw)>=10000n&&!transferInfrastructure(t,source)&&!firmWallets(sources).some(s=>s.wallet.toLowerCase()===t.to.toLowerCase());
+}
