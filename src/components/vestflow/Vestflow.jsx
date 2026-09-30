@@ -79,7 +79,7 @@ function WalletFlow({firm,config,onChain}){
  const SOURCE=`https://raw.githubusercontent.com/deciphe/thepayoutlab/vestflow-data/${config.slug}.json`;
  const [data,setData]=useState(null),[busy,setBusy]=useState(true),[error,setError]=useState(''),[days,setDays]=useState(7),[direction,setDirection]=useState('all'),[query,setQuery]=useState(''),[limit,setLimit]=useState(12),[copied,setCopied]=useState(false),[clock,setClock]=useState(Date.now()),[paused,setPaused]=useState(false),[inspected,setInspected]=useState(null),[bucket,setBucket]=useState(null),[excluded,setExcluded]=useState([]);
  const [sort,setSort]=useState('newest');
- const refreshLock=useRef(false),controller=useRef(null);
+ const refreshLock=useRef(false),controller=useRef(null),sourceSnapshots=useRef(null);
  async function refresh(){
   if(refreshLock.current)return;
   refreshLock.current=true;setBusy(true);setError('');
@@ -88,7 +88,7 @@ function WalletFlow({firm,config,onChain}){
   const adopt=snapshot=>setData(old=>!old||Date.parse(snapshot.updatedAt)>=Date.parse(old.updatedAt)?snapshot:old);
   const sources=config.sources||[config];
   const combine=snapshots=>config.sources?combineFlows(snapshots,sources):snapshots[0];
-  const cached=Promise.all(sources.map(async source=>{
+  const cached=sourceSnapshots.current?Promise.resolve(sourceSnapshots.current):Promise.all(sources.map(async source=>{
    for(const url of [`https://raw.githubusercontent.com/deciphe/thepayoutlab/vestflow-data/${source.slug}.json`,`/data/${source.slug}.json`]){
     try{const r=await fetch(url+'?t='+Date.now(),{cache:'no-store',signal:AbortSignal.any([signal,AbortSignal.timeout(12000)])});if(!r.ok)throw Error();const d=await r.json();if(d.wallet!==source.wallet||d.token!==source.token||d.chain!==source.chain||!d.complete||!Array.isArray(d.transfers))throw Error();return d;}catch{if(signal.aborted)break;}
    }
@@ -97,12 +97,12 @@ function WalletFlow({firm,config,onChain}){
   try{
    const previous=await cached;
    if(previous.every(Boolean)&&!signal.aborted)adopt(combine(previous));
-   const fresh=await Promise.all(sources.map((source,i)=>fetchFlow(source,{signal,previous:previous[i]})));
-   if(!signal.aborted)adopt(combine(fresh));
+   const fresh=await Promise.all(sources.map((source,i)=>fetchFlow(source,{signal:AbortSignal.any([signal,AbortSignal.timeout(55000)]),previous:previous[i]})));
+   if(!signal.aborted){sourceSnapshots.current=fresh;adopt(combine(fresh));}
   }catch{if(!signal.aborted)setError('Live refresh unavailable. Showing the last complete snapshot. Try Refresh again.');}
   finally{if(!signal.aborted){setBusy(false);setClock(Date.now());}if(controller.current?.signal===signal)refreshLock.current=false;}
  }
- useEffect(()=>{refresh();const timer=setInterval(refresh,15*60*1000),tick=setInterval(()=>setClock(Date.now()),30000);const visible=()=>{if(document.visibilityState==='visible')refresh();};document.addEventListener('visibilitychange',visible);const title=document.title;document.title=config.title+' · GIGAPROP';return()=>{controller.current?.abort();refreshLock.current=false;clearInterval(timer);clearInterval(tick);document.removeEventListener('visibilitychange',visible);document.title=title;};},[]);
+ useEffect(()=>{refresh();const timer=setInterval(()=>{if(document.visibilityState==='visible')refresh();},60*1000),tick=setInterval(()=>setClock(Date.now()),30000);const visible=()=>{if(document.visibilityState==='visible')refresh();};document.addEventListener('visibilitychange',visible);const title=document.title;document.title=config.title+' · GIGAPROP';return()=>{controller.current?.abort();refreshLock.current=false;clearInterval(timer);clearInterval(tick);document.removeEventListener('visibilitychange',visible);document.title=title;};},[]);
  useEffect(()=>{setLimit(12);setInspected(null);},[days,direction,query,excluded,sort]);
  useEffect(()=>{setBucket(null);setExcluded([]);},[days]);
  const summary=useMemo(()=>{
@@ -120,13 +120,13 @@ function WalletFlow({firm,config,onChain}){
   const filtered=summary?.rows.filter(t=>(direction==='all'||t.direction===direction)&&!excluded.includes(t.direction==='in'?t.from:t.to)&&[t.from,t.to,t.hash].some(v=>v.includes(query.trim().toLowerCase())))||[];
   return sortTransfers(filtered,sort);
  },[summary,direction,query,excluded,sort]);
- const age=data?Math.max(0,Math.floor((clock-Date.parse(data.updatedAt))/60000)):0,stale=age>30;
+ const age=data?Math.max(0,Math.floor((clock-Date.parse(data.updatedAt))/60000)):0,stale=age>2;
  const max=Math.max(1,...(summary?.buckets.flatMap(b=>[b.in,b.out])||[]));
  async function copy(){try{await navigator.clipboard.writeText(WALLET);setCopied(true);setTimeout(()=>setCopied(false),2000);}catch{setError('Copy unavailable. The full wallet address is shown below.');}}
  return <main className={"vf vf-"+firm}>
   <header className="vf-top"><a href="#" className="vf-brand">GP.</a><span>GIGAPROP <i>/</i> ONCHAIN</span><a className="vf-back" href="#flow">All flow trackers <ArrowUpRight size={16}/></a></header>
   <nav className="vf-flow-nav" aria-label="Flow trackers">{Object.values(FLOW_CONFIGS).map(c=><a key={c.id} href={"#"+c.slug} aria-current={firm===c.id?"page":undefined}>{c.title}<small>{c.id==='vest'?'3 chains':c.chain}</small></a>)}</nav>
-  <section className="vf-heading"><div><div className="vf-eyebrow">{config.eyebrow}</div><h1>{config.id}<span>flow</span><i>.</i></h1></div><div className="vf-status"><span className={stale||error?'vf-warning':''}>{busy?'Syncing…':data?(stale?'Delayed · ':age===0?'Updated just now':'Updated ')+(age===0&&!stale?'':age+'m ago'):'Connecting…'}</span><button onClick={refresh} disabled={busy} aria-label="Refresh transfers" title="Refresh transfers · Auto-refresh every 15 minutes while open"><RefreshCw size={15} className={busy?'vf-spin':''}/></button></div></section>
+  <section className="vf-heading"><div><div className="vf-eyebrow">{config.eyebrow}</div><h1>{config.id}<span>flow</span><i>.</i></h1></div><div className="vf-status"><span className={stale||error?'vf-warning':''}>{busy?'Syncing…':data?(stale?'Delayed · ':age===0?'Updated just now':'Updated ')+(age===0&&!stale?'':age+'m ago'):'Connecting…'}</span><button onClick={refresh} disabled={busy} aria-label="Refresh transfers" title="Refresh transfers · Auto-refresh every 60 seconds while open"><RefreshCw size={15} className={busy?'vf-spin':''}/></button></div></section>
   <p className="vf-scope" style={{margin:'-12px 0 22px',maxWidth:720,fontSize:13,lineHeight:1.7,color:'#929d8b'}}><strong style={{color:'#b9c3b2',fontWeight:500}}>{firm==='nova'?'Reserve & payout settlement flow.':firm==='vest'?'Tracked wallet flow.':'Payout hot wallet flow.'}</strong> Known internal and bridge outflows are hidden; remaining recipients are not individually verified. USDC activity for {config.sources?'these tracked wallets':'this address'} only—not eval sales, total reserves, or the firm’s overall financial standing.</p>
   {firm==='nova'&&<NovaPass/>}
   {firm==='propr'&&<ProprPulse/>}
@@ -138,7 +138,7 @@ function WalletFlow({firm,config,onChain}){
   {firm==='nova'&&<p style={{fontSize:12,color:'#929d8b',margin:'-6px 0 18px'}}>Reserve + payout settlement only. Trading wallets excluded.{config.sources?' Transfers between these wallets are excluded from combined flow totals.':''}</p>}
   {firm==='nova'&&config.sources&&<section aria-label="Hypernova wallet balances" style={{display:'grid',gridTemplateColumns:'repeat(2,minmax(0,1fr))',gap:12,marginBottom:24}}>{[...NOVA_WALLETS].reverse().map(source=>{const wallet=data?.walletBalances?.find(w=>w.key===source.chainKey);return <button key={source.chainKey} onClick={()=>onChain(source.chainKey)} style={{textAlign:'left',padding:'18px 14px',background:source.chainKey==='reserve'?'#15121b':'#10160e',borderColor:source.chainKey==='reserve'?'#a99ac033':'#a8c38a33',borderRadius:12,minWidth:0}}><span style={{display:'block',fontSize:13,color:source.chainKey==='reserve'?'#b4a6c8':'#b4c5a6'}}>{source.walletRole}</span><strong style={{display:'block',fontSize:'clamp(18px,3vw,30px)',fontWeight:500,letterSpacing:'-.04em',margin:'8px 0',overflowWrap:'anywhere'}}>{wallet?money(wallet.balance):'—'} <small style={{fontSize:11,fontWeight:400}}>USDC</small></strong><span style={{fontSize:12,color:'#929d8b'}}>{source.chainKey==='reserve'?'Dedicated reserve wallet':'Payout hot wallet'}</span></button>;})}</section>}
   {error&&<p className="vf-alert" role="status">{error}</p>}
-  {stale&&<p className="vf-alert">The latest snapshot is over 30 minutes old. Values below are as of {new Date(data.updatedAt).toLocaleString()}.</p>}
+  {stale&&<p className="vf-alert">The latest snapshot is over 2 minutes old. Values below are as of {new Date(data.updatedAt).toLocaleString()}.</p>}
   <PayoutLeaders data={data} config={config}/>
   <FlowHeatmap data={data} config={config}/>
   <div className="vf-period"><div className="vf-view-label"><span className="vf-status-dot"/> TRANSFER FLOW <button className="vf-pause" onClick={()=>setPaused(v=>!v)} aria-label={paused?"Play flow animation":"Pause flow animation"}>{paused?<Play size={12}/>:<Pause size={12}/>}</button></div><div role="group" aria-label="Time range">{[1,7,30].map(n=><button key={n} onClick={()=>setDays(n)} aria-pressed={days===n}>{n===1?'24H':n+'D'}</button>)}</div></div>

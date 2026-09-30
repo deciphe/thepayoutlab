@@ -21,7 +21,7 @@ export function combineFlows(snapshots,sources){
  }
  return {complete:true,walletBalances:snapshots.map((s,i)=>({key:sources[i].chainKey,balance:s.balance,updatedAt:s.updatedAt})),balance:snapshots.reduce((sum,s)=>sum+Math.round(s.balance*1e6),0)/1e6,
  updatedAt:new Date(Math.min(...snapshots.map(s=>Date.parse(s.updatedAt)))).toISOString(),
- windowEnd:new Date(Math.max(...snapshots.map(s=>Date.parse(s.updatedAt)))).toISOString(),
+ windowEnd:new Date(Math.min(...snapshots.map(s=>Date.parse(s.windowEnd||s.updatedAt)))).toISOString(),
  periodStart:new Date(Math.max(...snapshots.map(s=>Date.parse(s.periodStart)))).toISOString(),
  transfers:sortTransfers([...transfers.values()])
  };

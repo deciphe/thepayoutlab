@@ -2,11 +2,11 @@ export async function fetchFlow(config,{signal,previous,onProgress}={}){
 const {wallet:WALLET,token:TOKEN,api:API}=config;
 async function get(path){
   for(let attempt=0;attempt<4;attempt++){
-    try { const r=await fetch(API+path,{signal:AbortSignal.any([signal,AbortSignal.timeout(20000)].filter(Boolean))}); if(!r.ok)throw Error(`HTTP ${r.status}`);return await r.json(); }
+    try { const r=await fetch(API+path,{cache:'no-store',signal:AbortSignal.any([signal,AbortSignal.timeout(20000)].filter(Boolean))}); if(!r.ok)throw Error(`HTTP ${r.status}`);return await r.json(); }
     catch(e){if(signal?.aborted||attempt===3)throw e;await new Promise(r=>setTimeout(r,1500*(attempt+1)));}
   }
 }
-const cutoff=Date.now()-30*86400000, transfers=new Map();
+const startedAt=Date.now(),cutoff=startedAt-30*86400000, transfers=new Map();
 const reusable=previous?.complete&&previous.wallet===WALLET&&previous.token===TOKEN&&previous.chain===config.chain&&Array.isArray(previous.transfers)&&Date.parse(previous.periodStart)<=cutoff&&Date.parse(previous.updatedAt)>cutoff&&Date.parse(previous.updatedAt)<=Date.now();
 // Re-read a recent overlap, then merge the already complete older history.
 const overlap=reusable?Math.max(cutoff,Date.parse(previous.updatedAt)-3600000):cutoff;
@@ -36,6 +36,6 @@ const balances=await get(`/addresses/${WALLET}/token-balances`);
 if(!Array.isArray(balances))throw Error('Invalid balances');
 const balance=balances.find(b=>b.token.address_hash.toLowerCase()===TOKEN);
 if(balance&&(!/^\d+$/.test(balance.value)||Number(balance.token.decimals)!==6))throw Error('Invalid USDC balance');
-return {schema:1,wallet:WALLET,token:TOKEN,chain:config.chain,updatedAt:new Date().toISOString(),periodStart:new Date(cutoff).toISOString(),complete,balance:Number(balance?.value||0)/1e6,transfers:[...transfers.values()].sort((a,b)=>b.block-a.block||b.logIndex-a.logIndex)};
+return {schema:1,wallet:WALLET,token:TOKEN,chain:config.chain,updatedAt:new Date().toISOString(),windowEnd:new Date(startedAt).toISOString(),periodStart:new Date(cutoff).toISOString(),complete,balance:Number(balance?.value||0)/1e6,transfers:[...transfers.values()].sort((a,b)=>b.block-a.block||b.logIndex-a.logIndex)};
 
 }
