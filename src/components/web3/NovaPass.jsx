@@ -28,7 +28,7 @@ export default function NovaPass(){
           <div className="np-story"><span className="np-kicker">{program.name.toUpperCase()} RISK</span><h3>{selected==='medium'?'More breathing room.':'Your rules. At a glance.'}</h3><p>{selected==='medium'?<><b>+11.4 percentage points</b> above Low Risk’s reported pass rate.</>:'Compare the target and loss limits behind the pass rate.'}</p></div>
           <dl className="np-rules"><div><dt>Pass rate</dt><dd className="np-purple">{program.rate.toFixed(1)}%</dd></div><div><dt>Max drawdown</dt><dd>{program.drawdown}%</dd></div><div><dt>Daily loss limit</dt><dd>{program.daily}%</dd></div><div><dt>Profit target</dt><dd>{program.target}%</dd></div></dl>
         </div>
-        <div className="np-bottom"><p>Reported by <a href="https://hypernova.xyz/" target="_blank" rel="noopener noreferrer">Hypernova ↗</a> · Snapshot Sep 29, 2026 (ET)<br/>Resolved assessments; historical outcomes, not individual odds.</p><div><a className="np-flow" href="#novaflow">Payout flow <ArrowUpRight size={12}/></a><a className="np-cta" href="https://hn.xyz/r/4sjg1b" target="_blank" rel="sponsored noopener noreferrer">Explore Hypernova <ArrowUpRight size={13}/><small>Referral link</small></a></div></div>
+        <div className="np-bottom"><p>Reported by <a href="https://hypernova.xyz/" target="_blank" rel="noopener noreferrer">Hypernova ↗</a> · Snapshot Sep 29, 2026 (ET)<br/>Resolved assessments; historical outcomes, not individual odds.</p><div><a className="np-cta" href="https://hn.xyz/r/4sjg1b" target="_blank" rel="sponsored noopener noreferrer">Explore Hypernova <ArrowUpRight size={13}/><small>Referral link</small></a></div></div>
       </div></div>
     </div>
   </div>;

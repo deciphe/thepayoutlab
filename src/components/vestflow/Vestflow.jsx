@@ -1,3 +1,4 @@
+import NovaPass from '../web3/NovaPass';
 import {fetchFlow} from '../../lib/flow-data.js';
 import {FLOW_CONFIGS,VEST_CHAINS,NOVA_WALLETS} from '../../lib/flow-config.js';
 import {sortTransfers,combineFlows} from '../../lib/flow-metrics.js';
@@ -120,6 +121,7 @@ function WalletFlow({firm,config,onChain}){
   <nav className="vf-flow-nav" aria-label="Flow trackers">{Object.values(FLOW_CONFIGS).map(c=><a key={c.id} href={"#"+c.slug} aria-current={firm===c.id?"page":undefined}>{c.title}<small>{c.id==='vest'?'3 chains':c.chain}</small></a>)}</nav>
   <section className="vf-heading"><div><div className="vf-eyebrow">{config.eyebrow}</div><h1>{config.id}<span>flow</span><i>.</i></h1></div><div className="vf-status"><span className={stale||error?'vf-warning':''}>{busy?'Syncing…':data?(stale?'Delayed · ':age===0?'Updated just now':'Updated ')+(age===0&&!stale?'':age+'m ago'):'Connecting…'}</span><button onClick={refresh} disabled={busy} aria-label="Refresh transfers" title="Refresh transfers · Auto-refresh every 15 minutes while open"><RefreshCw size={15} className={busy?'vf-spin':''}/></button></div></section>
   <p className="vf-scope" style={{margin:'-12px 0 22px',maxWidth:720,fontSize:13,lineHeight:1.7,color:'#929d8b'}}><strong style={{color:'#b9c3b2',fontWeight:500}}>{firm==='nova'?'Reserve & payout settlement flow.':'Payout hot wallet flow.'}</strong> USDC activity for {config.sources?'these tracked wallets':'this address'} only—not eval sales, total reserves, or the firm’s overall financial standing.</p>
+  {firm==='nova'&&<NovaPass/>}
   <a className="vf-referral" href={config.referral} target="_blank" rel="noopener noreferrer sponsored" aria-label={config.cta+" with the GIGAPROP referral link (opens in a new tab)"}>
    <span className="vf-referral-offer"><strong>{firm==='vest'?<>5% <span>OFF</span></>:<>{config.firm}</>}</strong><span className="vf-referral-copy"><b>Your next {config.firm} account.</b><small>GIGAPROP referral</small></span></span>
    <span className="vf-referral-cta">{config.cta}</span>
