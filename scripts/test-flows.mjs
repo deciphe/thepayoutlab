@@ -12,13 +12,13 @@ assert.equal(sortTransfers(sortRows,'newest')[0].block,3);
 assert.equal(sortTransfers(sortRows,'oldest')[0].block,1);
 assert.equal(sortRows[0].block,2);
 const transfer=(id,to,raw,age,token=c.token)=>({transaction_hash:'0x'+String(id).padStart(64,'0'),log_index:id,block_number:100-id,timestamp:at(age),token:{address_hash:token},from:{hash:c.wallet},to:{hash:to},total:{value:raw,decimals:'6'}});
-const first=transfer(1,other,'2000000',1000),old=transfer(2,second,'3000000',86400000),outside=transfer(3,other,'9000000',31*86400000);
+const first=transfer(1,other,'2000000',1000),old=transfer(2,second,'3000000',86400000),outside=transfer(3,other,'9000000',33*86400000);
 const realFetch=globalThis.fetch;let calls=[];
 globalThis.fetch=async url=>{calls.push(url);return {ok:true,json:async()=>url.includes('token-balances')?[{token:{address_hash:c.token,decimals:'6'},value:'777000000'}]:url.includes('index=1')?{items:[old,outside],next_page_params:{index:2}}:{items:[first,first,transfer(5,other,'0',1000),transfer(6,other,'1',1000),transfer(4,other,'1000000',1000,FLOW_CONFIGS.vest.token)],next_page_params:{index:1}}}};
 try{
  const d=await fetchFlow(c);assert.equal(d.chain,'Ethereum');assert.equal(d.balance,777);assert.equal(d.transfers.length,2);assert.ok(calls.some(u=>u.includes('index=1')));assert.ok(calls.every(u=>u.startsWith(c.api)));assert.equal(d.complete,true);
  // Incremental refresh must retain older recipients and replace the overlap without double counting.
- calls=[];const previous={...d,updatedAt:at(1800000),periodStart:at(31*86400000)};
+ calls=[];const previous={...d,updatedAt:at(1800000),periodStart:at(33*86400000)};
  const refreshed=await fetchFlow(c,{previous});assert.equal(refreshed.transfers.length,2);assert.equal(refreshed.transfers.reduce((n,t)=>n+BigInt(t.raw),0n),5000000n);
 }finally{globalThis.fetch=realFetch;}
 console.log('Flow chain, pagination, token filtering, deduplication, incremental refresh, and transaction sorting checks passed.');
@@ -58,3 +58,18 @@ const novaSnapshots=NOVA_WALLETS.map((c,i)=>({wallet:c.wallet,chain:c.chain,comp
 const novaCombined=combineFlows(novaSnapshots,NOVA_WALLETS);
 assert.equal(novaCombined.balance,600);assert.equal(novaCombined.transfers.length,1);assert.equal(novaCombined.transfers[0].direction,'self');assert.equal(novaCombined.walletBalances.find(w=>w.key==='reserve').balance,500);
 console.log('Nova reserve breakdown and internal-transfer deduplication checks passed.');
+
+const {payoutLeaderboard}=await import('../src/lib/payout-leaderboard.js');
+const day=86400000,rankEnd=Date.now(),rankAt=days=>new Date(rankEnd-days*day).toISOString();
+const rankRow=(address,amount,days)=>({...row(address,String(amount*1e6)),timestamp:rankAt(days)});
+const rankRows=Array.from({length:20},(_,i)=>rankRow('wallet'+String(i+1).padStart(2,'0'),2100-i*100,2));
+rankRows.push(rankRow('wallet20',1750,.5));
+const ranked=payoutLeaderboard(rankRows,[c],rankAt(0),rankAt(32));
+assert.equal(ranked[2].address,'wallet20');assert.equal(ranked[2].previousRank,20);assert.equal(ranked[2].rankChange,17);
+assert.equal(ranked[3].rankChange,-1);
+assert.ok(payoutLeaderboard(rankRows,[c],rankAt(0),rankAt(30)).every(w=>w.rankChange===null&&!w.isNew));
+const newcomer=payoutLeaderboard([...rankRows,rankRow('new',10000,.1)],[c],rankAt(0),rankAt(32));
+assert.equal(newcomer[0].isNew,true);
+const aged=payoutLeaderboard([rankRow('expired',5000,30.5),rankRow('current',100,2)],[c],rankAt(0),rankAt(32));
+assert.equal(aged.length,1);assert.equal(aged[0].previousRank,2);assert.equal(aged[0].rankChange,1);
+console.log('Full-universe rank movement, new entries, expired payouts, and incomplete-history checks passed.');
