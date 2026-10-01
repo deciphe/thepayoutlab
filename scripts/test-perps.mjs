@@ -25,3 +25,14 @@ const second=tick(held,0,1),minute=tick(held,0,60);
 assert.ok(Math.abs(second.funding*60-minute.funding)<1e-9);
 assert.equal(tick(realtime,undefined,1).history.length,historyLength+2);
 console.log('PASS: real-time seconds, one-minute candle aggregation and time-scaled funding');
+
+// Brackets trigger at equality on each market second, both long and short.
+for(const side of [1,-1]){
+ let p=trade(flat(),{side,quantity:2,stop:10,take:20});
+ const stopPrice=p.position.entry-side*10;
+ p=tick(p,stopPrice-p.price,1);assert.equal(p.position,null);assert.equal(p.log[0].reason,'Stop loss');
+ p=trade(flat(),{side,quantity:2,stop:10,take:20});
+ const targetPrice=p.position.entry+side*20;
+ p=tick(p,targetPrice-p.price,1);assert.equal(p.position,null);assert.equal(p.log[0].reason,'Take profit');
+}
+console.log('PASS: long/short TP and SL trigger at exact levels on real-time ticks');

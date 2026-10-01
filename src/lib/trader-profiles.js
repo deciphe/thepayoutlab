@@ -1,6 +1,7 @@
-// Editorial mappings supplied by GIGAPROP, not wallet-signature claims.
-export const FEATURED_TRADERS={
- '0x097fd586fe2938653dfd8f404387436bedede596':{username:'kaiweeen',displayName:'kaiwen',avatar:'/traders/kaiweeen.jpg',social:'https://x.com/kaiweeen',editorial:true},
- '0x823e8e82b64370a8345c34e42599be2f252ebbcd':{username:'okalanqt',displayName:'Okala',avatar:'/traders/okalanqt.jpg',social:'https://x.com/OkalaNQT',tag:'#8020GANG',editorial:true},
-};
+import traders from '../data/traders.json';
+// One editorial identity per payout wallet; never grants a wallet-signature badge.
+export const FEATURED_TRADERS=Object.fromEntries(traders.map(t=>{
+ const username=t.twitter.trim().replace(/^@/,'');
+ return [t.wallet.toLowerCase(),{username,displayName:t.name||username,avatar:'/traders/'+t.image,social:'https://x.com/'+username,tag:t.tag||'',editorial:true}];
+}));
 export const featuredTrader=address=>FEATURED_TRADERS[address?.toLowerCase()]||null;
