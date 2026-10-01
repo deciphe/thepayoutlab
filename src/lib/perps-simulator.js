@@ -18,10 +18,10 @@ export function makeBook(price,mode='regular',minute=0) {
   })]));
 }
 export function createSession(seed=123456,capital=10000) {
-  let s={seed:seed>>>0,price:START,minute:0,history:[],cash:capital,initial:capital,position:null,fees:0,funding:0,realized:0,log:[],mode:'regular',message:'Choose your size. Your first fill starts here.',liquidated:false};
+  let s={seed:seed>>>0,price:START,seconds:0,minute:0,history:[],cash:capital,initial:capital,position:null,fees:0,funding:0,realized:0,log:[],mode:'regular',message:'Choose your size. Your first fill starts here.',liquidated:false};
   // A warm-up tape, with no account activity, so the chart is useful immediately.
   for(let i=0;i<70;i++)s=walk(s);
-  return {...s,minute:0,book:makeBook(s.price),history:s.history.map((b,i)=>({...b,minute:i-69}))};
+  return {...s,seconds:0,minute:0,book:makeBook(s.price),history:s.history.map((b,i)=>({...b,minute:i-69}))};
 }
 export function account(s) {
   const p=s.position, qty=p?.qty||0, unrealized=qty*(s.price-(p?.entry||s.price));
@@ -68,18 +68,21 @@ export function trade(s,{side,quantity,leverage=50,tif='IOC',tolerance=.001,redu
   const event={id:s.minute+'-'+s.log.length,minute:s.minute,side,qty:f.qty,price:f.price,fee:f.fee,realized,reason,partial:f.remaining>=.00005};
   return {...next,log:[event,...s.log].slice(0,80),message:`${reason}: ${side===1?'bought':'sold'} ${f.qty.toFixed(4)} units at ${f.price.toFixed(2)}.${f.remaining>=.00005?' Partial fill — unfilled size cancelled.':''}`};
 }
-function walk(s,shock) {
+function walk(s,shock,seconds=60) {
   let seed,u,v;[seed,u]=random(s.seed);[seed,v]=random(seed);
-  // ~500 point expected high-low over a 390-minute random-walk session, not a bound or forecast.
-  const change=shock??Math.sqrt(-2*Math.log(Math.max(u,1e-9)))*Math.cos(2*Math.PI*v)*16;
-  const price=Math.max(100,Math.round((s.price+change)*100)/100),minute=s.minute+1;
-  const bar={open:s.price,close:price,high:Math.max(price,s.price)+Math.abs(change)*.3,low:Math.min(price,s.price)-Math.abs(change)*.22,minute};
-  return {...s,seed,price,minute,history:[...s.history,bar].slice(-110)};
+  // Diffusion scales with elapsed time: 1x is one market second per wall second.
+  const change=shock??Math.sqrt(-2*Math.log(Math.max(u,1e-9)))*Math.cos(2*Math.PI*v)*16*Math.sqrt(seconds/60);
+  const price=Math.max(100,Math.round((s.price+change)*100)/100);
+  const elapsed=(s.seconds||0)+seconds,minute=Math.floor(elapsed/60);
+  const bucket=Math.ceil(elapsed/60),last=s.history.at(-1);
+  const same=last?.minute===bucket;
+  const bar={open:same?last.open:s.price,close:price,high:Math.max(same?last.high:s.price,price),low:Math.min(same?last.low:s.price,price),minute:bucket};
+  return {...s,seed,price,seconds:elapsed,minute,history:[...(same?s.history.slice(0,-1):s.history),bar].slice(-110)};
 }
-export function tick(s,shock) {
-  let n=walk(s,shock);n.book=makeBook(n.price,n.mode,n.minute);
+export function tick(s,shock,seconds=60) {
+  let n=walk(s,shock,seconds);n.book=makeBook(n.price,n.mode,n.minute);
   if(!n.position)return n;
-  const funding=n.position.qty*n.price*FUNDING/60;
+  const funding=n.position.qty*n.price*FUNDING*seconds/3600;
   n={...n,cash:n.cash-funding,funding:n.funding+funding};
   const p=n.position,a=account(n);
   if(a.equity<=a.maintenance){
@@ -94,7 +97,7 @@ export function tick(s,shock) {
   return n;
 }
 export function reducer(s,a) {
-  if(a.type==='tick')return tick(s,a.shock);
+  if(a.type==='tick')return tick(s,a.shock,a.seconds??60);
   if(a.type==='trade')return trade(s,a);
   if(a.type==='mode')return {...s,mode:a.mode,book:makeBook(s.price,a.mode,s.minute)};
   if(a.type==='reset')return createSession(a.seed,a.capital);

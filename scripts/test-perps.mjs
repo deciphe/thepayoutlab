@@ -16,3 +16,12 @@ s=trade(flat(),{side:1,quantity:2});const consumed=s.book.asks[0].qty;assert.ok(
 assert.deepEqual(tick(createSession(42)),tick(createSession(42)));
 assert.equal(trade(flat(),{side:1,quantity:NaN}).position,null);
 console.log('PASS: long/short P&L, fees, funding, margin, partial fills, FOK, reduce-only, reversals, stops, liquidation and deterministic tape');
+
+let realtime=createSession(42); const historyLength=realtime.history.length;
+for(let i=0;i<60;i++) realtime=tick(realtime,undefined,1);
+assert.equal(realtime.seconds,60);assert.equal(realtime.minute,1);assert.equal(realtime.history.length,historyLength+1);
+const held=trade(flat(),{side:1,quantity:2});
+const second=tick(held,0,1),minute=tick(held,0,60);
+assert.ok(Math.abs(second.funding*60-minute.funding)<1e-9);
+assert.equal(tick(realtime,undefined,1).history.length,historyLength+2);
+console.log('PASS: real-time seconds, one-minute candle aggregation and time-scaled funding');
