@@ -7,20 +7,20 @@ export const weeklySources=id=>id==='vest'?VEST_CHAINS:id==='nova'?NOVA_WALLETS:
 export function weekStart(time=Date.now()){const d=new Date(time);d.setUTCHours(0,0,0,0);d.setUTCDate(d.getUTCDate()-(d.getUTCDay()+6)%7);return d.getTime();}
 export const weekKey=t=>new Date(t).toISOString().slice(0,10);
 export function validSnapshot(d,s){return d?.complete&&d.wallet?.toLowerCase()===s.wallet.toLowerCase()&&d.chain===s.chain&&d.token?.toLowerCase()===s.token.toLowerCase()&&Array.isArray(d.transfers)&&Number.isFinite(Date.parse(d.periodStart))&&Number.isFinite(Date.parse(d.windowEnd||d.updatedAt));}
-export function weeklyBoard(snapshots,start,now=Date.now()){
+export function weeklyBoard(snapshots,start,now=Date.now(),duration=WEEK){
  const groups=WEEKLY_FIRMS.map(f=>{const sources=weeklySources(f.id),ds=sources.map(s=>snapshots[s.slug]);return {firm:f,sources,data:ds.every((d,i)=>validSnapshot(d,sources[i]))?combineFlows(ds,sources):null};});
  if(groups.some(g=>!g.data))return {available:false,missing:groups.filter(g=>!g.data).map(g=>g.firm.name)};
- const cutoff=Math.min(now,...groups.map(g=>Date.parse(g.data.windowEnd||g.data.updatedAt))),end=Math.min(start+WEEK,cutoff);
+ const cutoff=Math.min(now,...groups.map(g=>Date.parse(g.data.windowEnd||g.data.updatedAt))),end=Math.min(start+duration,cutoff);
  if(groups.some(g=>Date.parse(g.data.periodStart)>start))return {available:false,missing:['Complete history for this week']};
  if(end<start)return {available:false,missing:['A snapshot covering this week']};
  const seen=new Set(),transfers=[];
  for(const {firm,sources,data} of groups)for(const t of data.transfers){
   const time=Date.parse(t.timestamp),id=`${t.chain}:${t.hash}:${t.logIndex}`;
-  if(time<start||time>=start+WEEK||time>cutoff||seen.has(id)||!isPayoutRecipientTransfer(t,sources))continue;
+  if(time<start||time>=start+duration||time>cutoff||seen.has(id)||!isPayoutRecipientTransfer(t,sources))continue;
   if(FLOW_SOURCES.some(s=>s.chain===t.chain&&s.wallet.toLowerCase()===t.to.toLowerCase()))continue;
   seen.add(id);transfers.push({...t,id,firm:firm.id,amount:Number(BigInt(t.raw))/1e6});
  }
- return {available:true,version:1,start,end,week:weekKey(start),closed:cutoff>=start+WEEK,asOf:new Date(cutoff).toISOString(),transfers,coverage:groups.map(g=>({firm:g.firm.id,updatedAt:g.data.updatedAt})),methodology:'Eligible USDC recipient transfers; known firm wallets, bridges and dust excluded. Recipients and purpose are not independently verified.'};
+ return {available:true,version:1,start,end,week:weekKey(start),closed:cutoff>=start+duration,asOf:new Date(cutoff).toISOString(),transfers,coverage:groups.map(g=>({firm:g.firm.id,updatedAt:g.data.updatedAt})),methodology:'Eligible USDC recipient transfers; known firm wallets, bridges and dust excluded. Recipients and purpose are not independently verified.'};
 }
 export function rankWeekly(board,firm='all'){
  const wallets=new Map();for(const t of board?.transfers||[]){if(firm!=='all'&&t.firm!==firm)continue;

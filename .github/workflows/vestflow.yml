@@ -9,6 +9,8 @@ on:
       - scripts/update-vestflow.mjs
       - scripts/update-flows.mjs
       - scripts/archive-weekly.mjs
+      - scripts/archive-seasons.mjs
+      - src/lib/season-leaderboard.js
       - src/lib/weekly-leaderboard.js
       - src/lib/flow-data.js
       - src/lib/flow-config.js
@@ -32,6 +34,8 @@ jobs:
         run: node scripts/update-flows.mjs /tmp/flow-snapshots
       - name: Archive weekly payout editions
         run: node scripts/archive-weekly.mjs /tmp/flow-snapshots
+      - name: Archive 30-day seasons
+        run: node scripts/archive-seasons.mjs /tmp/flow-snapshots
       - name: Publish data snapshot
         run: |
           git config user.name 'github-actions[bot]'
@@ -46,6 +50,8 @@ jobs:
           cp /tmp/flow-snapshots/*.json .
           mkdir -p weekly
           cp -R /tmp/flow-snapshots/weekly/. weekly/
-          git add -- *.json weekly
+          mkdir -p seasons
+          cp -R /tmp/flow-snapshots/seasons/. seasons/
+          git add -- *.json weekly seasons
           git commit -m 'Refresh flow trackers USDC snapshot' || exit 0
           git push origin HEAD:vestflow-data

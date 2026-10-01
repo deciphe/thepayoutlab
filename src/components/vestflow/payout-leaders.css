@@ -12,3 +12,5 @@
 .pl-row>strong,.pl li:nth-child(-n+3) .pl-row>strong{text-shadow:none}.pl-address{color:#d4d8ce}.pl-address small{color:#a0aa96}
 
 .pl-move{display:block;margin-top:5px;font:800 12px 'Manrope',sans-serif;letter-spacing:0}.pl-move-up{color:#b6ff4a}.pl-move-down{color:#e4a095}.pl-move-flat{color:#98a48b}.pl-move em{font-size:9px;font-weight:500;font-style:normal;color:#a0aa96}
+.pl-trader-avatar{float:left;width:29px;height:33px;object-fit:cover;margin:0 9px 0 0;border:1px solid #c5b4d538;filter:grayscale(.45)}.pl .pl-social-link{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#c8b7d6;margin:0 0 14px}.pl-social-link small{font-size:8px;color:#92839c}.pl-address{min-width:0}
+@media(max-width:600px){.pl-trader-avatar{width:22px;height:28px;margin-right:6px}}
