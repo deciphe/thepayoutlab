@@ -30,6 +30,23 @@
       rel="stylesheet"
     />
     <title>GIGAPROP — Prop Firm Reviews & Comparisons</title>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-F8CECYK9W0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-F8CECYK9W0', {page_location: window.location.href});
+      // Track hash-based sections separately; leave automatic pageviews to GA4.
+      function trackSection(){
+        var sections = {'#vestflow':'Vestflow','#flow':'Flow hub','#breakoutflow':'Breakoutflow','#novaflow':'Novaflow','#proprflow':'Proprflow'};
+        var section = sections[window.location.hash] || (!window.location.hash || window.location.hash === '#' ? 'Home' : null);
+        if (!section) return;
+        gtag('event', section.toLowerCase().replace(/ /g, '_') + '_view', {page_location: window.location.href});
+      }
+      trackSection();
+      window.addEventListener('hashchange', trackSection);
+    </script>
   </head>
   <body>
     <div id="root"></div>
