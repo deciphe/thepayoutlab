@@ -40,6 +40,7 @@ jobs:
         run: |
           node scripts/test-web3.mjs
           node scripts/test-flows.mjs
+          node scripts/test-weekly.mjs
 
       - name: Build Maven Edition
         run: npm run build --prefix maven-site

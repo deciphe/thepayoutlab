@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import Web3Hub from "./components/web3/Web3Hub";
 
+const Weekly = lazy(() => import("./components/weekly/Weekly"));
 const Million = lazy(() => import("./components/vestflow/Million"));
 const FlowHub = lazy(() => import("./components/vestflow/FlowHub"));
 const Vestflow = lazy(() => import("./components/vestflow/Vestflow"));
@@ -12,6 +13,7 @@ export default function App() {
     return () => window.removeEventListener("hashchange", change);
   }, []);
   const flow=hash === "#vestflow" ? "vest" : hash === "#breakoutflow" ? "breakout" : hash === "#novaflow" ? "nova" : hash === "#proprflow" ? "propr" : null;
+  if(hash.split("?")[0] === "#leaderboard")return <Suspense fallback={<div style={{background:"#0a0e0c",minHeight:"100vh"}}/>}><Weekly/></Suspense>;
   if(hash === "#1milli")return <Suspense fallback={<div style={{background:"#090b0a",minHeight:"100vh"}}/>}><Million/></Suspense>;
   if(hash === "#flow")return <Suspense fallback={<div style={{background:"#090b0a",minHeight:"100vh"}}/>}><FlowHub/></Suspense>;
   return flow ? <Suspense fallback={<div style={{background:'#090b0a',color:'#b6ff4a',minHeight:'100vh',padding:40}}>Loading flow…</div>}><Vestflow key={flow} firm={flow}/></Suspense> : <Web3Hub />;

@@ -248,7 +248,7 @@ export default function Web3Hub(){
     <header className="gp-nav">
       <a className="gp-wordmark" href="#top">GIGAPROP<span>.</span></a>
       <nav className="gp-nav-links">
-        <a href="#field">Reviews</a><a href="#degen" aria-label="NQ comparison">NQ costs</a><a href="#drops">Free drops</a>
+        <a href="#leaderboard">Weekly Top 15</a><a href="#field">Reviews</a><a href="#degen" aria-label="NQ comparison">NQ costs</a><a href="#drops">Free drops</a>
       </nav>
     </header>
 

@@ -40,7 +40,7 @@
       // Track hash-based sections separately; leave automatic pageviews to GA4.
       function trackSection(){
         var sections = {'#vestflow':'Vestflow','#flow':'Flow hub','#breakoutflow':'Breakoutflow','#novaflow':'Novaflow','#proprflow':'Proprflow'};
-        var section = sections[window.location.hash] || (!window.location.hash || window.location.hash === '#' ? 'Home' : null);
+        var section = window.location.hash.split('?')[0] === '#leaderboard' ? 'Weekly leaderboard' : sections[window.location.hash] || (!window.location.hash || window.location.hash === '#' ? 'Home' : null);
         if (!section) return;
         gtag('event', section.toLowerCase().replace(/ /g, '_') + '_view', {page_location: window.location.href});
       }

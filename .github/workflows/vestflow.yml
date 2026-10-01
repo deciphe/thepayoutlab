@@ -8,6 +8,8 @@ on:
     paths:
       - scripts/update-vestflow.mjs
       - scripts/update-flows.mjs
+      - scripts/archive-weekly.mjs
+      - src/lib/weekly-leaderboard.js
       - src/lib/flow-data.js
       - src/lib/flow-config.js
       - src/lib/vestflow-data.js
@@ -28,6 +30,8 @@ jobs:
           node-version: 24
       - name: Read verified USDC transfers
         run: node scripts/update-flows.mjs /tmp/flow-snapshots
+      - name: Archive weekly payout editions
+        run: node scripts/archive-weekly.mjs /tmp/flow-snapshots
       - name: Publish data snapshot
         run: |
           git config user.name 'github-actions[bot]'
@@ -40,6 +44,8 @@ jobs:
             git rm -rf .
           fi
           cp /tmp/flow-snapshots/*.json .
-          git add -- *.json
+          mkdir -p weekly
+          cp -R /tmp/flow-snapshots/weekly/. weekly/
+          git add -- *.json weekly
           git commit -m 'Refresh flow trackers USDC snapshot' || exit 0
           git push origin HEAD:vestflow-data
