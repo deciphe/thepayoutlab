@@ -73,3 +73,12 @@ assert.equal(newcomer[0].isNew,true);
 const aged=payoutLeaderboard([rankRow('expired',5000,30.5),rankRow('current',100,2)],[c],rankAt(0),rankAt(32));
 assert.equal(aged.length,1);assert.equal(aged[0].previousRank,2);assert.equal(aged[0].rankChange,1);
 console.log('Full-universe rank movement, new entries, expired payouts, and incomplete-history checks passed.');
+
+const {vestMilestone,MILESTONE_START}=await import('../src/lib/vest-milestone.js');
+const mt=(amount,ms,to=other)=>({from:VEST_CHAINS[0].wallet,to,direction:'out',raw:String(amount*1e6),amount,timestamp:new Date(ms).toISOString(),chain:VEST_CHAINS[0].chain,block:ms,logIndex:0});
+const md={windowEnd:new Date(MILESTONE_START+20000).toISOString(),periodStart:new Date(MILESTONE_START-31*86400000).toISOString(),transfers:[mt(998000,MILESTONE_START-1000),mt(2500,MILESTONE_START+1000)]};
+const milestone=vestMilestone(md,VEST_CHAINS);
+assert.equal(milestone.total,1000500);assert.equal(milestone.crossing.before,998000);assert.equal(milestone.crossing.after,1000500);
+assert.equal(vestMilestone({...md,transfers:md.transfers.slice(0,1)},VEST_CHAINS).crossing,null);
+assert.equal(vestMilestone({...md,periodStart:new Date(MILESTONE_START).toISOString()},VEST_CHAINS).crossing,null);
+console.log('Milestone threshold and incomplete-history checks passed.');
