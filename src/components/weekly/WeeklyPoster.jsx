@@ -1,8 +1,8 @@
 import {WEEKLY_FIRMS} from '../../lib/weekly-leaderboard.js';
-import {SEASON as WEEK} from '../../lib/season-leaderboard.js';
+import {seasonEnd} from '../../lib/season-leaderboard.js';
 const usd=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
 const short=a=>a.slice(0,6)+'…'+a.slice(-4);
-export const range=s=>new Date(s).toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'UTC'})+' — '+new Date(s+WEEK).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'});
+export const range=s=>new Date(s).toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'UTC'})+' — '+new Date(seasonEnd(s)-1).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'});
 export default function WeeklyPoster({board,rows,profiles,firm,person}){
  const list=person?[person]:rows.slice(0,15),h=person?760:395+list.length*66;
  const label=firm==='all'?'ALL FIRMS':WEEKLY_FIRMS.find(f=>f.id===firm)?.name.toUpperCase();
