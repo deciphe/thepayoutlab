@@ -10,6 +10,15 @@ const usd=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',mini
 const short=a=>a.slice(0,6)+'…'+a.slice(-4);
 function initial(){const p=new URLSearchParams(window.location.hash.split('?')[1]||'');const w=p.get('week');return {week:w&&/^\d{4}-\d{2}-\d{2}$/.test(w)?w:weekKey(weekStart()),wallet:p.get('wallet'),firm:WEEKLY_FIRMS.some(f=>f.id===p.get('firm'))?p.get('firm'):'all'};}
 async function read(path,signal){for(const root of [ROOT,'/data/']){try{const r=await fetch(root+path+'?t='+Math.floor(Date.now()/60000),{signal,cache:'no-store'});if(r.ok)return await r.json();}catch{if(signal?.aborted)throw Error('Cancelled');}}throw Error('Snapshot unavailable');}
+async function posterFonts(node){
+ const chars=[...new Set(node.textContent)].sort().join('');
+ const response=await fetch('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap&text='+encodeURIComponent(chars));
+ if(!response.ok)throw Error('Fonts unavailable');
+ let css=await response.text();
+ const urls=[...new Set([...css.matchAll(/url\(([^)]+)\)/g)].map(m=>m[1].replace(/["']/g,'')))];
+ await Promise.all(urls.map(async url=>{const r=await fetch(url);if(!r.ok)throw Error('Font unavailable');const blob=await r.blob();const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(blob)});css=css.split(url).join(data)}));
+ return css;
+}
 function Badges({firms}){return <span className="wk-badges">{WEEKLY_FIRMS.filter(f=>firms[f.id]).map(f=><span key={f.id} title={f.name+' · '+usd(firms[f.id])}><img src={f.logo} alt=""/>{f.name}</span>)}</span>}
 function Spark({row,start}){let total=0;const data=[...row.transfers].sort((a,b)=>Date.parse(a.timestamp)-Date.parse(b.timestamp));let line='0,46';for(const t of data){const x=(Date.parse(t.timestamp)-start)/WEEK*180;line+=` ${x},${46-total/row.total*40}`;total+=t.amount;line+=` ${x},${46-total/row.total*40}`;}return <svg viewBox="0 0 180 52" aria-hidden="true"><polyline points={line} fill="none" stroke="currentColor" strokeWidth="1.5"/></svg>}
 export default function Weekly(){
@@ -34,7 +43,7 @@ export default function Weekly(){
  function close(){setSelected(null);setPoster(null);setClaim(null);setError('');}
  function linkFor(wallet){return location.origin+location.pathname+'#leaderboard?week='+week+'&firm='+firm+(wallet?'&wallet='+wallet:'');}
  async function copy(wallet){try{await navigator.clipboard.writeText(linkFor(wallet));setCopied(true);setTimeout(()=>setCopied(false),2000)}catch{setError('Could not copy link. You can copy the wallet address below.')}}
- async function download(){if(!posterRef.current)return;setExporting(true);try{const {toBlob}=await import('html-to-image');await document.fonts.ready;const blob=await toBlob(posterRef.current,{pixelRatio:3600/posterRef.current.getBoundingClientRect().width,backgroundColor:'#0b100e'});if(!blob)throw Error();const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`gigaprop-weekly-${week}${poster?.address?'-rank-'+poster.rank:'-top15'}.png`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000)}catch{setError('Image download failed. Please try again.')}finally{setExporting(false)}}
+ async function download(){if(!posterRef.current)return;setExporting(true);try{const {toBlob}=await import('html-to-image');await document.fonts.ready;const fontEmbedCSS=await posterFonts(posterRef.current);const blob=await toBlob(posterRef.current,{fontEmbedCSS,pixelRatio:3600/posterRef.current.getBoundingClientRect().width,backgroundColor:'#0b100e'});if(!blob)throw Error();const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`gigaprop-weekly-${week}${poster?.address?'-rank-'+poster.rank:'-top15'}.png`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000)}catch{setError('Image download failed. Please try again.')}finally{setExporting(false)}}
  useEffect(()=>{setHistory(null);if(!selected)return;const c=new AbortController();const old=weeks.filter(w=>w.closed&&w.week!==week).slice(0,8);Promise.all(old.map(async w=>{try{const b=await read('weekly/'+w.week+'.json',c.signal),r=rankWeekly(b,firm).find(r=>r.address===selected);return {week:w.week,start:w.start,row:r,available:true}}catch{return {week:w.week,start:w.start,available:false}}})).then(d=>{if(!c.signal.aborted)setHistory(d)});return()=>c.abort()},[selected,weeks,week,firm]);
  const name=r=>profiles[r.address]?'@'+profiles[r.address].username:short(r.address);
  const options=[...new Set([weekKey(weekStart()),...weeks.map(w=>w.week),week])].sort().reverse();
