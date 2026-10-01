@@ -15,6 +15,8 @@ import "./web3-hub.css";
 import "./speed-manifesto.css";
 import "./comparison-deck.css";
 import "./obsidian.css";
+import FirmAtmosphere,{firmMark} from "../design/FirmAtmosphere";
+import "../design/collector-surfaces.css";
 
 const OUTCOME_TARGET = 10;
 const RISK_BUDGET = 3;
@@ -63,14 +65,14 @@ function firstToken(value){
 function FirmLogo({firm,className=""}) {
   const [failed,setFailed]=useState(false);
   return <span className={"gp-logo gp-logo-"+firm.id+" "+className+(failed?" is-fallback":"")} aria-hidden="true">
-    {failed ? <span className="gp-logo-fallback">{firm.mark}</span> : <img src={firm.logo} alt="" loading="lazy" onError={()=>setFailed(true)}/>}
+    {failed ? <span className="gp-logo-fallback">{firm.mark}</span> : <img src={firmMark(firm.id)||firm.logo} alt="" loading="lazy" onError={()=>setFailed(true)}/>}
   </span>;
 }
 
 function FirmCard({firm,onOpen,index}){
   const program=defaultProgram(firm), review=reviewNotes[firm.id];
   return <article className={"review-row"+(firm.id==="vest"?" is-top-pick":"")}>
-    <div className="review-identity"><span className="review-rank">{String(index+1).padStart(2,"0")}</span><FirmLogo firm={firm}/><div><h3>{firm.name}</h3><span>{review.tag}</span></div></div>
+    <div className="review-identity"><FirmAtmosphere firm={firm.id}/><span className="review-rank">{String(index+1).padStart(2,"0")}</span><FirmLogo firm={firm}/><div><h3>{firm.name}</h3><span>{review.tag}</span></div></div>
     <div className="review-verdict">{['hypernova','propr'].includes(firm.id)&&<span className="pick-label">MY PICK · {firm.id==='hypernova'?'LOW RISK':'CLASSIC 1-STEP'}</span>}<h4>{review.title}</h4>{firm.id==="breakout"&&<p><a href="https://www.breakoutprop.com/article/the-heat-sheet-august-2026/" target="_blank" rel="noopener noreferrer" style={{color:"inherit",textUnderlineOffset:3}}>Reported $7.1M paid in August 2026</a></p>}<p className="review-caution"><b>The trade-off</b> {review.caution}</p></div>
     <dl className="review-facts"><div><dt>25K entry</dt><dd>{money(firm.price)}</dd></div><div><dt>Max drawdown</dt><dd>{firstToken(program.drawdown)}</dd></div><div><dt>Payout access</dt><dd>{firm.payout}</dd></div></dl>
     <div className="review-actions"><a href={firm.url} target="_blank" rel={firm.referral?"sponsored noopener noreferrer":"noopener noreferrer"}>Visit {firm.name}<ArrowUpRight size={15}/></a>{firm.id==="vest" && <span className="review-offer">5% off via this link</span>}<button type="button" onClick={()=>onOpen(firm.id)} aria-label={"Explore "+firm.name+" programs"}>Full review & rules <ChevronRight size={14}/></button></div>
@@ -137,7 +139,7 @@ function FirmDrawer({firm,onClose}){
 
   return <div className="firm-drawer-shell" role="dialog" aria-modal="true" aria-label={firm.name+" details"} onClick={onClose}>
     <aside ref={drawerRef} className="firm-drawer" onClick={e=>e.stopPropagation()}>
-      <div className="firm-drawer-top">
+      <div className="firm-drawer-top"><FirmAtmosphere firm={firm.id}/>
         <div className="firm-drawer-brand"><FirmLogo firm={firm}/><div><span>{firm.status}</span><h2>{firm.name}</h2></div></div>
         <button type="button" onClick={onClose} aria-label="Close firm details"><X size={18}/></button>
       </div>
