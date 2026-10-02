@@ -111,9 +111,9 @@ function ClaimForm({initialAddress}){
   e.preventDefault();if(!agree||busy||sent)return;
   const form=e.currentTarget,data=new FormData(form),attachment=data.get('attachment');
   if(data.get('_honey'))return;
-  if(!proof.trim()&&!attachment?.size){setStatus('Attach your withdrawal confirmation or paste the confirmation email below.');return;}
+  if(!attachment?.size){setStatus('Attach a screenshot of your Vest withdrawal confirmation email.');return;}
   if(attachment?.size>8*1024*1024){setStatus('Please use an attachment under 8 MB.');return;}
-  if(attachment?.size&&!['image/png','image/jpeg','image/webp','application/pdf'].includes(attachment.type)){setStatus('Use a PNG, JPG, WebP or PDF confirmation.');return;}
+  if(attachment?.size&&!['image/png','image/jpeg','image/webp'].includes(attachment.type)){setStatus('Use a PNG, JPG or WebP screenshot.');return;}
   if(!attachment?.size)data.delete('attachment');
   data.set('payout_wallet',address.trim().toLowerCase());data.set('twitter','@'+twitter.trim().replace(/^@/,''));
   data.set('display_name',displayName.trim());data.set('tag',tag.trim());data.set('email',email.trim());
@@ -135,8 +135,8 @@ function ClaimForm({initialAddress}){
  <label>Twitter / X @<input required pattern="@?[A-Za-z0-9_]{1,15}" maxLength={16} value={twitter} disabled={busy||sent} onChange={e=>setTwitter(e.target.value)} placeholder="@yourhandle" autoComplete="off"/></label>
  <label>Desired display name<input required maxLength={40} value={displayName} disabled={busy||sent} onChange={e=>setDisplayName(e.target.value)} placeholder="Your name on the board"/></label>
  <label>Desired tag <small>optional</small><input maxLength={40} value={tag} disabled={busy||sent} onChange={e=>setTag(e.target.value)} placeholder="#YOURGANG or yourbrand.com"/></label>
- <label>Withdrawal confirmation screenshot or PDF<input name="attachment" type="file" accept="image/png,image/jpeg,image/webp,application/pdf" disabled={busy||sent}/><small>PNG, JPG, WebP or PDF · up to 8 MB</small></label>
- <label>Or paste the confirmation email<textarea maxLength={5000} rows={5} value={proof} disabled={busy||sent} onChange={e=>setProof(e.target.value)} placeholder="Include the withdrawal amount, date and receiving address. Add the transaction hash if available."/></label>
+ <label>Withdrawal email screenshot<input name="attachment" type="file" required accept="image/png,image/jpeg,image/webp" disabled={busy||sent}/><small>PNG, JPG or WebP · up to 8 MB</small></label>
+ <label>Additional payout details (optional)<textarea maxLength={5000} rows={5} value={proof} disabled={busy||sent} onChange={e=>setProof(e.target.value)} placeholder="Include the withdrawal amount, date and receiving address. Add the transaction hash if available."/></label>
  <p className="wk-claim-note">Keep the payout details visible and remove unrelated personal information. Your confirmation and contact email are sent through FormSubmit to GIGAPROP for review, not published on the leaderboard.</p>
  <label className="wk-consent"><input type="checkbox" required checked={agree} disabled={busy||sent} onChange={e=>setAgree(e.target.checked)}/>I agree to my approved name, Twitter @, tag and payout address appearing publicly.</label>
  <button className="wk-primary" disabled={!agree||busy||sent} type="submit">{sent?'Submitted for review':busy?'Submitting…':'Submit profile for review'}<ArrowUpRight size={15}/></button>
