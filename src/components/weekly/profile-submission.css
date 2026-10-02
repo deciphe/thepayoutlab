@@ -4,3 +4,11 @@
 .wk-submission input:focus,.wk-submission textarea:focus{outline:1px solid #d4bc7d;border-color:#d4bc7d}
 .wk-submission-copy{color:#bfb5ca;font-size:11px;text-decoration:underline;text-underline-offset:4px}
 .wk-submission .wk-claim-note a{color:#ded2e7}
+.wk-submission-success{display:flex;min-height:430px;flex-direction:column;align-items:flex-start;justify-content:center}
+.wk-success-mark{display:grid;width:62px;height:62px;margin:0 0 22px;place-items:center;border:1px solid #d4bc7d66;border-radius:50%;background:radial-gradient(circle at 50% 35%,#d4bc7d2b,#d4bc7d0b 62%,transparent 63%);color:#e6d39e;box-shadow:0 0 38px #d4bc7d14}
+.wk-submission-success h2{margin:8px 0 10px;font-size:clamp(28px,5vw,42px);line-height:1;letter-spacing:-.045em}
+.wk-submission-success>p:not(.wk-claim-note){max-width:520px;color:#c8c1ce;line-height:1.7}
+.wk-success-wallet{display:flex;width:100%;margin:24px 0 14px;padding:14px 16px;align-items:center;justify-content:space-between;gap:16px;border:1px solid #ffffff18;border-radius:7px;background:#ffffff05}
+.wk-success-wallet span{color:#8f8796;font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.wk-success-wallet strong{color:#eee8f2;font-family:"DM Mono",monospace;font-size:12px;font-weight:500}
+.wk-success-done{width:100%;margin-top:26px;justify-content:center}
