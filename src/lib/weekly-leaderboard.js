@@ -1,3 +1,4 @@
+import {canonicalTraderWallet,traderWallets} from './trader-wallets.js';
 import {FLOW_CONFIGS,VEST_CHAINS,NOVA_WALLETS,FLOW_SOURCES} from './flow-config.js';
 import {combineFlows} from './flow-metrics.js';
 import {isPayoutRecipientTransfer} from './flow-classification.js';
@@ -24,7 +25,7 @@ export function weeklyBoard(snapshots,start,now=Date.now(),duration=WEEK,firmId=
 }
 export function rankWeekly(board,firm='all'){
  const wallets=new Map();for(const t of board?.transfers||[]){if(firm!=='all'&&t.firm!==firm)continue;
- const address=t.to.toLowerCase(),r=wallets.get(address)||{address,raw:0n,count:0,firms:{},transfers:[],largest:0};
+ const address=canonicalTraderWallet(t.to),r=wallets.get(address)||{address,addresses:traderWallets(address),raw:0n,count:0,firms:{},transfers:[],largest:0};
  r.raw+=BigInt(t.raw);r.count++;r.firms[t.firm]=(r.firms[t.firm]||0)+t.amount;r.largest=Math.max(r.largest,t.amount);r.transfers.push(t);wallets.set(address,r);
  }
  return [...wallets.values()].sort((a,b)=>a.raw===b.raw?a.address.localeCompare(b.address):a.raw>b.raw?-1:1).map((r,i)=>({...r,rank:i+1,total:Number(r.raw)/1e6,raw:String(r.raw),transfers:r.transfers.sort((a,b)=>Date.parse(b.timestamp)-Date.parse(a.timestamp))}));

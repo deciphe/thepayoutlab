@@ -26,5 +26,12 @@
     "name": "TORO MILANO",
     "image": "toro.jpg",
     "tag": "THE FIRE KING"
+  },
+  {
+    "wallet": "0x2f2c91a08aa283359b41850adb9ea3d65b36f3d3",
+    "twitter": "lemontradestand",
+    "name": "lemontrades",
+    "image": "lemon.jpg",
+    "tag": ""
   }
 ]
