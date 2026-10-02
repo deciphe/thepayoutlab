@@ -7,3 +7,21 @@ add('vestflow',1000000,start);add('breakoutflow',2000000,start+1);add('vestflow'
 let board=weeklyBoard(snapshots,start,end);assert(board.available&&board.closed);assert.equal(board.transfers.length,2);let ranks=rankWeekly(board);assert.equal(ranks.length,1);assert.equal(ranks[0].total,3);assert.equal(rankWeekly(board,'vest')[0].total,1);assert.equal(rankWeekly(board,'breakout')[0].total,2);
 snapshots.proprflow.windowEnd=new Date(start).toISOString();board=weeklyBoard(snapshots,start,end);assert.equal(board.closed,false);assert.equal(board.transfers.length,1);snapshots.proprflow.complete=false;assert.equal(weeklyBoard(snapshots,start,end).available,false);
 console.log('Weekly boundaries, integer totals, cross-firm aggregation, deduplication, treasury/dust exclusions, firm filters and common cutoff passed.');
+
+const {rankSeasonChanges}=await import('../src/lib/season-changes.js');
+const day=86400000,cutoff=start+3*day;
+const transfer=(to,amount,time,firm='vest')=>({to,raw:String(amount*1e6),amount,timestamp:new Date(time).toISOString(),firm});
+const season={available:true,start,end:cutoff,asOf:new Date(cutoff).toISOString(),transfers:[
+ transfer('a',100,start),transfer('b',200,start),transfer('a',150,cutoff-100),transfer('c',300,cutoff-50),transfer('d',1000,cutoff-50,'propr'),transfer('b',1,cutoff-day)
+]};
+const daily=rankSeasonChanges(season,'vest'),byAddress=Object.fromEntries(daily.map(r=>[r.address,r]));
+assert.equal(byAddress.a.received24h,150);assert.equal(byAddress.a.rankChange,0);
+assert.equal(byAddress.b.received24h,0);assert.equal(byAddress.b.rankChange,-2);assert.equal(byAddress.c.isNew,true);
+assert.equal(daily.length,3);
+const gain=rankSeasonChanges({...season,transfers:season.transfers.filter(t=>t.to!=='c')},'vest');
+assert.equal(gain.find(r=>r.address==='a').rankChange,1);
+const early=rankSeasonChanges({...season,end:start+day/2,asOf:new Date(start+day/2).toISOString(),transfers:[transfer('a',1,start)]});
+assert.equal(early[0].changeAvailable,false);assert.equal(early[0].isNew,false);
+const closed=rankSeasonChanges({...season,asOf:new Date(cutoff+5*day).toISOString()},'vest');
+assert.equal(closed.find(r=>r.address==='a').received24h,150);
+console.log('Season 24h payouts, boundary, rank gains/losses, NEW, firm filters and closed-season cutoff passed.');
