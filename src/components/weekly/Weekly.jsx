@@ -151,44 +151,4 @@ function ClaimForm({initialAddress,onDone}){
  <label className="wk-consent"><input type="checkbox" required checked={agree} disabled={busy||sent} onChange={e=>setAgree(e.target.checked)}/>I agree to my approved name, Twitter @, tag and payout address appearing publicly.</label>
  <button className="wk-primary" disabled={!agree||busy||sent} type="submit">{busy?'Submitting…':'Submit profile for review'}<ArrowUpRight size={15}/></button>
  <p className="wk-claim-note">Your profile goes live after manual approval. No wallet connection or signature needed.</p><p role="status" className="wk-claim-status">{status}</p></form></>;
-}){
- const [address,setAddress]=useState(initialAddress||''),[twitter,setTwitter]=useState(''),[displayName,setDisplayName]=useState(''),[tag,setTag]=useState(''),[email,setEmail]=useState(''),[proof,setProof]=useState(''),[agree,setAgree]=useState(false),[status,setStatus]=useState(''),[busy,setBusy]=useState(false),[sent,setSent]=useState(false);
- async function submit(e){
-  e.preventDefault();if(!agree||busy||sent)return;
-  const form=e.currentTarget,data=new FormData(form),attachment=data.get('attachment');
-  if(data.get('_honey'))return;
-  if(!attachment?.size){setStatus('Attach a screenshot of your Vest withdrawal confirmation email.');return;}
-  if(attachment?.size>8*1024*1024){setStatus('Please use an attachment under 8 MB.');return;}
-  if(attachment?.size&&!['image/png','image/jpeg','image/webp'].includes(attachment.type)){setStatus('Use a PNG, JPG or WebP screenshot.');return;}
-  setBusy(true);
-  let reviewAttachment;
-  try{setStatus('Preparing screenshot…');reviewAttachment=await reviewJpeg(attachment);}catch{setBusy(false);setStatus('We could not prepare that image. Please use a JPG, PNG or WebP screenshot and try again.');return;}
-  data.set('attachment',reviewAttachment,reviewAttachment.name);
-  data.set('payout_wallet',address.trim().toLowerCase());data.set('twitter','@'+twitter.trim().replace(/^@/,''));
-  data.set('display_name',displayName.trim());data.set('tag',tag.trim());data.set('email',email.trim());
-  data.set('withdrawal_confirmation',proof.trim());data.set('_subject','GIGAPROP VEST PROFILE REVIEW — @'+twitter.trim().replace(/^@/,''));
-  data.set('_template','table');data.set('source','gigaprop.xyz/#leaderboard');data.set('consent','I agree to publication of the approved profile details and payout wallet.');
-  setStatus('Sending your submission…');
-  try{
-   const response=await fetch('https://formsubmit.co/ajax/gp@gigaprop.xyz',{method:'POST',headers:{Accept:'application/json'},body:data,signal:AbortSignal.timeout(45000)});
-   const result=await response.json();
-   if(!response.ok||!(result.success===true||result.success==='true'))throw Error('Submission not accepted');
-   setSent(true);setStatus('Submitted for review. GIGAPROP will check your withdrawal against the onchain record before publishing your profile.');
-  }catch{setStatus('We could not confirm submission. Your details are still here. Please try again; if you already received a confirmation, avoid sending twice.');}
-  finally{setBusy(false);}
- }
- if(sent)return <div className="wk-claim-form wk-submission wk-submission-success" role="status" aria-live="polite"><div className="wk-success-mark"><Check size={32}/></div><span className="wk-profile-label">PROFILE CLAIM / RECEIVED</span><h2>Submission received.</h2><p>Your claim is in. GIGAPROP will review the withdrawal confirmation against the onchain payout record before publishing the profile.</p><div className="wk-success-wallet"><span>Submitted wallet</span><strong>{short(address.trim().toLowerCase())}</strong></div><p className="wk-claim-note">You do not need to submit again. If anything is missing, GIGAPROP will follow up using the contact email you provided.</p><button className="wk-primary wk-success-done" type="button" onClick={onDone}><Check size={16}/> Done</button></div>;
- return <form className="wk-claim-form wk-submission" onSubmit={submit} encType="multipart/form-data"><ShieldCheck size={30}/><span className="wk-profile-label">VEST / MANUAL PROFILE REVIEW</span><h2>Put your name on it.</h2><p>Submit your Vest withdrawal confirmation. GIGAPROP will cross-reference the receiving address onchain before adding your profile.</p>
- <input name="_honey" type="text" tabIndex={-1} autoComplete="off" style={{display:'none'}} aria-hidden="true"/>
- <label>Payout wallet address<input required pattern="0x[a-fA-F0-9]{40}" maxLength={42} value={address} disabled={busy||sent} onChange={e=>setAddress(e.target.value.trim())} placeholder="0x…" autoComplete="off"/></label>
- <label>Contact email<input required type="email" maxLength={254} value={email} disabled={busy||sent} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" autoComplete="email"/></label>
- <label>Twitter / X @<input required pattern="@?[A-Za-z0-9_]{1,15}" maxLength={16} value={twitter} disabled={busy||sent} onChange={e=>setTwitter(e.target.value)} placeholder="@yourhandle" autoComplete="off"/></label>
- <label>Desired display name<input required maxLength={40} value={displayName} disabled={busy||sent} onChange={e=>setDisplayName(e.target.value)} placeholder="Your name on the board"/></label>
- <label>Desired tag <small>optional</small><input maxLength={40} value={tag} disabled={busy||sent} onChange={e=>setTag(e.target.value)} placeholder="#YOURGANG or yourbrand.com"/></label>
- <label>Withdrawal email screenshot<input name="attachment" type="file" required accept="image/png,image/jpeg,image/webp" disabled={busy||sent}/><small>PNG, JPG or WebP · up to 8 MB · automatically prepared as JPG for review</small></label>
- <label>Additional payout details (optional)<textarea maxLength={5000} rows={5} value={proof} disabled={busy||sent} onChange={e=>setProof(e.target.value)} placeholder="Include the withdrawal amount, date and receiving address. Add the transaction hash if available."/></label>
- <p className="wk-claim-note">Keep the payout details visible and remove unrelated personal information. Your confirmation and contact email are sent through FormSubmit to GIGAPROP for review, not published on the leaderboard.</p>
- <label className="wk-consent"><input type="checkbox" required checked={agree} disabled={busy||sent} onChange={e=>setAgree(e.target.checked)}/>I agree to my approved name, Twitter @, tag and payout address appearing publicly.</label>
- <button className="wk-primary" disabled={!agree||busy||sent} type="submit">{sent?'Submitted for review':busy?'Submitting…':'Submit profile for review'}<ArrowUpRight size={15}/></button>
- <p className="wk-claim-note">Your profile goes live after manual approval. No wallet connection or signature needed.</p><p role="status" className="wk-claim-status">{status}</p></form>;
 }
