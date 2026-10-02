@@ -1,0 +1,6 @@
+.wk-submission>label:not(.wk-consent){display:flex;flex-direction:column;gap:8px;margin:17px 0;color:#c8c1ce;font-size:12px}
+.wk-submission>label>input,.wk-submission textarea{width:100%;min-width:0;padding:12px 14px;border:1px solid #ffffff26;border-radius:6px;color:#eee8f2;background:#ffffff05;font:inherit;line-height:1.6}
+.wk-submission textarea{resize:vertical;min-height:120px}
+.wk-submission input:focus,.wk-submission textarea:focus{outline:1px solid #d4bc7d;border-color:#d4bc7d}
+.wk-submission-copy{color:#bfb5ca;font-size:11px;text-decoration:underline;text-underline-offset:4px}
+.wk-submission .wk-claim-note a{color:#ded2e7}
