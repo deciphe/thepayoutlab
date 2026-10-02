@@ -13,7 +13,7 @@ export default function App() {
     window.addEventListener("hashchange", change);
     return () => window.removeEventListener("hashchange", change);
   }, []);
-  if(hash.split("?")[0] === "#vestpdf")return <Suspense fallback={<div style={{background:"#090a0e",minHeight:"100vh"}}/>}><VestPdf/></Suspense>;
+  if(["#vestpdf","#vestatm","#lesson1"].includes(hash.split("?")[0]))return <Suspense fallback={<div style={{background:"#090a0e",minHeight:"100vh"}}/>}><VestPdf/></Suspense>;
   const flow=hash === "#vestflow" ? "vest" : hash === "#breakoutflow" ? "breakout" : hash === "#novaflow" ? "nova" : hash === "#proprflow" ? "propr" : null;
   if(hash.split("?")[0] === "#leaderboard")return <Suspense fallback={<div style={{background:"#0a0e0c",minHeight:"100vh"}}/>}><Weekly/></Suspense>;
   if(hash === "#1milli")return <Suspense fallback={<div style={{background:"#090b0a",minHeight:"100vh"}}/>}><Million/></Suspense>;
