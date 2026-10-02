@@ -1,4 +1,4 @@
-import {weeklyBoard,weekKey,validSnapshot} from './weekly-leaderboard.js';
+import {weeklyBoard,weekKey,validSnapshot,weeklySources} from './weekly-leaderboard.js';
 import {FLOW_SOURCES} from './flow-config.js';
 export const SEASON_ONE=Date.parse('2026-09-01T00:00:00Z');
 const REGULAR_START=Date.parse('2027-01-01T00:00:00Z');
@@ -22,17 +22,18 @@ export function seedSeason(archives,start){
  }
  return latest?{...latest,version:3,start,end:cursor,week:weekKey(start),season:seasonNumber(start),duration:seasonDuration(start),closed:cursor===seasonEnd(start),transfers:[...new Map(transfers.map(t=>[t.id,t])).values()]}:null;
 }
-export function seasonBoard(snapshots,start,now=Date.now(),prior=null){
+export function seasonBoard(snapshots,start,now=Date.now(),prior=null,firmId='all'){
  if(!validSeasonKey(weekKey(start)))return {available:false,missing:['Valid season boundary']};
- if(FLOW_SOURCES.some(s=>!validSnapshot(snapshots[s.slug],s)))return {available:false,missing:['Complete source snapshots']};
- const coverageStart=Math.max(start,...FLOW_SOURCES.map(s=>Date.parse(snapshots[s.slug].periodStart)));
+ const sources=firmId==='all'?FLOW_SOURCES:weeklySources(firmId);
+ if(sources.some(s=>!validSnapshot(snapshots[s.slug],s)))return {available:false,missing:['Complete source snapshots']};
+ const coverageStart=Math.max(start,...sources.map(s=>Date.parse(snapshots[s.slug].periodStart)));
  const end=seasonEnd(start),duration=end-start;
  if(prior?.closed&&prior.start===start&&prior.duration===duration)return prior;
  if(coverageStart>start&&(!prior?.available||prior.start!==start||prior.duration!==duration||prior.end<Math.min(coverageStart,end)))return {available:false,missing:['Complete season history; archive coverage has a gap']};
  if(coverageStart>=end){if(prior?.end>=end)return {...prior,closed:true};return {available:false,missing:['Season closing snapshot']};}
- const fresh=weeklyBoard(snapshots,coverageStart,now,end-coverageStart);
+ const fresh=weeklyBoard(snapshots,coverageStart,now,end-coverageStart,firmId);
  if(!fresh.available)return fresh;
- const transfers=[...(coverageStart>start?prior.transfers.filter(t=>Date.parse(t.timestamp)<coverageStart):[]),...fresh.transfers];
+ const transfers=[...(coverageStart>start?prior.transfers.filter(t=>(firmId==='all'||t.firm===firmId)&&Date.parse(t.timestamp)<coverageStart):[]),...fresh.transfers];
  const unique=[...new Map(transfers.map(t=>[t.id,t])).values()];
  return {...fresh,version:3,start,end:fresh.end,week:weekKey(start),season:seasonNumber(start),duration,closed:fresh.end>=end,transfers:unique};
 }

@@ -25,3 +25,21 @@ assert.equal(early[0].changeAvailable,false);assert.equal(early[0].isNew,false);
 const closed=rankSeasonChanges({...season,asOf:new Date(cutoff+5*day).toISOString()},'vest');
 assert.equal(closed.find(r=>r.address==='a').received24h,150);
 console.log('Season 24h payouts, boundary, rank gains/losses, NEW, firm filters and closed-season cutoff passed.');
+
+// A failed unrelated firm must not freeze a selected firm's live rankings.
+const vestOnly=weeklyBoard(snapshots,start,end,WEEK,'vest');
+assert(vestOnly.available&&vestOnly.closed);
+assert.equal(vestOnly.transfers.length,1);
+assert(vestOnly.coverage.every(c=>c.firm==='vest'));
+const {seasonBoard,SEASON_ONE,seasonDuration}=await import('../src/lib/season-leaderboard.js');
+const historyCutoff=SEASON_ONE+10*day;
+const selectedSnapshots=structuredClone(snapshots);
+for(const s of FLOW_SOURCES){selectedSnapshots[s.slug].periodStart=new Date(historyCutoff).toISOString();selectedSnapshots[s.slug].windowEnd=new Date(cutoff).toISOString();}
+const priorSeason={available:true,start:SEASON_ONE,end:historyCutoff,duration:seasonDuration(SEASON_ONE),transfers:[{...transfer('historical',12,SEASON_ONE),id:'historical'},{...transfer('unrelated',15,SEASON_ONE,'propr'),id:'unrelated'}]};
+const currentVest=seasonBoard(selectedSnapshots,SEASON_ONE,cutoff,priorSeason,'vest');
+assert(currentVest.available);
+assert.equal(currentVest.end,cutoff);
+assert(currentVest.transfers.some(t=>t.id==='historical'));
+assert(currentVest.transfers.every(t=>t.firm==='vest'));
+assert.equal(seasonBoard(selectedSnapshots,SEASON_ONE,cutoff,{...priorSeason,end:historyCutoff-1},'vest').available,false);
+console.log('Selected-firm refresh ignores unrelated failures, preserves season history, and rejects archive gaps.');

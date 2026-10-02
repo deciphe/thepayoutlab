@@ -7,8 +7,8 @@ export const weeklySources=id=>id==='vest'?VEST_CHAINS:id==='nova'?NOVA_WALLETS:
 export function weekStart(time=Date.now()){const d=new Date(time);d.setUTCHours(0,0,0,0);d.setUTCDate(d.getUTCDate()-(d.getUTCDay()+6)%7);return d.getTime();}
 export const weekKey=t=>new Date(t).toISOString().slice(0,10);
 export function validSnapshot(d,s){return d?.complete&&d.wallet?.toLowerCase()===s.wallet.toLowerCase()&&d.chain===s.chain&&d.token?.toLowerCase()===s.token.toLowerCase()&&Array.isArray(d.transfers)&&Number.isFinite(Date.parse(d.periodStart))&&Number.isFinite(Date.parse(d.windowEnd||d.updatedAt));}
-export function weeklyBoard(snapshots,start,now=Date.now(),duration=WEEK){
- const groups=WEEKLY_FIRMS.map(f=>{const sources=weeklySources(f.id),ds=sources.map(s=>snapshots[s.slug]);return {firm:f,sources,data:ds.every((d,i)=>validSnapshot(d,sources[i]))?combineFlows(ds,sources):null};});
+export function weeklyBoard(snapshots,start,now=Date.now(),duration=WEEK,firmId='all'){
+ const groups=WEEKLY_FIRMS.filter(f=>firmId==='all'||f.id===firmId).map(f=>{const sources=weeklySources(f.id),ds=sources.map(s=>snapshots[s.slug]);return {firm:f,sources,data:ds.every((d,i)=>validSnapshot(d,sources[i]))?combineFlows(ds,sources):null};});
  if(groups.some(g=>!g.data))return {available:false,missing:groups.filter(g=>!g.data).map(g=>g.firm.name)};
  const cutoff=Math.min(now,...groups.map(g=>Date.parse(g.data.windowEnd||g.data.updatedAt))),end=Math.min(start+duration,cutoff);
  if(groups.some(g=>Date.parse(g.data.periodStart)>start))return {available:false,missing:['Complete history for this week']};

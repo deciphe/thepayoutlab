@@ -30,3 +30,5 @@
 .wk-data-tools>button{display:flex;align-items:center;gap:7px;border:1px solid #ffffff24;padding:9px 12px;border-radius:5px;color:#ded9e3;background:#ffffff06}
 .wk-data-tools>button:disabled{opacity:.5}
 @media(max-width:600px){.wk-data-tools{gap:8px 14px}.wk-data-tools>div{flex-basis:100%}.wk-row-amount .wk-daily{font-size:9px}.wk-daily em{font-size:8px}}
+
+.wk-data-footer{margin-top:30px;padding-top:18px;border-top:1px solid #ffffff12;color:#827c89;font:9px 'DM Mono',monospace}.wk-refresh-note{font-size:10px;color:#827c89;margin:0 0 20px}
