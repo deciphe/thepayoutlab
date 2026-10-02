@@ -108,15 +108,50 @@ export default function Weekly(){
  </dialog>
  </div></main>;
 }
-async function reviewJpeg(file){
- const bitmap=await createImageBitmap(file);
- const max=2400,scale=Math.min(1,max/Math.max(bitmap.width,bitmap.height)),width=Math.max(1,Math.round(bitmap.width*scale)),height=Math.max(1,Math.round(bitmap.height*scale));
- const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
- const ctx=canvas.getContext('2d',{alpha:false});ctx.fillStyle='#fff';ctx.fillRect(0,0,width,height);ctx.drawImage(bitmap,0,0,width,height);bitmap.close?.();
- const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(Error('Could not prepare screenshot')),'image/jpeg',0.92));
- return new File([blob],'withdrawal-confirmation.jpg',{type:'image/jpeg',lastModified:Date.now()});
-}
 function ClaimForm({initialAddress,onDone}){
+ const [address,setAddress]=useState(initialAddress||''),[twitter,setTwitter]=useState(''),[displayName,setDisplayName]=useState(''),[tag,setTag]=useState(''),[email,setEmail]=useState(''),[proof,setProof]=useState(''),[agree,setAgree]=useState(false),[status,setStatus]=useState(''),[busy,setBusy]=useState(false),[sent,setSent]=useState(false);
+ const submitted=useRef(false);
+ function submittedFrameLoaded(){
+  if(!submitted.current)return;
+  submitted.current=false;setBusy(false);setSent(true);setStatus('Submitted for review. GIGAPROP will check your withdrawal against the onchain record before publishing your profile.');
+ }
+ function submit(e){
+  e.preventDefault();if(!agree||busy||sent)return;
+  const form=e.currentTarget,attachment=form.elements.attachment?.files?.[0];
+  if(form.elements._honey?.value)return;
+  if(!attachment?.size){setStatus('Attach a screenshot of your Vest withdrawal confirmation email.');return;}
+  if(attachment.size>8*1024*1024){setStatus('Please use an attachment under 8 MB.');return;}
+  if(!['image/png','image/jpeg','image/webp'].includes(attachment.type)){setStatus('Use a PNG, JPG or WebP screenshot.');return;}
+  setBusy(true);setStatus('Sending your screenshot and profile…');submitted.current=true;
+  try{HTMLFormElement.prototype.submit.call(form)}catch{ submitted.current=false;setBusy(false);setStatus('We could not send the submission. Please try again.');}
+ }
+ if(sent)return <div className="wk-claim-form wk-submission wk-submission-success" role="status" aria-live="polite"><div className="wk-success-mark"><Check size={32}/></div><span className="wk-profile-label">PROFILE CLAIM / RECEIVED</span><h2>Submission received.</h2><p>Your claim is in. GIGAPROP will review the withdrawal confirmation against the onchain payout record before publishing the profile.</p><div className="wk-success-wallet"><span>Submitted wallet</span><strong>{short(address.trim().toLowerCase())}</strong></div><p className="wk-claim-note">You do not need to submit again. If anything is missing, GIGAPROP will follow up using the contact email you provided.</p><button className="wk-primary wk-success-done" type="button" onClick={onDone}><Check size={16}/> Done</button></div>;
+ return <><iframe name="gigaprop-claim-submit" title="Profile claim submission" className="wk-claim-submit-frame" onLoad={submittedFrameLoaded}/>
+ <form className="wk-claim-form wk-submission" onSubmit={submit} action="https://formsubmit.co/gp@gigaprop.xyz" method="POST" target="gigaprop-claim-submit" encType="multipart/form-data"><ShieldCheck size={30}/><span className="wk-profile-label">VEST / MANUAL PROFILE REVIEW</span><h2>Put your name on it.</h2><p>Submit your Vest withdrawal confirmation. GIGAPROP will cross-reference the receiving address onchain before adding your profile.</p>
+ <input name="_honey" type="text" tabIndex={-1} autoComplete="off" style={{display:'none'}} aria-hidden="true"/>
+ <input type="hidden" name="_captcha" value="false"/>
+ <input type="hidden" name="_template" value="table"/>
+ <input type="hidden" name="_subject" value={'GIGAPROP VEST PROFILE REVIEW — @'+twitter.trim().replace(/^@/,'')}/>
+ <input type="hidden" name="source" value="gigaprop.xyz/#leaderboard"/>
+ <input type="hidden" name="consent" value="I agree to publication of the approved profile details and payout wallet."/>
+ <input type="hidden" name="payout_wallet" value={address.trim().toLowerCase()}/>
+ <input type="hidden" name="twitter" value={'@'+twitter.trim().replace(/^@/,'')}/>
+ <input type="hidden" name="display_name" value={displayName.trim()}/>
+ <input type="hidden" name="tag" value={tag.trim()}/>
+ <input type="hidden" name="email" value={email.trim()}/>
+ <input type="hidden" name="withdrawal_confirmation" value={proof.trim()}/>
+ <label>Payout wallet address<input required pattern="0x[a-fA-F0-9]{40}" maxLength={42} value={address} disabled={busy||sent} onChange={e=>setAddress(e.target.value.trim())} placeholder="0x…" autoComplete="off"/></label>
+ <label>Contact email<input required type="email" maxLength={254} value={email} disabled={busy||sent} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" autoComplete="email"/></label>
+ <label>Twitter / X @<input required pattern="@?[A-Za-z0-9_]{1,15}" maxLength={16} value={twitter} disabled={busy||sent} onChange={e=>setTwitter(e.target.value)} placeholder="@yourhandle" autoComplete="off"/></label>
+ <label>Desired display name<input required maxLength={40} value={displayName} disabled={busy||sent} onChange={e=>setDisplayName(e.target.value)} placeholder="Your name on the board"/></label>
+ <label>Desired tag <small>optional</small><input maxLength={40} value={tag} disabled={busy||sent} onChange={e=>setTag(e.target.value)} placeholder="#YOURGANG or yourbrand.com"/></label>
+ <label>Withdrawal email screenshot<input name="attachment" type="file" required accept="image/png,image/jpeg,image/webp" disabled={busy||sent}/><small>PNG, JPG or WebP · up to 8 MB</small></label>
+ <label>Additional payout details (optional)<textarea maxLength={5000} rows={5} value={proof} disabled={busy||sent} onChange={e=>setProof(e.target.value)} placeholder="Include the withdrawal amount, date and receiving address. Add the transaction hash if available."/></label>
+ <p className="wk-claim-note">Keep the payout details visible and remove unrelated personal information. Your confirmation and contact email are sent through FormSubmit to GIGAPROP for review, not published on the leaderboard.</p>
+ <label className="wk-consent"><input type="checkbox" required checked={agree} disabled={busy||sent} onChange={e=>setAgree(e.target.checked)}/>I agree to my approved name, Twitter @, tag and payout address appearing publicly.</label>
+ <button className="wk-primary" disabled={!agree||busy||sent} type="submit">{busy?'Submitting…':'Submit profile for review'}<ArrowUpRight size={15}/></button>
+ <p className="wk-claim-note">Your profile goes live after manual approval. No wallet connection or signature needed.</p><p role="status" className="wk-claim-status">{status}</p></form></>;
+}){
  const [address,setAddress]=useState(initialAddress||''),[twitter,setTwitter]=useState(''),[displayName,setDisplayName]=useState(''),[tag,setTag]=useState(''),[email,setEmail]=useState(''),[proof,setProof]=useState(''),[agree,setAgree]=useState(false),[status,setStatus]=useState(''),[busy,setBusy]=useState(false),[sent,setSent]=useState(false);
  async function submit(e){
   e.preventDefault();if(!agree||busy||sent)return;
