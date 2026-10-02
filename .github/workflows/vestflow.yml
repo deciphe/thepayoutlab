@@ -34,7 +34,7 @@ jobs:
         run: node scripts/update-flows.mjs /tmp/flow-snapshots
       - name: Archive weekly payout editions
         run: node scripts/archive-weekly.mjs /tmp/flow-snapshots
-      - name: Archive 30-day seasons
+      - name: Archive quarterly seasons
         run: node scripts/archive-seasons.mjs /tmp/flow-snapshots
       - name: Publish data snapshot
         run: |

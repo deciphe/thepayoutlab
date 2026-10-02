@@ -33,9 +33,9 @@ export default function Weekly(){
  useEffect(()=>{const title=document.title;document.title='The Fifteen · GIGAPROP Trader Rankings';return()=>{document.title=title}},[]);
  useEffect(()=>{const c=new AbortController();let running=false;
  async function run(){if(running)return;running=true;setBusy(true);try{const [ds,index]=await Promise.all([Promise.all(FLOW_SOURCES.map(async s=>{const d=await read(s.slug+'.json',AbortSignal.any([c.signal,AbortSignal.timeout(15000)]));if(!validSnapshot(d,s))throw Error('Invalid snapshot');return [s.slug,d]})),read('season-index.json',c.signal).catch(()=>({weeks:[]}))]);if(!c.signal.aborted){setSnapshots(Object.fromEntries(ds));setWeeks((index.weeks||[]).filter(w=>validSeasonKey(w.week)));setError('');}}catch{if(!c.signal.aborted)setError('Live refresh delayed. Showing the last available snapshot.');}finally{running=false;if(!c.signal.aborted)setBusy(false);}}
- refresh.current=run;run();const timer=setInterval(()=>{if(document.visibilityState==='visible')run()},60000);return()=>{c.abort();clearInterval(timer)};
+ refresh.current=run;run();const onVisible=()=>{if(document.visibilityState==='visible')run()};document.addEventListener('visibilitychange',onVisible);const timer=setInterval(onVisible,60000);return()=>{c.abort();clearInterval(timer);document.removeEventListener('visibilitychange',onVisible)};
  },[]);
- useEffect(()=>{setEdition(null);const c=new AbortController();read('seasons/'+week+'.json',c.signal).then(d=>{if(d.available&&d.week===week&&!c.signal.aborted)setEdition(d)}).catch(()=>{});return()=>c.abort()},[week]);
+ useEffect(()=>{setEdition(previous=>previous?.week===week?previous:null);const c=new AbortController();read('seasons/'+week+'.json',AbortSignal.any([c.signal,AbortSignal.timeout(15000)])).then(d=>{if(d.available&&d.week===week&&!c.signal.aborted)setEdition(previous=>previous?.week===week&&Date.parse(previous.asOf)>Date.parse(d.asOf)?previous:d)}).catch(()=>{});return()=>c.abort()},[week,snapshots]);
  const computed=useMemo(()=>snapshots&&Number.isFinite(start)?weeklyBoard(snapshots,start,Date.now(),edition):null,[snapshots,start,edition]);
  const board=edition?.closed?edition:computed?.available&&(!edition||Date.parse(computed.asOf)>=Date.parse(edition.asOf))?computed:edition;
  const ranked=useMemo(()=>rankWeekly(board,firm),[board,firm]);
