@@ -125,14 +125,15 @@ function ClaimForm({initialAddress,onDone}){
   if(!attachment?.size){setStatus('Attach a screenshot of your Vest withdrawal confirmation email.');return;}
   if(attachment?.size>8*1024*1024){setStatus('Please use an attachment under 8 MB.');return;}
   if(attachment?.size&&!['image/png','image/jpeg','image/webp'].includes(attachment.type)){setStatus('Use a PNG, JPG or WebP screenshot.');return;}
+  setBusy(true);
   let reviewAttachment;
-  try{setStatus('Preparing screenshot…');reviewAttachment=await reviewJpeg(attachment);}catch{setStatus('We could not prepare that image. Please use a JPG, PNG or WebP screenshot and try again.');return;}
+  try{setStatus('Preparing screenshot…');reviewAttachment=await reviewJpeg(attachment);}catch{setBusy(false);setStatus('We could not prepare that image. Please use a JPG, PNG or WebP screenshot and try again.');return;}
   data.set('attachment',reviewAttachment,reviewAttachment.name);
   data.set('payout_wallet',address.trim().toLowerCase());data.set('twitter','@'+twitter.trim().replace(/^@/,''));
   data.set('display_name',displayName.trim());data.set('tag',tag.trim());data.set('email',email.trim());
   data.set('withdrawal_confirmation',proof.trim());data.set('_subject','GIGAPROP VEST PROFILE REVIEW — @'+twitter.trim().replace(/^@/,''));
   data.set('_template','table');data.set('source','gigaprop.xyz/#leaderboard');data.set('consent','I agree to publication of the approved profile details and payout wallet.');
-  setBusy(true);setStatus('Sending your submission…');
+  setStatus('Sending your submission…');
   try{
    const response=await fetch('https://formsubmit.co/ajax/gp@gigaprop.xyz',{method:'POST',headers:{Accept:'application/json'},body:data,signal:AbortSignal.timeout(45000)});
    const result=await response.json();
