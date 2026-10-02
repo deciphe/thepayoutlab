@@ -108,6 +108,14 @@ export default function Weekly(){
  </dialog>
  </div></main>;
 }
+async function reviewJpeg(file){
+ const bitmap=await createImageBitmap(file);
+ const max=2400,scale=Math.min(1,max/Math.max(bitmap.width,bitmap.height)),width=Math.max(1,Math.round(bitmap.width*scale)),height=Math.max(1,Math.round(bitmap.height*scale));
+ const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
+ const ctx=canvas.getContext('2d',{alpha:false});ctx.fillStyle='#fff';ctx.fillRect(0,0,width,height);ctx.drawImage(bitmap,0,0,width,height);bitmap.close?.();
+ const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(Error('Could not prepare screenshot')),'image/jpeg',0.92));
+ return new File([blob],'withdrawal-confirmation.jpg',{type:'image/jpeg',lastModified:Date.now()});
+}
 function ClaimForm({initialAddress,onDone}){
  const [address,setAddress]=useState(initialAddress||''),[twitter,setTwitter]=useState(''),[displayName,setDisplayName]=useState(''),[tag,setTag]=useState(''),[email,setEmail]=useState(''),[proof,setProof]=useState(''),[agree,setAgree]=useState(false),[status,setStatus]=useState(''),[busy,setBusy]=useState(false),[sent,setSent]=useState(false);
  async function submit(e){
@@ -117,7 +125,9 @@ function ClaimForm({initialAddress,onDone}){
   if(!attachment?.size){setStatus('Attach a screenshot of your Vest withdrawal confirmation email.');return;}
   if(attachment?.size>8*1024*1024){setStatus('Please use an attachment under 8 MB.');return;}
   if(attachment?.size&&!['image/png','image/jpeg','image/webp'].includes(attachment.type)){setStatus('Use a PNG, JPG or WebP screenshot.');return;}
-  if(!attachment?.size)data.delete('attachment');
+  let reviewAttachment;
+  try{setStatus('Preparing screenshot…');reviewAttachment=await reviewJpeg(attachment);}catch{setStatus('We could not prepare that image. Please use a JPG, PNG or WebP screenshot and try again.');return;}
+  data.set('attachment',reviewAttachment,reviewAttachment.name);
   data.set('payout_wallet',address.trim().toLowerCase());data.set('twitter','@'+twitter.trim().replace(/^@/,''));
   data.set('display_name',displayName.trim());data.set('tag',tag.trim());data.set('email',email.trim());
   data.set('withdrawal_confirmation',proof.trim());data.set('_subject','GIGAPROP VEST PROFILE REVIEW — @'+twitter.trim().replace(/^@/,''));
@@ -139,7 +149,7 @@ function ClaimForm({initialAddress,onDone}){
  <label>Twitter / X @<input required pattern="@?[A-Za-z0-9_]{1,15}" maxLength={16} value={twitter} disabled={busy||sent} onChange={e=>setTwitter(e.target.value)} placeholder="@yourhandle" autoComplete="off"/></label>
  <label>Desired display name<input required maxLength={40} value={displayName} disabled={busy||sent} onChange={e=>setDisplayName(e.target.value)} placeholder="Your name on the board"/></label>
  <label>Desired tag <small>optional</small><input maxLength={40} value={tag} disabled={busy||sent} onChange={e=>setTag(e.target.value)} placeholder="#YOURGANG or yourbrand.com"/></label>
- <label>Withdrawal email screenshot<input name="attachment" type="file" required accept="image/png,image/jpeg,image/webp" disabled={busy||sent}/><small>PNG, JPG or WebP · up to 8 MB</small></label>
+ <label>Withdrawal email screenshot<input name="attachment" type="file" required accept="image/png,image/jpeg,image/webp" disabled={busy||sent}/><small>PNG, JPG or WebP · up to 8 MB · automatically prepared as JPG for review</small></label>
  <label>Additional payout details (optional)<textarea maxLength={5000} rows={5} value={proof} disabled={busy||sent} onChange={e=>setProof(e.target.value)} placeholder="Include the withdrawal amount, date and receiving address. Add the transaction hash if available."/></label>
  <p className="wk-claim-note">Keep the payout details visible and remove unrelated personal information. Your confirmation and contact email are sent through FormSubmit to GIGAPROP for review, not published on the leaderboard.</p>
  <label className="wk-consent"><input type="checkbox" required checked={agree} disabled={busy||sent} onChange={e=>setAgree(e.target.checked)}/>I agree to my approved name, Twitter @, tag and payout address appearing publicly.</label>
