@@ -32,10 +32,10 @@
 .wk-modal .wk-trader-tag{margin-top:15px;font-size:10px;padding:9px 12px}
 @media(max-width:600px){.wk-trader-tag{font-size:7px;padding:6px 8px}.wk-modal .wk-trader-tag{font-size:8px;padding:7px 9px}}
 /* Stronger clickable trader domains */
-.wk-tag-link{pointer-events:auto;cursor:pointer;width:max-content;max-width:100%;font-size:11px;line-height:1;letter-spacing:1px;padding:9px 12px;border-color:#d4bc7d88;background:linear-gradient(120deg,#d4bc7d2e,#3b2f1510);color:#ead79e;box-shadow:inset 0 0 0 1px #ffffff05}
+.wk-tag-link{pointer-events:auto;cursor:pointer;width:max-content;max-width:100%;font-family:'Manrope',sans-serif;font-size:10px;font-weight:600;line-height:1.05;letter-spacing:.15px;padding:8px 11px;border-color:#d4bc7d72;background:linear-gradient(120deg,#d4bc7d26,#3b2f150d);color:#e6d29a;box-shadow:inset 0 0 0 1px #ffffff04}
 .wk-tag-link span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.wk-place-1 .wk-tag-link{font-size:12px;padding:10px 13px;margin-top:13px}
-.wk-modal .wk-tag-link{font-size:12px;padding:10px 13px;margin:15px 0 4px}
-.wk-tag-compact{font-size:8px!important;padding:5px 7px!important;margin:4px 0 3px!important;letter-spacing:.65px!important}
+.wk-place-1 .wk-tag-link{font-size:11px;padding:9px 12px;margin-top:13px}
+.wk-modal .wk-tag-link{font-size:11px;padding:9px 12px;margin:15px 0 4px}
+.wk-tag-compact{font-size:7.5px!important;padding:5px 7px!important;margin:4px 0 3px!important;letter-spacing:.1px!important;font-weight:600!important}
 .wk-row-identity .wk-tag-link{display:flex!important}
 @media(max-width:600px){.wk-tag-link{font-size:9px;padding:8px 9px}.wk-place-1 .wk-tag-link,.wk-modal .wk-tag-link{font-size:10px;padding:9px 10px}.wk-tag-compact{font-size:7px!important;padding:4px 6px!important}}
