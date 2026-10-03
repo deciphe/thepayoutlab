@@ -75,6 +75,11 @@ export default function TwoMilli(){
     <div className="tm-hero-top"><div><img src="/brands/vest-markets-official.svg" alt="Vest Markets"/><span>×</span><b>GP.</b></div><small>VESTFLOW / MILESTONE 002</small></div>
     <div className="tm-hero-copy"><span className="tm-kicker">THE SECOND MILLION DIDN'T WAIT.</span><h1><span>$</span>2,000,000<i>.</i></h1><p>Tracked 30-day Vest outflow crossed two million USDC.</p></div>
     <div className="tm-split-stamp"><span>1M → 2M</span><strong>{split(elapsed)}</strong><small>HOURS : MINUTES : SECONDS</small></div>
+    <div className="tm-hero-compare" aria-label="Milestone timing comparison">
+      <article className="tm-hero-compare-first"><small>FIRST $1M</small><strong>30 DAYS</strong><span>0 → 1,000,000</span></article>
+      <div className="tm-hero-compare-divider"><i/><b>VS</b><i/></div>
+      <article className="tm-hero-compare-second"><small>NEXT $1M</small><strong>{split(elapsed)}</strong><span>1,000,000 → 2,000,000</span></article>
+    </div>
     <div className="tm-hero-bottom"><span>OCTOBER 03 · 2026</span><span>BASE · USDC</span><span>GIGAPROP INDEPENDENT TRACKER</span></div>
    </section>
 
