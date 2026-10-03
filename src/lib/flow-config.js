@@ -1,7 +1,7 @@
 export const FLOW_CONFIGS = {
  vest: {
   id:'vest',slug:'vestflow',title:'Vestflow',firm:'Vest',eyebrow:'VEST EXCHANGE',mark:'V',
-  wallet:'0xb2f86eae1197032fa85389cc6c0f3b06b58dd1ea',token:'0xaf88d065e77c8cc2239327c5edb3a432268e5831',minIncoming:2000,
+  wallet:'0xb2f86eae1197032fa85389cc6c0f3b06b58dd1ea',token:'0xaf88d065e77c8cc2239327c5edb3a432268e5831',
   chain:'Arbitrum One',api:'https://arbitrum.blockscout.com/api/v2',explorer:'https://arbiscan.io',explorerName:'Arbiscan',minIncomingAmount:2000,
   referral:'https://next.vestmarkets.com/r/isgigaprop',cta:'Get 5% off Vest'
  },
