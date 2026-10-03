@@ -44,6 +44,37 @@ export default function TwoMilli(){
   return()=>{clearInterval(timer);document.title=title};
  },[]);
 
+ function cloneRenderedCard(node){
+  const rect=node.getBoundingClientRect();
+  const clone=node.cloneNode(true);
+  const sourceNodes=[node,...node.querySelectorAll('*')];
+  const cloneNodes=[clone,...clone.querySelectorAll('*')];
+  sourceNodes.forEach((source,index)=>{
+   const target=cloneNodes[index],computed=getComputedStyle(source);
+   for(const property of computed){
+    const value=computed.getPropertyValue(property);
+    if(value)target.style.setProperty(property,value,computed.getPropertyPriority(property));
+   }
+  });
+  Object.assign(clone.style,{
+   position:'fixed',
+   left:'-20000px',
+   top:'0',
+   margin:'0',
+   width:rect.width+'px',
+   height:rect.height+'px',
+   minWidth:rect.width+'px',
+   maxWidth:rect.width+'px',
+   minHeight:rect.height+'px',
+   maxHeight:rect.height+'px',
+   transform:'none',
+   zIndex:'-9999',
+   pointerEvents:'none'
+  });
+  document.body.appendChild(clone);
+  return {clone,width:rect.width,height:rect.height};
+ }
+
  const live=useMemo(()=>{
   if(!data)return null;
   const end=Date.parse(data.windowEnd||data.updatedAt),start=end-30*86400000;
@@ -57,14 +88,26 @@ export default function TwoMilli(){
 
  async function download(){
   if(exporting||!hero.current)return;setExporting(true);setError('');
+  let frozen=null;
   try{
-   const {toBlob}=await import('html-to-image');await document.fonts.ready;
+   const {toBlob,getFontEmbedCSS}=await import('html-to-image');
+   await document.fonts.ready;
    await Promise.all(Array.from(hero.current.querySelectorAll('img'),img=>img.decode().catch(()=>{})));
-   const blob=await toBlob(hero.current,{pixelRatio:Math.max(2,2400/hero.current.getBoundingClientRect().width),backgroundColor:'#080a09',cacheBust:true});
+   frozen=cloneRenderedCard(hero.current);
+   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+   const fontEmbedCSS=await getFontEmbedCSS(hero.current).catch(()=>undefined);
+   const blob=await toBlob(frozen.clone,{
+    width:frozen.width,
+    height:frozen.height,
+    pixelRatio:Math.max(2,2400/frozen.width),
+    backgroundColor:'#080a09',
+    cacheBust:true,
+    fontEmbedCSS
+   });
    if(!blob)throw Error('No image');
    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='vest-2-million-gigaprop.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
   }catch{setError('Share-card export failed. Please try again.');}
-  finally{setExporting(false);}
+  finally{frozen?.clone?.remove();setExporting(false);}
  }
 
  return <main className="tm">
