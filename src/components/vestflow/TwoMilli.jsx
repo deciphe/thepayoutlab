@@ -58,14 +58,25 @@ export default function TwoMilli(){
 
  async function download(){
   if(exporting||!hero.current)return;setExporting(true);setError('');
+  const node=hero.current;
   try{
    const {toBlob}=await import('html-to-image');await document.fonts.ready;
-   await Promise.all(Array.from(hero.current.querySelectorAll('img'),img=>img.decode().catch(()=>{})));
-   const blob=await toBlob(hero.current,{pixelRatio:Math.max(2,2400/hero.current.getBoundingClientRect().width),backgroundColor:'#080a09',cacheBust:true});
+   await Promise.all(Array.from(node.querySelectorAll('img'),img=>img.decode().catch(()=>{})));
+   node.classList.add('tm-hero-export');
+   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+   const rect=node.getBoundingClientRect();
+   const blob=await toBlob(node,{
+    width:1120,
+    height:700,
+    pixelRatio:2400/1120,
+    backgroundColor:'#080a09',
+    cacheBust:true,
+    style:{width:'1120px',height:'700px',minHeight:'700px',margin:'0'}
+   });
    if(!blob)throw Error('No image');
    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='vest-2-million-gigaprop.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
   }catch{setError('Share-card export failed. Please try again.');}
-  finally{setExporting(false);}
+  finally{node.classList.remove('tm-hero-export');setExporting(false);}
  }
 
  return <main className="tm">
