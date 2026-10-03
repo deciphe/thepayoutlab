@@ -68,3 +68,10 @@ npm run leaderboard:email -- --test --to YOUR_EMAIL --twitter YOUR_X_HANDLE --na
 Add `--preview` to render the email locally instead of sending it.
 
 Test mode never writes to the leaderboard and the button simply opens `gigaprop.xyz/#leaderboard`.
+
+
+### X profile photo in test mode
+
+When `--test` is used, the mailer now resolves the profile photo from the supplied `--twitter` handle automatically. No `--image` argument is needed.
+
+For a real send, the resolved avatar is embedded inline in the email with CID so it is not dependent on the recipient loading an external image. You can still override it with `--image https://...` if needed.
