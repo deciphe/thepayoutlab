@@ -83,11 +83,13 @@ async function traderForWallet(wallet) {
   return { ...trader, wallet: canonical };
 }
 
-function emailHtml({ trader, row, season, seasonNumber: seasonNo }) {
+function emailHtml({ trader, row, season, seasonNumber: seasonNo, test = false }) {
   const username = trader.twitter.replace(/^@/, '');
   const displayName = trader.name || username;
-  const avatar = new URL(`traders/${trader.image}`, SITE).href;
-  const profileUrl = `${SITE}#leaderboard?season=${encodeURIComponent(season)}&firm=vest&wallet=${encodeURIComponent(trader.wallet)}`;
+  const avatar = trader.avatar || (trader.image ? new URL(`traders/${trader.image}`, SITE).href : '');
+  const profileUrl = test
+    ? `${SITE}#leaderboard`
+    : `${SITE}#leaderboard?season=${encodeURIComponent(season)}&firm=vest&wallet=${encodeURIComponent(trader.wallet)}`;
   const accent = accentForRank(row.rank);
   const tag = trader.tag
     ? `<span style="display:inline-block;margin-top:10px;padding:7px 11px;border:1px solid #2a2c2b;border-radius:999px;color:#a9aca9;font-size:11px;font-style:italic;letter-spacing:.04em;">${escapeHtml(trader.tag)}</span>`
@@ -120,7 +122,7 @@ function emailHtml({ trader, row, season, seasonNumber: seasonNo }) {
 ${tag}
 </td>
 <td width="38%" align="right" valign="bottom" style="padding:12px 28px 30px 8px;">
-<img src="${escapeHtml(avatar)}" width="132" height="132" alt="${escapeHtml(displayName)}" style="display:block;width:132px;height:132px;object-fit:cover;border-radius:18px;border:1px solid #292c2a;background:#121412;">
+${avatar ? `<img src="${escapeHtml(avatar)}" width="132" height="132" alt="${escapeHtml(displayName)}" style="display:block;width:132px;height:132px;object-fit:cover;border-radius:18px;border:1px solid #292c2a;background:#121412;">` : `<div style="display:inline-block;width:130px;height:130px;line-height:130px;text-align:center;border-radius:18px;border:1px solid #292c2a;background:#111311;color:#7f8682;font-size:20px;font-weight:700;letter-spacing:.18em;">GP.</div>`}
 </td>
 </tr>
 <tr><td colspan="2" style="padding:0 28px;"><div style="height:1px;background:#202321;font-size:0;line-height:0;">&nbsp;</div></td></tr>
@@ -149,9 +151,11 @@ ${tag}
 </html>`;
 }
 
-function emailText({ trader, row, season }) {
+function emailText({ trader, row, season, test = false }) {
   const username = trader.twitter.replace(/^@/, '');
-  const profileUrl = `${SITE}#leaderboard?season=${encodeURIComponent(season)}&firm=vest&wallet=${encodeURIComponent(trader.wallet)}`;
+  const profileUrl = test
+    ? `${SITE}#leaderboard`
+    : `${SITE}#leaderboard?season=${encodeURIComponent(season)}&firm=vest&wallet=${encodeURIComponent(trader.wallet)}`;
   return `YOU'RE LIVE.\n\n@${username} is now live on the GIGAPROP Trader League.\nVest season rank: #${row.rank}\nEligible USDC received: ${usd(row.total)}\nPayouts: ${row.count}\n\nView your rank: ${profileUrl}\n\nNames worth knowing.\nGIGAPROP`;
 }
 
@@ -159,20 +163,51 @@ async function main() {
   await loadLocalEnv();
   const args = parseArgs(process.argv.slice(2));
 
-  if (!args.to || !args.wallet) {
-    console.error('Usage: npm run leaderboard:email -- --to trader@example.com --wallet 0x... [--preview]');
+  if (!args.to) {
+    console.error('Live: npm run leaderboard:email -- --to trader@example.com --wallet 0x...');
+    console.error('Test: npm run leaderboard:email -- --test --to you@example.com --twitter yourhandle --rank 20');
     process.exit(1);
   }
-  if (!/^0x[a-fA-F0-9]{40}$/.test(args.wallet)) throw new Error('Invalid 0x wallet address.');
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(args.to)) throw new Error('Invalid recipient email address.');
 
-  const trader = await traderForWallet(args.wallet);
-  const { key, number, ranked } = await currentVestSeason();
-  const row = ranked.find(item => item.address === trader.wallet);
-  if (!row) throw new Error('Approved trader is not currently ranked on the Vest season board.');
+  let trader, row, key, number;
+  const isTest = Boolean(args.test);
 
-  const html = emailHtml({ trader, row, season: key, seasonNumber: number });
-  const text = emailText({ trader, row, season: key });
+  if (isTest) {
+    if (!args.twitter) throw new Error('Test mode needs --twitter yourhandle.');
+    const rank = Number.parseInt(args.rank || '20', 10);
+    const total = Number(args.total || 12480.00);
+    const count = Number.parseInt(args.payouts || '12', 10);
+    if (!Number.isInteger(rank) || rank < 1 || rank > 999) throw new Error('Test rank must be a whole number between 1 and 999.');
+    if (!Number.isFinite(total) || total < 0) throw new Error('Test total must be a non-negative number.');
+    if (!Number.isInteger(count) || count < 0) throw new Error('Test payouts must be a non-negative whole number.');
+
+    const start = seasonStart();
+    key = seasonKey(start);
+    number = seasonNumber(start);
+    const username = String(args.twitter).replace(/^@/, '');
+    trader = {
+      twitter: username,
+      name: args.name || username,
+      tag: args.tag || '',
+      avatar: args.image || '',
+      wallet: '',
+    };
+    row = { rank, total, count };
+    console.log('TEST MODE — no leaderboard data or profile records are being changed.');
+  } else {
+    if (!args.wallet) throw new Error('Live mode needs --wallet 0x...');
+    if (!/^0x[a-fA-F0-9]{40}$/.test(args.wallet)) throw new Error('Invalid 0x wallet address.');
+    trader = await traderForWallet(args.wallet);
+    const live = await currentVestSeason();
+    key = live.key;
+    number = live.number;
+    row = live.ranked.find(item => item.address === trader.wallet);
+    if (!row) throw new Error('Approved trader is not currently ranked on the Vest season board.');
+  }
+
+  const html = emailHtml({ trader, row, season: key, seasonNumber: number, test: isTest });
+  const text = emailText({ trader, row, season: key, test: isTest });
 
   if (args.preview) {
     const outDir = path.join(projectRoot, 'output');
@@ -180,7 +215,7 @@ async function main() {
     const file = path.join(outDir, `leaderboard-live-${trader.twitter.replace(/^@/, '')}.html`);
     await fs.writeFile(file, html);
     console.log(`Preview written to ${path.relative(projectRoot, file)}`);
-    console.log(`Rank resolved: #${row.rank} · ${usd(row.total)} · ${row.count} payouts`);
+    console.log(`${isTest ? 'Test rank' : 'Rank resolved'}: #${row.rank} · ${usd(row.total)} · ${row.count} payouts`);
     return;
   }
 
@@ -200,7 +235,7 @@ async function main() {
 
   const body = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(`Resend rejected the email (${response.status}): ${body.message || JSON.stringify(body)}`);
-  console.log(`Sent to ${args.to} · #${row.rank} · email ${body.id || 'accepted'}`);
+  console.log(`${isTest ? 'TEST SENT' : 'Sent'} to ${args.to} · #${row.rank} · email ${body.id || 'accepted'}`);
 }
 
 main().catch(error => {
