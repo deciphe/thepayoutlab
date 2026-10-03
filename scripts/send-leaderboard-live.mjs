@@ -38,6 +38,18 @@ function accentForRank(rank) {
   return { line: '#7f8682', glow: 'rgba(127,134,130,.10)', label: 'GIGAPROP / RANKED' };
 }
 
+function xAvatarUrl(username) {
+  return `https://unavatar.io/x/${encodeURIComponent(username)}?fallback=false`;
+}
+
+async function verifyRemoteImage(url) {
+  const response = await fetch(url, { redirect: 'follow', headers: { 'user-agent': 'gigaprop-leaderboard-mailer/1.0' } });
+  if (!response.ok) throw new Error(`Could not resolve X profile image (${response.status}). Check the X handle or pass --image with a direct image URL.`);
+  const type = response.headers.get('content-type') || '';
+  if (!type.startsWith('image/')) throw new Error('X profile image lookup did not return an image.');
+  return url;
+}
+
 async function loadLocalEnv() {
   try {
     const raw = await fs.readFile(path.join(projectRoot, '.env'), 'utf8');
@@ -143,7 +155,7 @@ ${avatar ? `<img src="${escapeHtml(avatar)}" width="132" height="132" alt="${esc
 <a href="${escapeHtml(profileUrl)}" style="display:inline-block;padding:15px 25px;color:#080908;text-decoration:none;font-size:11px;font-weight:700;letter-spacing:.13em;">VIEW YOUR RANK →</a>
 </td></tr></table>
 </td></tr>
-<tr><td align="center" style="padding:3px 15px 0;font-size:11px;line-height:1.7;color:#5e635f;">Public payouts. Independently ranked.<br>Rankings move as new eligible payouts are recorded.</td></tr>
+<tr><td align="center" style="padding:3px 15px 0;font-size:11px;line-height:1.7;color:#5e635f;">Public payouts. Independently ranked.<br>Rankings move as new eligible payouts are recorded.${test ? '<br><a href="https://unavatar.io" style="color:#4f5450;text-decoration:none;">Test avatar via Unavatar</a>' : ''}</td></tr>
 </table>
 </td></tr>
 </table>
@@ -186,11 +198,18 @@ async function main() {
     key = seasonKey(start);
     number = seasonNumber(start);
     const username = String(args.twitter).replace(/^@/, '');
+    const avatarSource = args.image || xAvatarUrl(username);
+    if (!args.image) {
+      process.stdout.write(`Resolving @${username} X profile photo… `);
+      await verifyRemoteImage(avatarSource);
+      console.log('found');
+    }
     trader = {
       twitter: username,
       name: args.name || username,
       tag: args.tag || '',
-      avatar: args.image || '',
+      avatar: avatarSource,
+      avatarSource,
       wallet: '',
     };
     row = { rank, total, count };
@@ -206,7 +225,9 @@ async function main() {
     if (!row) throw new Error('Approved trader is not currently ranked on the Vest season board.');
   }
 
-  const html = emailHtml({ trader, row, season: key, seasonNumber: number, test: isTest });
+  const inlineTestAvatar = isTest && !args.preview && trader.avatarSource;
+  const htmlTrader = inlineTestAvatar ? { ...trader, avatar: 'cid:trader-avatar' } : trader;
+  const html = emailHtml({ trader: htmlTrader, row, season: key, seasonNumber: number, test: isTest });
   const text = emailText({ trader, row, season: key, test: isTest });
 
   if (args.preview) {
@@ -230,7 +251,20 @@ async function main() {
       authorization: `Bearer ${apiKey}`,
       'content-type': 'application/json',
     },
-    body: JSON.stringify({ from, to: [args.to], subject, html, text }),
+    body: JSON.stringify({
+      from,
+      to: [args.to],
+      subject,
+      html,
+      text,
+      ...(inlineTestAvatar ? {
+        attachments: [{
+          path: trader.avatarSource,
+          filename: `${trader.twitter.replace(/^@/, '')}-x-avatar.jpg`,
+          content_id: 'trader-avatar',
+        }],
+      } : {}),
+    }),
   });
 
   const body = await response.json().catch(() => ({}));
