@@ -1,5 +1,6 @@
 export async function fetchFlow(config,{signal,previous,onProgress}={}){
 const {wallet:WALLET,token:TOKEN,api:API}=config;
+const minIncomingRaw=BigInt(Math.round((config.minIncoming||0)*1e6));
 const minIncomingRaw=BigInt(Math.round((config.minIncomingAmount||0)*1e6));
 async function get(path){
   for(let attempt=0;attempt<4;attempt++){
