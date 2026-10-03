@@ -44,35 +44,39 @@ export default function TwoMilli(){
   return()=>{clearInterval(timer);document.title=title};
  },[]);
 
- function cloneRenderedCard(node){
+ function freezeRenderedMetrics(node){
   const rect=node.getBoundingClientRect();
-  const clone=node.cloneNode(true);
-  const sourceNodes=[node,...node.querySelectorAll('*')];
-  const cloneNodes=[clone,...clone.querySelectorAll('*')];
-  sourceNodes.forEach((source,index)=>{
-   const target=cloneNodes[index],computed=getComputedStyle(source);
-   for(const property of computed){
+  const nodes=[node,...node.querySelectorAll('*')];
+  const saved=nodes.map(el=>({el,style:el.getAttribute('style')}));
+  const textProps=[
+   'font-family','font-size','font-weight','font-style','font-stretch',
+   'font-kerning','font-feature-settings','font-variation-settings',
+   'line-height','letter-spacing','text-transform','white-space'
+  ];
+  nodes.forEach(el=>{
+   const computed=getComputedStyle(el);
+   textProps.forEach(property=>{
     const value=computed.getPropertyValue(property);
-    if(value)target.style.setProperty(property,value,computed.getPropertyPriority(property));
+    if(value)el.style.setProperty(property,value);
+   });
+  });
+  node.style.setProperty('width',rect.width+'px');
+  node.style.setProperty('height',rect.height+'px');
+  node.style.setProperty('min-width',rect.width+'px');
+  node.style.setProperty('max-width',rect.width+'px');
+  node.style.setProperty('min-height',rect.height+'px');
+  node.style.setProperty('max-height',rect.height+'px');
+  node.style.setProperty('margin','0');
+  return {
+   width:rect.width,
+   height:rect.height,
+   restore(){
+    saved.forEach(({el,style})=>{
+     if(style==null)el.removeAttribute('style');
+     else el.setAttribute('style',style);
+    });
    }
-  });
-  Object.assign(clone.style,{
-   position:'fixed',
-   left:'-20000px',
-   top:'0',
-   margin:'0',
-   width:rect.width+'px',
-   height:rect.height+'px',
-   minWidth:rect.width+'px',
-   maxWidth:rect.width+'px',
-   minHeight:rect.height+'px',
-   maxHeight:rect.height+'px',
-   transform:'none',
-   zIndex:'-9999',
-   pointerEvents:'none'
-  });
-  document.body.appendChild(clone);
-  return {clone,width:rect.width,height:rect.height};
+  };
  }
 
  const live=useMemo(()=>{
@@ -91,23 +95,26 @@ export default function TwoMilli(){
   let frozen=null;
   try{
    const {toBlob,getFontEmbedCSS}=await import('html-to-image');
+   const node=hero.current;
    await document.fonts.ready;
-   await Promise.all(Array.from(hero.current.querySelectorAll('img'),img=>img.decode().catch(()=>{})));
-   frozen=cloneRenderedCard(hero.current);
+   await Promise.all(Array.from(node.querySelectorAll('img'),img=>img.decode().catch(()=>{})));
+   frozen=freezeRenderedMetrics(node);
    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-   const fontEmbedCSS=await getFontEmbedCSS(hero.current).catch(()=>undefined);
-   const blob=await toBlob(frozen.clone,{
+   const fontEmbedCSS=await getFontEmbedCSS(node).catch(()=>undefined);
+   const blob=await toBlob(node,{
     width:frozen.width,
     height:frozen.height,
     pixelRatio:Math.max(2,2400/frozen.width),
     backgroundColor:'#080a09',
-    cacheBust:true,
     fontEmbedCSS
    });
    if(!blob)throw Error('No image');
-   const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='vest-2-million-gigaprop.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+   const url=URL.createObjectURL(blob),a=document.createElement('a');
+   a.href=url;a.download='vest-2-million-gigaprop.png';
+   document.body.appendChild(a);a.click();a.remove();
+   setTimeout(()=>URL.revokeObjectURL(url),60000);
   }catch{setError('Share-card export failed. Please try again.');}
-  finally{frozen?.clone?.remove();setExporting(false);}
+  finally{frozen?.restore?.();setExporting(false);}
  }
 
  return <main className="tm">
