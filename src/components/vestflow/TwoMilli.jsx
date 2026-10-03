@@ -160,10 +160,11 @@ export default function TwoMilli(){
     <div className="tm-hero-top"><div><img src="/brands/vest-markets-official.svg" alt="Vest Markets"/><span>×</span><b>GP.</b></div><small>VESTFLOW / MILESTONE 002</small></div>
     <div className="tm-hero-copy"><span className="tm-kicker">THE SECOND MILLION DIDN'T WAIT.</span><h1><span>$</span>2,000,000<i>.</i></h1><p>Tracked 30-day Vest outflow crossed two million USDC.</p></div>
     <div className="tm-split-stamp"><span>1M → 2M</span><strong>{split(elapsed)}</strong><small>HOURS : MINUTES : SECONDS</small></div>
-    <div className="tm-hero-compare" aria-label="Milestone timing comparison">
-      <article className="tm-hero-compare-first"><small>FIRST $1M</small><strong>30 DAYS</strong><span>0 → 1,000,000</span></article>
-      <div className="tm-hero-compare-divider"><i/><b>VS</b><i/></div>
-      <article className="tm-hero-compare-second"><small>NEXT $1M</small><strong>{split(elapsed)}</strong><span>1,000,000 → 2,000,000</span></article>
+    <div className="tm-race tm-race-hero" aria-label="Milestone velocity comparison">
+      <header><span>MILESTONE VELOCITY</span><b>{compression.toFixed(1)}× shorter interval <small>vs 30D window</small></b></header>
+      <div className="tm-race-row first"><div className="tm-race-label"><small>FIRST MILLION</small><strong>30D</strong><span>ROLLING WINDOW → OCT 01</span></div><div className="tm-track"><i/><b>1M</b></div></div>
+      <div className="tm-race-row second"><div className="tm-race-label"><small>SECOND MILLION</small><strong>{split(elapsed)}</strong><span>OCT 01 → OCT 03</span></div><div className="tm-track"><i style={{width:(100/compression)+'%'}}/><b style={{left:'calc('+(100/compression)+'% - 14px)'}}>2M</b></div></div>
+      <div className="tm-race-foot"><span>30 DAYS</span><span>51H 41M 56S</span></div>
     </div>
     <div className="tm-hero-bottom"><span>OCTOBER 03 · 2026</span><span>BASE · USDC</span><span>GIGAPROP INDEPENDENT TRACKER</span></div>
    </section>
@@ -171,13 +172,6 @@ export default function TwoMilli(){
    <section className="tm-intro">
     <div><span className="tm-index">01 / THE SPLIT</span><h2>The first million took the window.<br/><em>The next took 51 hours.</em></h2></div>
     <p>The $1M mark arrived inside the rolling 30-day measurement window. Then another million-plus of new filtered outflow landed between the two milestone crossings in just {Math.floor(hours)} hours and {Math.floor((hours%1)*60)} minutes.</p>
-   </section>
-
-   <section className="tm-race">
-    <header><span>MILESTONE VELOCITY</span><b>{compression.toFixed(1)}× shorter interval <small>vs 30D window</small></b></header>
-    <div className="tm-race-row first"><div className="tm-race-label"><small>FIRST MILLION</small><strong>30D</strong><span>ROLLING WINDOW → OCT 01</span></div><div className="tm-track"><i/><b>1M</b></div></div>
-    <div className="tm-race-row second"><div className="tm-race-label"><small>SECOND MILLION</small><strong>{split(elapsed)}</strong><span>OCT 01 → OCT 03</span></div><div className="tm-track"><i style={{width:(100/compression)+'%'}}/><b style={{left:'calc('+(100/compression)+'% - 14px)'}}>2M</b></div></div>
-    <div className="tm-race-foot"><span>30 DAYS</span><span>51H 41M 56S</span></div>
    </section>
 
    <section className="tm-tunnel">
