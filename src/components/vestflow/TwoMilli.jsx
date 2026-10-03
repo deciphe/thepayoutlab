@@ -15,6 +15,7 @@ const money=(n,d=2)=>new Intl.NumberFormat('en-US',{minimumFractionDigits:d,maxi
 const compact=n=>new Intl.NumberFormat('en-US',{notation:'compact',maximumFractionDigits:2}).format(n);
 const split=ms=>{const h=Math.floor(ms/3600000),m=Math.floor(ms%3600000/60000),s=Math.floor(ms%60000/1000);return [h,m,s].map(v=>String(v).padStart(2,'0')).join(':')};
 
+// deploy touch: 2m hero retained export
 export default function TwoMilli(){
  const [data,setData]=useState(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[exporting,setExporting]=useState(false);
  const hero=useRef(null);
