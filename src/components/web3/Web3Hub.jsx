@@ -211,6 +211,32 @@ function CompactMatrix(){
   </details>;
 }
 
+function LeaderboardLanding(){
+  return <section className="gp-leaderboard-landing" aria-labelledby="gp-leaderboard-title">
+    <a className="gp-leaderboard-stage" href="#leaderboard" aria-label="Open the GIGAPROP trader leaderboard">
+      <div className="gp-leaderboard-glow" aria-hidden="true"/>
+      <div className="gp-leaderboard-copy">
+        <span className="gp-leaderboard-kicker">GIGAPROP / TRADER LEAGUE</span>
+        <h2 id="gp-leaderboard-title">Names worth <strong>knowing.</strong></h2>
+        <p>Public onchain payouts, ranked across Vest, Breakout, Hypernova and Propr. Quarterly seasons plus a live Weekly Top 20.</p>
+        <span className="gp-leaderboard-cta">Enter the leaderboard <ArrowUpRight size={17}/></span>
+      </div>
+      <div className="gp-leaderboard-podium" aria-hidden="true">
+        <div className="gp-home-rank gp-home-rank-2"><span>02</span><small>SECOND</small></div>
+        <div className="gp-home-rank gp-home-rank-1"><span>01</span><small>THE BOARD</small><b>GP.</b></div>
+        <div className="gp-home-rank gp-home-rank-3"><span>03</span><small>THIRD</small></div>
+      </div>
+      <div className="gp-leaderboard-meta">
+        <span><b>SEASON</b> Quarterly standings</span>
+        <i/>
+        <span><b>WEEKLY</b> Top 20</span>
+        <i/>
+        <span><b>EVIDENCE</b> Public payouts</span>
+      </div>
+    </a>
+  </section>;
+}
+
 export default function Web3Hub(){
   const [detailId,setDetailId]=useState(null);
 
@@ -250,11 +276,13 @@ export default function Web3Hub(){
     <header className="gp-nav">
       <a className="gp-wordmark" href="#top">GIGAPROP<span>.</span></a>
       <nav className="gp-nav-links">
-        <a href="#leaderboard">Season rankings</a><a href="#field">Reviews</a><a href="#degen" aria-label="NQ comparison">NQ costs</a><a href="#drops">Free drops</a>
+        <a href="#leaderboard">Leaderboard</a><a href="#field">Reviews</a><a href="#degen" aria-label="NQ comparison">NQ costs</a><a href="#drops">Free drops</a>
       </nav>
     </header>
 
     <SpeedManifesto about={<AboutPopover />} firms={coreFirms} onOpen={openFirm}/>
+
+    <LeaderboardLanding />
 
     <section className="firm-deck-section" id="field">
       <div className="firm-deck-header">
