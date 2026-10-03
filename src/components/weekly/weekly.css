@@ -68,3 +68,14 @@
 .wk-place-2 .wk-podium-amount{color:#e7ebef}
 .wk-place-2 .wk-podium-foot{border-top-color:#dce3e918;color:#c8d0d7}
 .wk-place-2 .wk-podium-foot>span{color:#858d96}
+
+/* Podium hierarchy — keep visual order locked regardless of profile/tag content. */
+@media(min-width:601px){
+ .wk-place-2 .wk-card-art{height:208px}
+ .wk-place-2 .wk-wallet-name{font-size:21px}
+ .wk-place-2 .wk-podium-amount{font-size:34px}
+ .wk-place-3 .wk-card-art{height:184px}
+ .wk-place-3 .wk-wallet-name{font-size:19px}
+ .wk-place-3 .wk-podium-amount{font-size:29px}
+ .wk-place-3 .wk-monument-rank{font-size:160px}
+}
