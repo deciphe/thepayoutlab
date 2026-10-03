@@ -169,7 +169,7 @@ function ClaimForm({initialAddress,onDone,onClaim}){
    const d=await result.json();if(!result.ok)throw Error(d.error||'Could not verify the wallet claim.');
    const social=xProfile||await fetchXProfile(handle).catch(()=>null);
    setStatus('Verified. Publishing profile…');
-   await onClaim?.({...d.profile,...social,username:d.profile?.username||handle,address:account});
+   await onClaim?.({...d.profile,...social,username:d.profile?.username||handle,address:account,tag:tag.trim()});
   }catch(e){
    setStatus(e?.code===4001?'Signature cancelled. Nothing was changed.':e?.message||'Could not verify this wallet.');
   }finally{setBusy(false)}
@@ -205,9 +205,10 @@ function ClaimForm({initialAddress,onDone,onClaim}){
   <div className="wk-route-note"><strong>Cryptographic claim.</strong><span>No payment. No token approval. A message signature proves control of the payout wallet.</span></div>
   <label>Payout wallet address<input required={!!initialAddress} pattern="0x[a-fA-F0-9]{40}" maxLength={42} value={address} disabled={busy} onChange={e=>setAddress(e.target.value.trim())} placeholder="0x…"/></label>
   <label>Twitter / X @<input required pattern="@?[A-Za-z0-9_]{1,15}" maxLength={16} value={twitter} disabled={busy} onChange={e=>setTwitter(e.target.value)} placeholder="@yourhandle" autoComplete="off"/></label>
+  <label>Profile tag <small>optional</small><input maxLength={40} value={tag} disabled={busy} onChange={e=>setTag(e.target.value)} placeholder="#8020GANG or yourbrand.com"/></label>
   {(xBusy||xProfile)&&<div className="wk-x-preview">{xProfile?.avatar&&<img src={xProfile.avatar} alt=""/>}<span><strong>{xBusy?'Reading X profile…':xProfile?.displayName}</strong>{xProfile&&<small>@{xProfile.username}</small>}</span>{xProfile&&<Check size={15}/>}</div>}
   <p className="wk-claim-note">Your X display name and profile photo are pulled from the public X profile. The @handle is the profile identity stored with the wallet claim.</p>
-  <label className="wk-consent"><input type="checkbox" required checked={agree} disabled={busy} onChange={e=>setAgree(e.target.checked)}/>I want this X profile publicly linked to this payout wallet and its payout history.</label>
+  <label className="wk-consent"><input type="checkbox" required checked={agree} disabled={busy} onChange={e=>setAgree(e.target.checked)}/>I want this X profile{tag.trim()?' and tag':''} publicly linked to this payout wallet and its payout history.</label>
   <button className="wk-primary" disabled={!agree||busy} type="submit">{busy?'Verifying…':'Connect wallet & claim'}<ArrowUpRight size={15}/></button>
   <p role="status" className="wk-claim-status">{status}</p>
  </form>:<><iframe name="gigaprop-claim-submit" title="Profile claim submission" className="wk-claim-submit-frame" onLoad={submittedFrameLoaded}/>
