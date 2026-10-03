@@ -110,14 +110,15 @@ function WalletFlow({firm,config,onChain}){
  const summary=useMemo(()=>{
   if(!data)return null;
   const end=Date.parse(data.windowEnd||data.updatedAt),start=Math.max(end-days*86400000,Date.parse(data.periodStart));
-  const rows=data.transfers.filter(t=>Date.parse(t.timestamp)>=start&&Date.parse(t.timestamp)<=end&&t.direction!=='self'&&BigInt(t.raw)>=10000n&&(t.direction!=='out'||isPayoutRecipientTransfer(t,config.sources||[config])));
+  const minIncomingRaw=BigInt(Math.round((config.minIncomingAmount||0)*1e6));
+  const rows=data.transfers.filter(t=>Date.parse(t.timestamp)>=start&&Date.parse(t.timestamp)<=end&&t.direction!=='self'&&BigInt(t.raw)>=10000n&&(t.direction!=='in'||BigInt(t.raw)>=minIncomingRaw)&&(t.direction!=='out'||isPayoutRecipientTransfer(t,config.sources||[config])));
   const incoming=rows.filter(t=>t.direction==='in'),outgoing=rows.filter(t=>t.direction==='out');
   const sum=rs=>Number(rs.reduce((a,t)=>a+BigInt(t.raw),0n))/1e6;
   const count=days===1?24:days;
   const buckets=Array.from({length:count},(_,i)=>({start:start+(end-start)*i/count,in:0,out:0}));
   for(const t of rows){const i=Math.min(count-1,Math.floor((Date.parse(t.timestamp)-start)/(end-start)*count));if(i>=0)buckets[i][t.direction]+=t.amount;}
   return {rows,incoming:sum(incoming),outgoing:sum(outgoing),inCount:incoming.length,outCount:outgoing.length,recipients:new Set(outgoing.map(t=>t.to)).size,buckets};
- },[data,days]);
+ },[data,days,config]);
  const rows=useMemo(()=>{
   const filtered=summary?.rows.filter(t=>(direction==='all'||t.direction===direction)&&!excluded.includes(t.direction==='in'?t.from:t.to)&&[t.from,t.to,t.hash].some(v=>v.includes(query.trim().toLowerCase())))||[];
   return sortTransfers(filtered,sort);
