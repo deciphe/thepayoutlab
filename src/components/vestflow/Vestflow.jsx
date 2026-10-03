@@ -134,7 +134,7 @@ function WalletFlow({firm,config,onChain}){
   {firm==='nova'&&<NovaPass/>}
   {firm==='propr'&&<ProprPulse/>}
   <a className="vf-referral" href={config.referral} target="_blank" rel="noopener noreferrer sponsored" aria-label={config.cta+" with the GIGAPROP referral link (opens in a new tab)"}>
-   <span className="vf-referral-offer"><strong>{firm==='vest'?<>5% <span>OFF</span></>:<>{config.firm}</>}</strong><span className="vf-referral-copy"><b>Your next {config.firm} account.</b><small>GIGAPROP referral</small></span></span>
+   <span className="vf-referral-offer"><strong>{firm==='vest'?<>5% <span>OFF</span></>:<>{config.firm}</>}</strong><span className="vf-referral-copy"><b>Your next {config.firm} account.</b><small>{firm==='vest'?<>Code <strong>GIGA</strong> at checkout</>:<>GIGAPROP referral</>}</small></span></span>
    <span className="vf-referral-cta">{config.cta}</span>
   </a>
   {['vest','nova'].includes(firm)&&<div className="vf-tabs" role="group" aria-label="Tracked wallet view" style={{display:'flex',gap:8,flexWrap:'wrap',margin:'0 0 18px'}}>{[{chainKey:'all',chain:firm==='nova'?'Combined':'All chains'},...(firm==='nova'?NOVA_WALLETS:VEST_CHAINS)].map(c=><button key={c.chainKey} type="button" aria-pressed={config.chainKey===c.chainKey} onClick={()=>onChain(c.chainKey)} style={{fontSize:14,padding:'9px 14px'}}>{c.walletRole||(c.chain==='Arbitrum One'?'Arbitrum':c.chain)}</button>)}</div>}
