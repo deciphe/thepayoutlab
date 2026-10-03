@@ -79,3 +79,53 @@
  .wk-place-3 .wk-podium-amount{font-size:29px}
  .wk-place-3 .wk-monument-rank{font-size:160px}
 }
+
+/* Podium finish refinement — muted champagne #1, neutral platinum #2. */
+.wk-place-1{
+ background:
+  radial-gradient(ellipse at 88% 0,#b59a6420,transparent 54%),
+  linear-gradient(120deg,#313033 0%,#1a191c 28%,#101013 62%,#252427 100%);
+ border-color:#b7a98c4f;
+ box-shadow:0 20px 64px #0007,inset 0 1px 0 #ffffff0a;
+}
+.wk-place-1:after{
+ background:linear-gradient(117deg,transparent 27%,#d2c3a20c 36%,transparent 49%);
+ opacity:.52;
+}
+.wk-place-1:hover{border-color:#c8b99a73}
+.wk-place-1 .wk-monument-rank{
+ background:linear-gradient(128deg,#f1eee7 10%,#bdb5a7 38%,#ece7dc 55%,#716c64 82%);
+ background-clip:text;
+ -webkit-background-clip:text;
+ -webkit-text-fill-color:transparent;
+}
+.wk-place-1 .wk-wallet-name{color:#eeeae2}
+.wk-place-1 .wk-podium-amount{color:#e4ddd0}
+.wk-place-1 .wk-podium-top>span{color:#b8ad99}
+.wk-place-1 .wk-podium-top>b{color:#837b70}
+
+.wk-place-2{
+ background:
+  radial-gradient(ellipse at 82% 0,#dadbd81a,transparent 48%),
+  linear-gradient(122deg,#292a2c 0%,#18191b 34%,#101113 68%,#232426 100%);
+ border-color:#c8c9c45a;
+ box-shadow:0 18px 56px #0007,inset 0 1px 0 #ffffff0d;
+}
+.wk-place-2:after{
+ background:linear-gradient(112deg,transparent 21%,#f0f0ec0d 35%,#d5d6d211 41%,transparent 53%);
+ opacity:.60;
+}
+.wk-place-2:hover{border-color:#d6d7d281}
+.wk-place-2 .wk-monument-rank{
+ background:linear-gradient(128deg,#f2f2ef 8%,#c4c5c1 35%,#ecece8 54%,#7b7d7a 82%);
+ background-clip:text;
+ -webkit-background-clip:text;
+ -webkit-text-fill-color:transparent;
+}
+.wk-place-2 .wk-podium-top>span{color:#b7b8b3}
+.wk-place-2 .wk-podium-top>b{color:#858783}
+.wk-place-2 .wk-wallet-name{color:#ecece8}
+.wk-place-2 .wk-identity{color:#8d8e8a}
+.wk-place-2 .wk-podium-amount{color:#d9dad6}
+.wk-place-2 .wk-podium-foot{border-top-color:#d6d7d316;color:#b9bbb6}
+.wk-place-2 .wk-podium-foot>span{color:#81837f}
