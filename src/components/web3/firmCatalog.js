@@ -114,7 +114,7 @@ export const firms = [
     ]
   },
   {
-    id:"vest", name:"Vest", mark:"VE", domain:"vestmarkets.com", logo:"/brands/vest.ico", url:"https://next.vestmarkets.com/r/isgigaprop", referral:true,
+    id:"vest", name:"Vest", mark:"VE", domain:"vestmarkets.com", logo:"/brands/vest.ico", url:"https://next.vestmarkets.com/r/isgigaprop", referral:true, referralCode:"GIGA",
     status:"PERPS", venue:"Vest Markets", price:199, plan:"1-Step 10%", target:10, daily:"3%", drawdown:"6%", split:"80%",
     payout:"Instant · USDC", leverage:"50x NQ · up to 100x", indexLev:50, edge:"Extreme market leverage",
     note:"24/7 multi-asset perps with multiple evaluation styles and instant funded accounts.",
