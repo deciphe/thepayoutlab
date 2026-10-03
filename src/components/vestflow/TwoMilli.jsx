@@ -149,8 +149,8 @@ export default function TwoMilli(){
     <div className="tm-split-stamp"><span>1M → 2M</span><strong>{split(elapsed)}</strong><small>HOURS : MINUTES : SECONDS</small></div>
     <div className="tm-race tm-race-hero" aria-label="Milestone velocity comparison">
       <header><span>MILESTONE VELOCITY</span><b>{compression.toFixed(1)}× shorter interval <small>vs 30D window</small></b></header>
-      <div className="tm-race-row first"><div className="tm-race-label"><small>FIRST MILLION</small><strong>30D</strong><span>ROLLING WINDOW → OCT 01</span></div><div className="tm-track"><i/><b>1M</b></div></div>
       <div className="tm-race-row second"><div className="tm-race-label"><small>SECOND MILLION</small><strong>{split(elapsed)}</strong><span>OCT 01 → OCT 03</span></div><div className="tm-track"><i style={{width:(100/compression)+'%'}}/><b style={{left:'calc('+(100/compression)+'% - 14px)'}}>2M</b></div></div>
+      <div className="tm-race-row first"><div className="tm-race-label"><small>FIRST MILLION</small><strong>30D</strong><span>ROLLING WINDOW → OCT 01</span></div><div className="tm-track"><i/><b>1M</b></div></div>
       <div className="tm-race-foot"><span>30 DAYS</span><span>51H 41M 56S</span></div>
     </div>
     <div className="tm-hero-bottom"><span>OCTOBER 03 · 2026</span><span>BASE · USDC</span><span>GIGAPROP INDEPENDENT TRACKER</span></div>
