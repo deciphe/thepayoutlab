@@ -44,21 +44,16 @@ export default function TwoMilli(){
   return()=>{clearInterval(timer);document.title=title};
  },[]);
 
- function freezeRenderedMetrics(node){
+ function freezeRenderedStyles(node){
   const rect=node.getBoundingClientRect();
   const nodes=[node,...node.querySelectorAll('*')];
   const saved=nodes.map(el=>({el,style:el.getAttribute('style')}));
-  const textProps=[
-   'font-family','font-size','font-weight','font-style','font-stretch',
-   'font-kerning','font-feature-settings','font-variation-settings',
-   'line-height','letter-spacing','text-transform','white-space'
-  ];
   nodes.forEach(el=>{
    const computed=getComputedStyle(el);
-   textProps.forEach(property=>{
+   for(const property of computed){
     const value=computed.getPropertyValue(property);
-    if(value)el.style.setProperty(property,value);
-   });
+    if(value)el.style.setProperty(property,value,computed.getPropertyPriority(property));
+   }
   });
   node.style.setProperty('width',rect.width+'px');
   node.style.setProperty('height',rect.height+'px');
@@ -77,6 +72,32 @@ export default function TwoMilli(){
     });
    }
   };
+ }
+
+ function bytesToBase64(buffer){
+  const bytes=new Uint8Array(buffer);
+  let binary='';
+  const chunk=0x8000;
+  for(let i=0;i<bytes.length;i+=chunk)binary+=String.fromCharCode(...bytes.subarray(i,i+chunk));
+  return btoa(binary);
+ }
+
+ async function exactExportFontCSS(node,getFontEmbedCSS){
+  const fallback=()=>getFontEmbedCSS(node,{preferredFontFormat:'woff2'}).catch(()=>undefined);
+  try{
+   const cssUrl='https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap';
+   const response=await fetch(cssUrl,{mode:'cors',cache:'force-cache'});
+   if(!response.ok)return fallback();
+   let css=await response.text();
+   const urls=[...new Set(Array.from(css.matchAll(/url\((https:\/\/fonts\.gstatic\.com\/[^)]+)\)/g),m=>m[1]))];
+   await Promise.all(urls.map(async url=>{
+    const fontResponse=await fetch(url,{mode:'cors',cache:'force-cache'});
+    if(!fontResponse.ok)throw Error('font');
+    const encoded=bytesToBase64(await fontResponse.arrayBuffer());
+    css=css.split(url).join('data:font/woff2;base64,'+encoded);
+   }));
+   return css;
+  }catch{return fallback();}
  }
 
  const live=useMemo(()=>{
@@ -98,9 +119,9 @@ export default function TwoMilli(){
    const node=hero.current;
    await document.fonts.ready;
    await Promise.all(Array.from(node.querySelectorAll('img'),img=>img.decode().catch(()=>{})));
-   frozen=freezeRenderedMetrics(node);
+   frozen=freezeRenderedStyles(node);
    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-   const fontEmbedCSS=await getFontEmbedCSS(node).catch(()=>undefined);
+   const fontEmbedCSS=await exactExportFontCSS(node,getFontEmbedCSS);
    const blob=await toBlob(node,{
     width:frozen.width,
     height:frozen.height,
