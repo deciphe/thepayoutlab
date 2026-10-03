@@ -15,7 +15,6 @@ const money=(n,d=2)=>new Intl.NumberFormat('en-US',{minimumFractionDigits:d,maxi
 const compact=n=>new Intl.NumberFormat('en-US',{notation:'compact',maximumFractionDigits:2}).format(n);
 const split=ms=>{const h=Math.floor(ms/3600000),m=Math.floor(ms%3600000/60000),s=Math.floor(ms%60000/1000);return [h,m,s].map(v=>String(v).padStart(2,'0')).join(':')};
 
-// deploy touch: 2m hero retained export
 export default function TwoMilli(){
  const [data,setData]=useState(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[exporting,setExporting]=useState(false);
  const hero=useRef(null);
@@ -58,25 +57,14 @@ export default function TwoMilli(){
 
  async function download(){
   if(exporting||!hero.current)return;setExporting(true);setError('');
-  const node=hero.current;
   try{
    const {toBlob}=await import('html-to-image');await document.fonts.ready;
-   await Promise.all(Array.from(node.querySelectorAll('img'),img=>img.decode().catch(()=>{})));
-   node.classList.add('tm-hero-export');
-   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-   const rect=node.getBoundingClientRect();
-   const blob=await toBlob(node,{
-    width:1120,
-    height:700,
-    pixelRatio:2400/1120,
-    backgroundColor:'#080a09',
-    cacheBust:true,
-    style:{width:'1120px',height:'700px',minHeight:'700px',margin:'0'}
-   });
+   await Promise.all(Array.from(hero.current.querySelectorAll('img'),img=>img.decode().catch(()=>{})));
+   const blob=await toBlob(hero.current,{pixelRatio:Math.max(2,2400/hero.current.getBoundingClientRect().width),backgroundColor:'#080a09',cacheBust:true});
    if(!blob)throw Error('No image');
    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='vest-2-million-gigaprop.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
   }catch{setError('Share-card export failed. Please try again.');}
-  finally{node.classList.remove('tm-hero-export');setExporting(false);}
+  finally{setExporting(false);}
  }
 
  return <main className="tm">
