@@ -49,3 +49,22 @@ No rank-card attachment is sent. The rank card is rendered directly inside the H
 4. Run the sender with the claimant’s contact email and payout wallet.
 
 The contact email exists only in your inbox/terminal command and is never added to `traders.json`.
+
+
+## Safe test send
+
+You can test the exact email without adding yourself to `traders.json` or changing any leaderboard data.
+
+```bash
+npm run leaderboard:email -- --test --to YOUR_EMAIL --twitter YOUR_X_HANDLE --rank 20
+```
+
+Optional fake values:
+
+```bash
+npm run leaderboard:email -- --test --to YOUR_EMAIL --twitter YOUR_X_HANDLE --name "Your Name" --rank 20 --total 12480 --payouts 12 --tag "#GIGAPROP"
+```
+
+Add `--preview` to render the email locally instead of sending it.
+
+Test mode never writes to the leaderboard and the button simply opens `gigaprop.xyz/#leaderboard`.
