@@ -1,5 +1,6 @@
 export async function fetchFlow(config,{signal,previous,onProgress}={}){
 const {wallet:WALLET,token:TOKEN,api:API}=config;
+const minIncomingRaw=BigInt(Math.round((config.minIncomingAmount||0)*1e6));
 async function get(path){
   for(let attempt=0;attempt<4;attempt++){
     try { const r=await fetch(API+path,{cache:'no-store',signal:AbortSignal.any([signal,AbortSignal.timeout(20000)].filter(Boolean))}); if(!r.ok)throw Error(`HTTP ${r.status}`);return await r.json(); }
@@ -10,7 +11,7 @@ const startedAt=Date.now(),cutoff=startedAt-32*86400000, transfers=new Map();
 const reusable=previous?.complete&&previous.wallet===WALLET&&previous.token===TOKEN&&previous.chain===config.chain&&Array.isArray(previous.transfers)&&Date.parse(previous.periodStart)<=cutoff&&Date.parse(previous.updatedAt)>cutoff&&Date.parse(previous.updatedAt)<=Date.now();
 // Re-read a recent overlap, then merge the already complete older history.
 const overlap=reusable?Math.max(cutoff,Date.parse(previous.updatedAt)-3600000):cutoff;
-if(reusable)for(const t of previous.transfers)if(BigInt(t.raw)>=10000n&&Date.parse(t.timestamp)>=cutoff&&Date.parse(t.timestamp)<overlap)transfers.set(t.id,t);
+if(reusable)for(const t of previous.transfers)if(BigInt(t.raw)>=10000n&&(t.direction!=='in'||BigInt(t.raw)>=minIncomingRaw)&&Date.parse(t.timestamp)>=cutoff&&Date.parse(t.timestamp)<overlap)transfers.set(t.id,t);
 let params={type:'ERC-20',token:TOKEN}, complete=false;
 for(let page=0;page<300;page++){
   onProgress?.(page+1);
@@ -26,6 +27,7 @@ for(let page=0;page<300;page++){
     // Ignore zero-value and sub-cent dust transfers.
     if(BigInt(t.total.value)<10000n)continue;
     const row={id:`${t.transaction_hash}:${t.log_index}`,hash:t.transaction_hash,logIndex:t.log_index,block:t.block_number,timestamp:t.timestamp,from,to,raw:t.total.value,amount:Number(t.total.value)/1e6,direction:from===WALLET?(to===WALLET?'self':'out'):'in'};
+    if(row.direction==='in'&&BigInt(row.raw)<minIncomingRaw)continue;
     transfers.set(row.id,row);
   }
   if(!data.next_page_params||data.items.some(t=>Date.parse(t.timestamp)<overlap)){complete=true;break;}
