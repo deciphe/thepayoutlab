@@ -16,3 +16,11 @@
 
 /* Keep the rank-card canvas centered in both its preview and image capture. */
 .wk-poster{width:100%;margin:20px auto;float:none}.wk-poster>svg{display:block;width:100%;height:auto;margin:0 auto}
+/* Season / weekly leaderboard period switch */
+.wk-view-switch{display:inline-flex;align-items:center;gap:2px;margin:26px 0 0;padding:3px;border:1px solid #ffffff18;background:#111114}
+.wk-view-switch button{display:inline-flex;align-items:center;gap:8px;padding:10px 15px;border:0;background:transparent;color:#74717a;font:9px 'DM Mono',monospace;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer}
+.wk-view-switch button span{padding:3px 5px;border:1px solid #ffffff16;color:#8d8991;font-size:7px;letter-spacing:.8px}
+.wk-view-switch button.active{background:#dddcd4;color:#101013}
+.wk-view-switch button.active span{border-color:#10101330;color:#36343a}
+.wk-week-current{font:11px 'DM Mono',monospace!important;letter-spacing:.5px;color:#c8c5be!important;text-align:right}
+@media(max-width:600px){.wk-view-switch{width:100%;margin-top:18px}.wk-view-switch button{flex:1;justify-content:center;padding:10px 8px;font-size:8px}.wk-week-current{font-size:9px!important}}
