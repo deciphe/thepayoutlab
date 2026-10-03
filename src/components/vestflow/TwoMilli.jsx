@@ -59,7 +59,8 @@ export default function TwoMilli(){
   if(exporting||!hero.current)return;setExporting(true);setError('');
   try{
    const {toBlob}=await import('html-to-image');await document.fonts.ready;
-   const blob=await toBlob(hero.current,{pixelRatio:Math.max(2,2400/hero.current.getBoundingClientRect().width),backgroundColor:'#080a09'});
+   await Promise.all(Array.from(hero.current.querySelectorAll('img'),img=>img.decode().catch(()=>{})));
+   const blob=await toBlob(hero.current,{pixelRatio:Math.max(2,2400/hero.current.getBoundingClientRect().width),backgroundColor:'#080a09',cacheBust:true});
    if(!blob)throw Error('No image');
    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='vest-2-million-gigaprop.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
   }catch{setError('Share-card export failed. Please try again.');}
