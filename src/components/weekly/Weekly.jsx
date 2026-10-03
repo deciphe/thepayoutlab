@@ -124,28 +124,36 @@ function ClaimForm({initialAddress,onDone}){
   if(!submitted.current)return;
   submitted.current=false;setBusy(false);setSent(true);setStatus('Submitted for review. GIGAPROP will check your withdrawal against the onchain record before publishing your profile.');
  }
- function submit(e){
+ async function submit(e){
   e.preventDefault();if(!agree||busy||sent)return;
-  const form=e.currentTarget,attachment=form.elements.attachment?.files?.[0];
+  const form=e.currentTarget,input=form.elements.attachment,attachment=input?.files?.[0];
   if(form.elements._honey?.value)return;
   if(!attachment?.size){setStatus('Attach a screenshot of your Vest withdrawal confirmation email.');return;}
-  if(attachment.size>8*1024*1024){setStatus('Please use an attachment under 8 MB.');return;}
+  if(attachment.size>10*1024*1024){setStatus('Please use an image under 10 MB.');return;}
   if(!['image/png','image/jpeg','image/webp'].includes(attachment.type)){setStatus('Use a PNG, JPG or WebP screenshot.');return;}
-  const addMeta=(name,value)=>{let input=form.querySelector('input[name="'+name+'"]');if(!input){input=document.createElement('input');input.type='hidden';input.name=name;form.appendChild(input)}input.value=String(value)};
-  addMeta('attachment_filename',attachment.name);addMeta('attachment_bytes',attachment.size);addMeta('attachment_type',attachment.type||'unknown');
-  submitted.current=true;
+  setBusy(true);setStatus('Preparing a mail-safe copy of your screenshot…');
   try{
+   const bitmap=await createImageBitmap(attachment);
+   const maxSide=1800,scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
+   const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+   const ctx=canvas.getContext('2d',{alpha:false});ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close?.();
+   const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(Error('Image conversion failed')),'image/jpeg',0.9));
+   const safeName='gigaprop-withdrawal-'+Date.now()+'.jpg',safeFile=new File([blob],safeName,{type:'image/jpeg',lastModified:Date.now()});
+   const transfer=new DataTransfer();transfer.items.add(safeFile);input.files=transfer.files;
+   const addMeta=(name,value)=>{let hidden=form.querySelector('input[name="'+name+'"]');if(!hidden){hidden=document.createElement('input');hidden.type='hidden';hidden.name=name;form.appendChild(hidden)}hidden.value=String(value)};
+   addMeta('attachment_filename',safeName);addMeta('attachment_bytes',safeFile.size);addMeta('attachment_type','image/jpeg');addMeta('original_attachment_type',attachment.type||'unknown');
+   submitted.current=true;setStatus('Sending your screenshot and profile…');
    HTMLFormElement.prototype.submit.call(form);
-   setBusy(true);setStatus('Sending your screenshot and profile…');
-  }catch{submitted.current=false;setBusy(false);setStatus('We could not send the submission. Please try again.');}
+  }catch{
+   submitted.current=false;setBusy(false);setStatus('We could not prepare the screenshot. Please try a PNG or JPG image.');
+  }
  }
  if(sent)return <div className="wk-claim-form wk-submission wk-submission-success" role="status" aria-live="polite"><div className="wk-success-mark"><Check size={32}/></div><span className="wk-profile-label">PROFILE CLAIM / RECEIVED</span><h2>Submission received.</h2><p>Your claim is in. GIGAPROP will review the withdrawal confirmation against the onchain payout record before publishing the profile.</p><div className="wk-success-wallet"><span>Submitted wallet</span><strong>{short(address.trim().toLowerCase())}</strong></div><p className="wk-claim-note">You do not need to submit again. If anything is missing, GIGAPROP will follow up using the contact email you provided.</p><button className="wk-primary wk-success-done" type="button" onClick={onDone}><Check size={16}/> Done</button></div>;
  return <><iframe name="gigaprop-claim-submit" title="Profile claim submission" className="wk-claim-submit-frame" onLoad={submittedFrameLoaded}/>
  <form className="wk-claim-form wk-submission" onSubmit={submit} action="https://formsubmit.co/gp@gigaprop.xyz" method="POST" target="gigaprop-claim-submit" encType="multipart/form-data"><ShieldCheck size={30}/><span className="wk-profile-label">VEST / MANUAL PROFILE REVIEW</span><h2>Put your name on it.</h2><p>Submit your Vest withdrawal confirmation. GIGAPROP will cross-reference the receiving address onchain before adding your profile.</p>
  <input name="_honey" type="text" tabIndex={-1} autoComplete="off" style={{display:'none'}} aria-hidden="true"/>
  <input type="hidden" name="_captcha" value="false"/>
- <input type="hidden" name="_template" value="table"/>
- <input type="hidden" name="_subject" value={'GIGAPROP VEST PROFILE REVIEW — @'+twitter.trim().replace(/^@/,'')}/>
+  <input type="hidden" name="_subject" value={'GIGAPROP VEST PROFILE REVIEW — @'+twitter.trim().replace(/^@/,'')}/>
  <input type="hidden" name="source" value="gigaprop.xyz/#leaderboard"/>
  <input type="hidden" name="consent" value="I agree to publication of the approved profile details and payout wallet."/>
  <input type="hidden" name="payout_wallet" value={address.trim().toLowerCase()}/>
@@ -159,7 +167,7 @@ function ClaimForm({initialAddress,onDone}){
  <label>Twitter / X @<input required pattern="@?[A-Za-z0-9_]{1,15}" maxLength={16} value={twitter} disabled={busy||sent} onChange={e=>setTwitter(e.target.value)} placeholder="@yourhandle" autoComplete="off"/></label>
  <label>Desired display name<input required maxLength={40} value={displayName} disabled={busy||sent} onChange={e=>setDisplayName(e.target.value)} placeholder="Your name on the board"/></label>
  <label>Desired tag <small>optional</small><input maxLength={40} value={tag} disabled={busy||sent} onChange={e=>setTag(e.target.value)} placeholder="#YOURGANG or yourbrand.com"/></label>
- <label>Withdrawal email screenshot<input name="attachment" type="file" required accept="image/png,image/jpeg,image/webp" disabled={sent}/><small>PNG, JPG or WebP · up to 8 MB</small></label>
+ <label>Withdrawal email screenshot<input name="attachment" type="file" required accept="image/png,image/jpeg,image/webp" disabled={busy||sent}/><small>PNG, JPG or WebP · automatically converted to a compact JPG for reliable delivery · up to 10 MB</small></label>
  <label>Additional payout details (optional)<textarea maxLength={5000} rows={5} value={proof} disabled={busy||sent} onChange={e=>setProof(e.target.value)} placeholder="Include the withdrawal amount, date and receiving address. Add the transaction hash if available."/></label>
  <p className="wk-claim-note">Keep the payout details visible and remove unrelated personal information. Your confirmation and contact email are sent through FormSubmit to GIGAPROP for review, not published on the leaderboard.</p>
  <label className="wk-consent"><input type="checkbox" required checked={agree} disabled={busy||sent} onChange={e=>setAgree(e.target.checked)}/>I agree to my approved name, Twitter @, tag and payout address appearing publicly.</label>
