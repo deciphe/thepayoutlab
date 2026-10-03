@@ -33,5 +33,12 @@
     "name": "lemontrades",
     "image": "lemon.jpg",
     "tag": ""
+  },
+  {
+    "wallet": "0xff17ae7a439200005707e1a1d72d9d1189f99509",
+    "twitter": "marketswithmags",
+    "name": "markets with maggie",
+    "image": "maggie.jpg",
+    "tag": "beacons.ai/marketswithmaggie"
   }
 ]
