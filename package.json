@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "audit:onchain": "node scripts/match-onchain.mjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "leaderboard:email": "node scripts/send-leaderboard-live.mjs"
   },
   "dependencies": {
     "framer-motion": "^11.16.4",
