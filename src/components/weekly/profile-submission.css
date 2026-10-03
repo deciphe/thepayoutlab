@@ -13,10 +13,3 @@
 .wk-success-wallet strong{color:#eee8f2;font-family:"DM Mono",monospace;font-size:12px;font-weight:500}
 .wk-success-done{width:100%;margin-top:26px;justify-content:center}
 .wk-claim-submit-frame{display:none;width:0;height:0;border:0}
-
-.wk-claim-shell>svg{color:#b49cc1;margin-bottom:12px}.wk-claim-shell>h2{font-size:35px;margin:7px 0 8px;letter-spacing:-1.5px}.wk-claim-intro{max-width:560px;margin:0 0 22px;color:#948b9c;font-size:12px;line-height:1.7}
-.wk-claim-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:24px 0 18px}.wk-claim-tabs button{display:flex;align-items:center;gap:8px;min-width:0;padding:13px 14px;border:1px solid #ffffff1b;border-radius:4px;background:#ffffff04;color:#8f8797;font:10px "DM Mono",monospace;text-transform:uppercase;letter-spacing:.7px;text-align:left}.wk-claim-tabs button span{margin-left:auto;color:#6f6875;font-size:7px;letter-spacing:1px}.wk-claim-tabs button.active{border-color:#d4bc7d66;background:linear-gradient(120deg,#d4bc7d17,#ffffff04);color:#e8dfd0}.wk-claim-tabs button.active span{color:#c9ad70}
-.wk-route-note{display:flex;flex-direction:column;gap:5px;margin:2px 0 17px;padding:13px 14px;border-left:2px solid #c9ad7066;background:#ffffff03}.wk-route-note strong{color:#d9d1dc;font-size:11px}.wk-route-note span{color:#837a89;font-size:10px;line-height:1.5}
-.wk-x-preview{display:flex;align-items:center;gap:12px;margin:-5px 0 15px;padding:10px 12px;border:1px solid #ffffff16;border-radius:5px;background:#ffffff035}.wk-x-preview img{width:42px;height:42px;object-fit:cover;border-radius:50%;border:1px solid #ffffff28}.wk-x-preview>span{display:flex;min-width:0;flex:1;flex-direction:column;gap:2px}.wk-x-preview strong{overflow:hidden;color:#e1dae5;font-size:12px;text-overflow:ellipsis;white-space:nowrap}.wk-x-preview small{color:#8c8291;font:9px "DM Mono",monospace}.wk-x-preview>svg{color:#d4bc7d}
-.wk-profile-handle{display:inline-block;margin:-2px 0 10px;color:#9e8ba7;font:10px "DM Mono",monospace;letter-spacing:.5px}
-@media(max-width:600px){.wk-claim-tabs{grid-template-columns:1fr}.wk-claim-tabs button{padding:12px}.wk-claim-shell>h2{font-size:31px}}
