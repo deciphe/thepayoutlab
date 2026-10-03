@@ -120,6 +120,19 @@ export default function TwoMilli(){
    await document.fonts.ready;
    await Promise.all(Array.from(node.querySelectorAll('img'),img=>img.decode().catch(()=>{})));
    frozen=freezeRenderedStyles(node);
+   const headline=node.querySelector('.tm-hero-copy h1');
+   const period=headline?.querySelector('i');
+   if(headline){
+    headline.style.setProperty('background-image','linear-gradient(165deg,#fff8e5 5%,#e0c488 48%,#8c713d 96%)','important');
+    headline.style.setProperty('background-clip','text','important');
+    headline.style.setProperty('-webkit-background-clip','text','important');
+    headline.style.setProperty('color','transparent','important');
+    headline.style.setProperty('-webkit-text-fill-color','transparent','important');
+   }
+   if(period){
+    period.style.setProperty('color','#f1dca9','important');
+    period.style.setProperty('-webkit-text-fill-color','#f1dca9','important');
+   }
    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
    const fontEmbedCSS=await exactExportFontCSS(node,getFontEmbedCSS);
    const blob=await toBlob(node,{
