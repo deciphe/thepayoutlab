@@ -129,3 +129,30 @@
 .wk-place-2 .wk-podium-amount{color:#d9dad6}
 .wk-place-2 .wk-podium-foot{border-top-color:#d6d7d316;color:#b9bbb6}
 .wk-place-2 .wk-podium-foot>span{color:#81837f}
+
+
+/* Locked podium hierarchy — identical in Season and Weekly, independent of profile/tag content. */
+@media(min-width:1001px){
+ .wk-podium{align-items:end}
+ .wk-place-1{min-height:610px}
+ .wk-place-2{min-height:565px}
+ .wk-place-3{min-height:525px}
+}
+@media(min-width:601px) and (max-width:1000px){
+ .wk-podium{align-items:end}
+ .wk-place-1{min-height:555px}
+ .wk-place-2{min-height:515px}
+ .wk-place-3{min-height:480px}
+}
+@media(max-width:600px){
+ .wk-place-1{min-height:0}
+ .wk-place-2,.wk-place-3{min-height:365px}
+ .wk-place-2 .wk-card-art{height:145px}
+ .wk-place-3 .wk-card-art{height:128px}
+ .wk-place-2 .wk-monument-rank{font-size:126px}
+ .wk-place-3 .wk-monument-rank{font-size:112px}
+ .wk-place-2 .wk-wallet-name{font-size:15px}
+ .wk-place-3 .wk-wallet-name{font-size:14px}
+ .wk-place-2 .wk-podium-amount{font-size:24px}
+ .wk-place-3 .wk-podium-amount{font-size:22px}
+}
